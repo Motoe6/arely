@@ -57,9 +57,10 @@ export interface CompiledPipeline {
 
 export interface CompiledStep {
   id: string
-  type: string
-  input: Record<string, unknown>
+  toolName: string
+  inputMapping: string
   dependsOn: string[]
+  stepOrder: number
   timeoutMs: number | null
   retries: number | null
   retryDelayMs: number | null
