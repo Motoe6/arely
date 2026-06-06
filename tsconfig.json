@@ -18,12 +18,15 @@
     "noEmit": true,
     "paths": {
       "@opencode/engine": ["./packages/engine/src"],
-      "@opencode/engine/*": ["./packages/engine/src/*"]
+      "@opencode/engine/*": ["./packages/engine/src/*"],
+      "@opencode/flow-runtime": ["./packages/flow-runtime/src"],
+      "@opencode/flow-runtime/*": ["./packages/flow-runtime/src/*"]
     }
   },
   "include": [],
   "references": [
-    { "path": "packages/engine" }
+    { "path": "packages/engine" },
+    { "path": "packages/flow-runtime" }
   ],
   "exclude": ["node_modules", "dist", "packages/*/dist"]
 }

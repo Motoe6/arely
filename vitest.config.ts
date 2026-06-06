@@ -5,6 +5,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@opencode/engine": fileURLToPath(new URL("./packages/engine/src", import.meta.url)),
+      "@opencode/flow-runtime": fileURLToPath(new URL("./packages/flow-runtime/src", import.meta.url)),
     },
   },
   test: {
