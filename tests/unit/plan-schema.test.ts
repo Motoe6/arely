@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { PlanOutputSchema, validateBusinessRules, normalizePlanOutput } from "../../src/planner/plan-schema.js";
-import type { Tool } from "../../src/tools/base-tool.js";
+import { PlanOutputSchema, validateBusinessRules, normalizePlanOutput } from "@opencode/engine/planner/plan-schema.js";
+import type { Tool } from "@opencode/engine/tools/base-tool.js";
 
 const mockTools = new Map<string, Tool>([
   ["websearch", { name: "websearch", description: "Search", async execute() { return { content: "" }; } }],

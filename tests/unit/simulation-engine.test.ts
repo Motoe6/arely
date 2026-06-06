@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { SimulationEngine, computePolicyHash, type AuditStorePort } from "../../src/agents/simulation/simulation-engine.js";
-import type { PolicyAuditEvent } from "../../src/persistence/policy-audit-store.js";
-import type { PolicyRule } from "../../src/agents/policy/policy-types.js";
+import { SimulationEngine, computePolicyHash, type AuditStorePort } from "@opencode/engine/agents/simulation/simulation-engine.js";
+import type { PolicyAuditEvent } from "@opencode/engine/persistence/policy-audit-store.js";
+import type { PolicyRule } from "@opencode/engine/agents/policy/policy-types.js";
 
 function makeRule(overrides: Partial<PolicyRule> = {}): PolicyRule {
   return {

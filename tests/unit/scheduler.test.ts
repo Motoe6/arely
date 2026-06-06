@@ -4,23 +4,23 @@ const mockListAgents = vi.hoisted(() => vi.fn());
 const mockExecuteAgent = vi.hoisted(() => vi.fn());
 const mockListPlansByAgent = vi.hoisted(() => vi.fn());
 
-vi.mock("../../src/agents/agent-store.js", () => ({
+vi.mock("@opencode/engine/agents/agent-store.js", () => ({
   listAgents: mockListAgents,
 }));
 
-vi.mock("../../src/agents/runtime.js", () => ({
+vi.mock("@opencode/engine/agents/runtime.js", () => ({
   executeAgent: mockExecuteAgent,
 }));
 
-vi.mock("../../src/persistence/plan-store.js", () => ({
+vi.mock("@opencode/engine/persistence/plan-store.js", () => ({
   listPlansByAgent: mockListPlansByAgent,
 }));
 
-vi.mock("../../src/logger.js", () => ({
+vi.mock("@opencode/engine/logger.js", () => ({
   logger: { info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() },
 }));
 
-import { AgentScheduler } from "../../src/agents/scheduler.js";
+import { AgentScheduler } from "@opencode/engine/agents/scheduler.js";
 
 describe("AgentScheduler", () => {
   let scheduler: AgentScheduler;

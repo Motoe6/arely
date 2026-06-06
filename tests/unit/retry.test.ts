@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { withRetry } from "../../src/tools/retry.js";
-import { TimeoutError, CancelledError } from "../../src/tools/errors.js";
+import { withRetry } from "@opencode/engine/tools/retry.js";
+import { TimeoutError, CancelledError } from "@opencode/engine/tools/errors.js";
 
 function makeOpts(overrides?: Partial<{ maxAttempts: number; baseDelayMs: number; maxDelayMs: number; enabled: boolean }>) {
   return { maxAttempts: 3, baseDelayMs: 10, maxDelayMs: 1000, enabled: true, ...overrides };

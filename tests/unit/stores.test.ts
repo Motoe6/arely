@@ -1,17 +1,17 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { createSession, getSession, updateSessionState, listSessions } from "../../src/persistence/session-store.js";
-import { createMessage, getSessionMessages, getMessageCount } from "../../src/persistence/message-store.js";
-import { createToolCall, updateToolCallStatus, getToolCall, getSessionToolCalls } from "../../src/persistence/tool-call-store.js";
+import { createSession, getSession, updateSessionState, listSessions } from "@opencode/engine/persistence/session-store.js";
+import { createMessage, getSessionMessages, getMessageCount } from "@opencode/engine/persistence/message-store.js";
+import { createToolCall, updateToolCallStatus, getToolCall, getSessionToolCalls } from "@opencode/engine/persistence/tool-call-store.js";
 import {
   setApproval,
   findMatchingApproval,
   clearSessionCache,
-} from "../../src/persistence/approval-cache-store.js";
-import { getDb } from "../../src/persistence/database.js";
-import { approvalCache } from "../../src/persistence/schema.js";
-import { createAuditLog, getSessionAuditLogs } from "../../src/persistence/audit-store.js";
-import { getConfigValue, setConfigValue, getAllConfig, deleteConfig } from "../../src/persistence/config-store.js";
+} from "@opencode/engine/persistence/approval-cache-store.js";
+import { getDb } from "@opencode/engine/persistence/database.js";
+import { approvalCache } from "@opencode/engine/persistence/schema.js";
+import { createAuditLog, getSessionAuditLogs } from "@opencode/engine/persistence/audit-store.js";
+import { getConfigValue, setConfigValue, getAllConfig, deleteConfig } from "@opencode/engine/persistence/config-store.js";
 
 describe("Session Store", () => {
   beforeAll(() => initTestDb());

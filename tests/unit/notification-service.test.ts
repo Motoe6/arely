@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { ReliableNotificationService, type NotificationServiceConfig } from "../../src/agents/notifiers/notification-service.js";
-import type { AlertNotifier } from "../../src/agents/notifiers/notifier-types.js";
-import type { NotificationStore, NotificationRecord } from "../../src/agents/notifiers/notification-store.js";
-import type { Alert } from "../../src/agents/alert-rules.js";
+import { ReliableNotificationService, type NotificationServiceConfig } from "@opencode/engine/agents/notifiers/notification-service.js";
+import type { AlertNotifier } from "@opencode/engine/agents/notifiers/notifier-types.js";
+import type { NotificationStore, NotificationRecord } from "@opencode/engine/agents/notifiers/notification-store.js";
+import type { Alert } from "@opencode/engine/agents/alert-rules.js";
 
 const sampleAlert: Alert = {
   ruleId: "test_rule",

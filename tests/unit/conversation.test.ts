@@ -1,20 +1,20 @@
 import { describe, it, expect, vi, beforeAll, beforeEach, afterEach } from "vitest";
-import type { Message } from "../../src/types.js";
+import type { Message } from "@opencode/engine/types.js";
 
 const mockMessages: Message[] = [];
 let mockSequence = 0;
 
-vi.mock("../../src/persistence/message-store.js", () => ({
+vi.mock("@opencode/engine/persistence/message-store.js", () => ({
   getSessionMessages: vi.fn(() => mockMessages),
 }));
 
-import { loadConfig } from "../../src/config/index.js";
+import { loadConfig } from "@opencode/engine/config/index.js";
 import {
   loadConversation,
   injectToolResult,
   injectSystemPrompt,
   hasReachedTokenLimit,
-} from "../../src/llm/conversation.js";
+} from "@opencode/engine/llm/conversation.js";
 
 describe("conversation", () => {
   beforeAll(() => {

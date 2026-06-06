@@ -5,24 +5,24 @@ const mockConfig = vi.fn();
 const emittedEvents: string[] = [];
 const requestIdsByType: Record<string, string> = {};
 
-vi.mock("../../src/config/index.js", () => ({
+vi.mock("@opencode/engine/config/index.js", () => ({
   getConfig: () => mockConfig(),
 }));
 
-vi.mock("../../src/persistence/permission-store.js", () => ({
+vi.mock("@opencode/engine/persistence/permission-store.js", () => ({
   createPermissionApproval: vi.fn(),
 }));
 
-vi.mock("../../src/persistence/audit-store.js", () => ({
+vi.mock("@opencode/engine/persistence/audit-store.js", () => ({
   createAuditLog: vi.fn(),
 }));
 
-vi.mock("../../src/persistence/approval-cache-store.js", () => ({
+vi.mock("@opencode/engine/persistence/approval-cache-store.js", () => ({
   findMatchingApproval: vi.fn().mockReturnValue(undefined),
   setApproval: vi.fn(),
 }));
 
-import { PermissionGate } from "../../src/permissions/gate.js";
+import { PermissionGate } from "@opencode/engine/permissions/gate.js";
 
 function createSseMock() {
   return {
@@ -78,7 +78,7 @@ describe("PermissionGate", () => {
 
   describe("mode=ask with cache hit", () => {
     it("returns true when cache matches", async () => {
-      const approvalCache = await import("../../src/persistence/approval-cache-store.js");
+      const approvalCache = await import("@opencode/engine/persistence/approval-cache-store.js");
       (approvalCache.findMatchingApproval as any).mockReturnValue({
         id: "cache-1",
         granted: true,

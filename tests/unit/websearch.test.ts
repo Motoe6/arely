@@ -3,12 +3,12 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 const mockConfig = vi.fn();
 let mockFetch: any;
 
-vi.mock("../../src/config/index.js", () => ({
+vi.mock("@opencode/engine/config/index.js", () => ({
   getConfig: () => mockConfig(),
 }));
 
-import { ExaProvider, ParallelProvider, performWebSearch } from "../../src/tools/websearch.js";
-import type { SearchProvider, SearchResultItem } from "../../src/tools/base-tool.js";
+import { ExaProvider, ParallelProvider, performWebSearch } from "@opencode/engine/tools/websearch.js";
+import type { SearchProvider, SearchResultItem } from "@opencode/engine/tools/base-tool.js";
 
 beforeEach(() => {
   vi.clearAllMocks();

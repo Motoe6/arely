@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { LLMAdapter } from "../../src/llm/adapter.js";
-import type { Tool } from "../../src/tools/base-tool.js";
+import type { LLMAdapter } from "@opencode/engine/llm/adapter.js";
+import type { Tool } from "@opencode/engine/tools/base-tool.js";
 
-vi.mock("../../src/config/index.js", () => ({
+vi.mock("@opencode/engine/config/index.js", () => ({
   getConfig: () => ({ PLAN_MAX_STEPS: 10, PLANNING_ENABLED: true }),
 }));
 
-import { createPlan } from "../../src/planner/planner.js";
+import { createPlan } from "@opencode/engine/planner/planner.js";
 
 const mockTools = new Map<string, Tool>([
   ["websearch", { name: "websearch", description: "Search", async execute() { return { content: "" }; } }],

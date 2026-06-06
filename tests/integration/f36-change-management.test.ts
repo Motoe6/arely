@@ -5,10 +5,10 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import http from "node:http";
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { createHttpServer } from "../../src/transport/http-server.js";
-import { SSEBus } from "../../src/server/sse.js";
-import { loadConfig } from "../../src/config/index.js";
-import type { PolicyRule } from "../../src/agents/policy/policy-types.js";
+import { createHttpServer } from "@opencode/engine/transport/http-server.js";
+import { SSEBus } from "@opencode/engine/server/sse.js";
+import { loadConfig } from "@opencode/engine/config/index.js";
+import type { PolicyRule } from "@opencode/engine/agents/policy/policy-types.js";
 
 type Middleware = (req: IncomingMessage, res: ServerResponse, next: () => void) => void;
 

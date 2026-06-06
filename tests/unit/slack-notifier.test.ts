@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { SlackNotifier } from "../../src/agents/notifiers/slack-notifier.js";
-import type { Alert } from "../../src/agents/alert-rules.js";
+import { SlackNotifier } from "@opencode/engine/agents/notifiers/slack-notifier.js";
+import type { Alert } from "@opencode/engine/agents/alert-rules.js";
 
 const sampleAlert: Alert = {
   ruleId: "test_rule",

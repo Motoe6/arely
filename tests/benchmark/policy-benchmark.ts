@@ -3,14 +3,14 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import Database from "better-sqlite3";
 import { ulid } from "ulid";
-import { pushSchema } from "../../src/persistence/migrate.js";
-import { connect, close } from "../../src/persistence/database.js";
-import { getTrace, listTraces, countTraces } from "../../src/persistence/policy-audit-store.js";
-import { SimulationEngine } from "../../src/agents/simulation/simulation-engine.js";
-import { FileSystemPolicyPackStore } from "../../src/agents/policy/policy-pack.js";
-import { PolicyRecommender, type RecommenderAuditPort } from "../../src/agents/policy/policy-recommender.js";
-import { ImpactAnalyzer } from "../../src/agents/policy/impact-analyzer.js";
-import type { PolicyRule } from "../../src/agents/policy/policy-types.js";
+import { pushSchema } from "@opencode/engine/persistence/migrate.js";
+import { connect, close } from "@opencode/engine/persistence/database.js";
+import { getTrace, listTraces, countTraces } from "@opencode/engine/persistence/policy-audit-store.js";
+import { SimulationEngine } from "@opencode/engine/agents/simulation/simulation-engine.js";
+import { FileSystemPolicyPackStore } from "@opencode/engine/agents/policy/policy-pack.js";
+import { PolicyRecommender, type RecommenderAuditPort } from "@opencode/engine/agents/policy/policy-recommender.js";
+import { ImpactAnalyzer } from "@opencode/engine/agents/policy/impact-analyzer.js";
+import type { PolicyRule } from "@opencode/engine/agents/policy/policy-types.js";
 
 function makeRule(id: string, overrides: Partial<PolicyRule> = {}): PolicyRule {
   return {
@@ -91,7 +91,7 @@ function fmt(ms: number): string {
   return `${ms.toFixed(1)}ms`;
 }
 
-function setupScale(n: number, tmpDir: string): { traceIds: string[]; engine: SimulationEngine; analyzer: ImpactAnalyzer; deadRec: import("../../src/agents/policy/policy-recommender.js").PolicyRecommendation | undefined; recs: import("../../src/agents/policy/policy-recommender.js").PolicyRecommendation[] } {
+function setupScale(n: number, tmpDir: string): { traceIds: string[]; engine: SimulationEngine; analyzer: ImpactAnalyzer; deadRec: import("@opencode/engine/agents/policy/policy-recommender.js").PolicyRecommendation | undefined; recs: import("@opencode/engine/agents/policy/policy-recommender.js").PolicyRecommendation[] } {
   const dbPath = join(tmpDir, "bench.db");
   pushSchema(dbPath);
   connect(dbPath);

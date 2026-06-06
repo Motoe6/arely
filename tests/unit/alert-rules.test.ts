@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { evaluateToolRule, evaluatePipelineRule, evaluateAlertRules, DEFAULT_ALERT_RULES } from "../../src/agents/alert-rules.js";
-import type { AlertRule, Alert } from "../../src/agents/alert-rules.js";
-import type { ToolMetric, PipelineMetric } from "../../src/agents/pipeline-metrics.js";
-import { getDb } from "../../src/persistence/database.js";
-import { agentPipelines, pipelineRuns, pipelineStepRuns } from "../../src/persistence/schema.js";
+import { evaluateToolRule, evaluatePipelineRule, evaluateAlertRules, DEFAULT_ALERT_RULES } from "@opencode/engine/agents/alert-rules.js";
+import type { AlertRule, Alert } from "@opencode/engine/agents/alert-rules.js";
+import type { ToolMetric, PipelineMetric } from "@opencode/engine/agents/pipeline-metrics.js";
+import { getDb } from "@opencode/engine/persistence/database.js";
+import { agentPipelines, pipelineRuns, pipelineStepRuns } from "@opencode/engine/persistence/schema.js";
 import { ulid } from "ulid";
 
 function insertPipeline(name: string): string {

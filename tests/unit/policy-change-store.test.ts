@@ -5,7 +5,7 @@ import {
   getPolicyChange,
   listPolicyChanges,
   updatePolicyChangeStatus,
-} from "../../src/persistence/policy-change-store.js";
+} from "@opencode/engine/persistence/policy-change-store.js";
 
 describe("policy-change-store", () => {
   beforeAll(() => initTestDb());

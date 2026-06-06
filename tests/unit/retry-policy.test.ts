@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { computeDelay } from "../../src/agents/retry-policy.js";
-import type { RetryStrategy } from "../../src/agents/execution-contract.js";
+import { computeDelay } from "@opencode/engine/agents/retry-policy.js";
+import type { RetryStrategy } from "@opencode/engine/agents/execution-contract.js";
 
 describe("computeDelay", () => {
   describe("fixed", () => {

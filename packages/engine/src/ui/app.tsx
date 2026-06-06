@@ -1,6 +1,8 @@
 import { Box, Text, useInput } from 'ink';
 import React, { useState, useRef } from 'react';
-import type { SessionMessage, ToolCallPart, PermissionRequest, SessionState, SessionEvent } from '../types.js';
+import type { SessionMessage, ToolCallPart, PermissionRequest, SessionState } from '../types.js';
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type UIEvent = { type: string; [key: string]: any };
 import type { SSEBus } from '../server/sse.js';
 import type { AgentSession } from '../server/session.js';
 import { SessionView } from './session-view.js';
@@ -47,7 +49,7 @@ export function App({
       activeSession.current = session;
       sessions.set(session.id, session);
 
-      sse.on(session.id, (event: SessionEvent) => {
+      sse.on(session.id, (event: UIEvent) => {
         switch (event.type) {
           case 'message':
             setMessages((prev) => [...prev, event.data as SessionMessage]);

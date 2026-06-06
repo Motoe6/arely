@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
 
 describe("Metrics", () => {
-  let metrics: import("../../src/metrics.js").MetricsInstance;
+  let metrics: import("@opencode/engine/metrics.js").MetricsInstance;
 
   beforeEach(async () => {
     vi.resetModules();
-    const mod = await import("../../src/metrics.js");
+    const mod = await import("@opencode/engine/metrics.js");
     metrics = mod.metrics;
   });
 

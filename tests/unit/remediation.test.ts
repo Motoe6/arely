@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { generateRemediations } from "../../src/agents/remediation.js";
-import type { ReliabilityInsight } from "../../src/agents/pipeline-insights.js";
-import type { Alert } from "../../src/agents/alert-rules.js";
+import { generateRemediations } from "@opencode/engine/agents/remediation.js";
+import type { ReliabilityInsight } from "@opencode/engine/agents/pipeline-insights.js";
+import type { Alert } from "@opencode/engine/agents/alert-rules.js";
 
 const baseInsight = (overrides: Partial<ReliabilityInsight> = {}): ReliabilityInsight => ({
   id: "test::tool::t1::warning",

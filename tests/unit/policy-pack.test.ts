@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { mkdirSync, rmSync, existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { FileSystemPolicyPackStore, type PolicyPack } from "../../src/agents/policy/policy-pack.js";
-import type { PolicyRule } from "../../src/agents/policy/policy-types.js";
+import { FileSystemPolicyPackStore, type PolicyPack } from "@opencode/engine/agents/policy/policy-pack.js";
+import type { PolicyRule } from "@opencode/engine/agents/policy/policy-types.js";
 
 function makeRule(id: string): PolicyRule {
   return {

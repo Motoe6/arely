@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { HealthRegistry } from "../../src/health.js";
+import { HealthRegistry } from "@opencode/engine/health.js";
 
 describe("HealthRegistry", () => {
   it("should return ok=true when all checks pass", () => {

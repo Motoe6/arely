@@ -1,0 +1,37 @@
+{
+  "id": "dead-analyze-fe896641",
+  "name": "dead-analyze",
+  "description": "",
+  "rules": [
+    {
+      "id": "high_success",
+      "when": {
+        "successRate": {
+          "lt": 0.9
+        }
+      },
+      "then": {
+        "type": "trigger_remediation",
+        "payload": {}
+      },
+      "cooldownMs": 60000,
+      "maxExecutionsPerHour": 10
+    },
+    {
+      "id": "dead_rule",
+      "when": {
+        "successRate": {
+          "lt": 0
+        }
+      },
+      "then": {
+        "type": "trigger_remediation",
+        "payload": {}
+      },
+      "cooldownMs": 60000,
+      "maxExecutionsPerHour": 10
+    }
+  ],
+  "createdAt": "2026-06-06T00:31:55.275Z",
+  "updatedAt": "2026-06-06T00:31:55.275Z"
+}

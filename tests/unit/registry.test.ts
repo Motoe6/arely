@@ -8,24 +8,24 @@ const mockGetConfig = vi.fn();
 const mockPerformWebSearch = vi.fn();
 const mockPerformWebFetch = vi.fn();
 
-vi.mock("../../src/config/index.js", () => ({
+vi.mock("@opencode/engine/config/index.js", () => ({
   getConfig: () => mockGetConfig(),
 }));
 
-vi.mock("../../src/persistence/tool-call-store.js", () => ({
+vi.mock("@opencode/engine/persistence/tool-call-store.js", () => ({
   createToolCall: (...args: unknown[]) => mockCreateToolCall(...args),
   updateToolCallStatus: (...args: unknown[]) => mockUpdateToolCallStatus(...args),
 }));
 
-vi.mock("../../src/tools/websearch.js", () => ({
+vi.mock("@opencode/engine/tools/websearch.js", () => ({
   performWebSearch: (...args: unknown[]) => mockPerformWebSearch(...args),
 }));
 
-vi.mock("../../src/tools/webfetch.js", () => ({
+vi.mock("@opencode/engine/tools/webfetch.js", () => ({
   performWebFetch: (...args: unknown[]) => mockPerformWebFetch(...args),
 }));
 
-import { createToolRegistry, TimeoutError, CancelledError } from "../../src/tools/registry.js";
+import { createToolRegistry, TimeoutError, CancelledError } from "@opencode/engine/tools/registry.js";
 
 function createSseMock() {
   return { emit: mockEmit };

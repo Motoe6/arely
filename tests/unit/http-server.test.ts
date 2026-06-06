@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { createHttpServer } from "../../src/transport/http-server.js";
-import { SSEBus } from "../../src/server/sse.js";
-import { connect, close } from "../../src/persistence/database.js";
-import { loadConfig } from "../../src/config/index.js";
-import { createSession } from "../../src/persistence/session-store.js";
+import { createHttpServer } from "@opencode/engine/transport/http-server.js";
+import { SSEBus } from "@opencode/engine/server/sse.js";
+import { connect, close } from "@opencode/engine/persistence/database.js";
+import { loadConfig } from "@opencode/engine/config/index.js";
+import { createSession } from "@opencode/engine/persistence/session-store.js";
 import http from "node:http";
-import type { SessionStartedEvent } from "../../src/types/events.js";
+import type { SessionStartedEvent } from "@opencode/engine/types/events.js";
 
 function fetchUrl(url: string): Promise<{ statusCode: number; body: string }> {
   return new Promise((resolve, reject) => {

@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import type { SessionMessage } from "../../src/types.js";
-import type { LLMAdapter, LLMResponse } from "../../src/llm/adapter.js";
+import type { SessionMessage } from "@opencode/engine/types.js";
+import type { LLMAdapter, LLMResponse } from "@opencode/engine/llm/adapter.js";
 
 const mockEmit = vi.fn();
 
-vi.mock("../../src/tools/websearch.js", async (importOriginal) => {
+vi.mock("@opencode/engine/tools/websearch.js", async (importOriginal) => {
   const actual = await importOriginal();
   return {
     ...actual,
@@ -15,7 +15,7 @@ vi.mock("../../src/tools/websearch.js", async (importOriginal) => {
   };
 });
 
-vi.mock("../../src/tools/webfetch.js", async (importOriginal) => {
+vi.mock("@opencode/engine/tools/webfetch.js", async (importOriginal) => {
   const actual = await importOriginal();
   return {
     ...actual,
@@ -25,7 +25,7 @@ vi.mock("../../src/tools/webfetch.js", async (importOriginal) => {
   };
 });
 
-vi.mock("../../src/config/index.js", () => ({
+vi.mock("@opencode/engine/config/index.js", () => ({
   loadConfig: vi.fn(),
   getConfig: () => ({
     TOOL_TIMEOUT_MS: 5000,
@@ -48,12 +48,12 @@ vi.mock("../../src/config/index.js", () => ({
   }),
 }));
 
-vi.mock("../../src/persistence/approval-cache-store.js", () => ({
+vi.mock("@opencode/engine/persistence/approval-cache-store.js", () => ({
   findMatchingApproval: vi.fn(),
   setApproval: vi.fn(),
 }));
 
-import { AgentSession } from "../../src/server/session.js";
+import { AgentSession } from "@opencode/engine/server/session.js";
 
 function createSseMock() {
   return { emit: mockEmit };
@@ -192,7 +192,7 @@ describe("AgentSession integration", () => {
       [{ content: "Recovered from error." }],
     ]);
 
-    const websearch = await import("../../src/tools/websearch.js");
+    const websearch = await import("@opencode/engine/tools/websearch.js");
     (websearch.performWebSearch as any).mockRejectedValue(new Error("Service unavailable"));
 
     const session = new AgentSession(sse, llm, {

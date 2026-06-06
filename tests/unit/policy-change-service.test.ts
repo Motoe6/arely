@@ -3,9 +3,9 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { FileSystemPolicyPackStore } from "../../src/agents/policy/policy-pack.js";
-import { PolicyChangeService, ChangeServiceError } from "../../src/control/policy-change-service.js";
-import type { PolicyRule } from "../../src/agents/policy/policy-types.js";
+import { FileSystemPolicyPackStore } from "@opencode/engine/agents/policy/policy-pack.js";
+import { PolicyChangeService, ChangeServiceError } from "@opencode/engine/control/policy-change-service.js";
+import type { PolicyRule } from "@opencode/engine/agents/policy/policy-types.js";
 
 describe("PolicyChangeService", () => {
   let packDir: string;

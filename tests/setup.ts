@@ -1,8 +1,8 @@
 import Database from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
-import * as schema from "../src/persistence/schema.js";
-import { pushSchema } from "../src/persistence/migrate.js";
-import { close, connect } from "../src/persistence/database.js";
+import * as schema from "@opencode/engine/persistence/schema.js";
+import { pushSchema } from "@opencode/engine/persistence/migrate.js";
+import { close, connect } from "@opencode/engine/persistence/database.js";
 
 let testDbPath: string | null = null;
 

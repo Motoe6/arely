@@ -6,7 +6,7 @@ import {
   listTraces,
   countTraces,
   prune,
-} from "../../src/persistence/policy-audit-store.js";
+} from "@opencode/engine/persistence/policy-audit-store.js";
 
 describe("Policy Audit Store", () => {
   const traceA = "trace-a";

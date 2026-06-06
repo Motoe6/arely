@@ -1,8 +1,8 @@
 import { mkdirSync, rmSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { FileSystemPolicyPackStore } from "../../src/agents/policy/policy-pack.js";
-import type { PolicyRule } from "../../src/agents/policy/policy-types.js";
+import { FileSystemPolicyPackStore } from "@opencode/engine/agents/policy/policy-pack.js";
+import type { PolicyRule } from "@opencode/engine/agents/policy/policy-types.js";
 
 function makeRule(id: string, overrides: Partial<PolicyRule> = {}): PolicyRule {
   return {

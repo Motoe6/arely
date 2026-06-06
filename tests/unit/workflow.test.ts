@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { PlanRecord, PlanStepRecord } from "../../src/types.js";
-import type { Tool } from "../../src/tools/base-tool.js";
-import type { AgentEvent } from "../../src/types/events.js";
+import type { PlanRecord, PlanStepRecord } from "@opencode/engine/types.js";
+import type { Tool } from "@opencode/engine/tools/base-tool.js";
+import type { AgentEvent } from "@opencode/engine/types/events.js";
 
-vi.mock("../../src/config/index.js", () => ({
+vi.mock("@opencode/engine/config/index.js", () => ({
   getConfig: () => ({ PLAN_PARALLELISM: 3 }),
 }));
 
-import { WorkflowExecutor, buildGraph, computeLevels, safeParseDepends } from "../../src/planner/workflow.js";
+import { WorkflowExecutor, buildGraph, computeLevels, safeParseDepends } from "@opencode/engine/planner/workflow.js";
 
 function makeStep(id: string, overrides: Partial<PlanStepRecord> = {}): PlanStepRecord {
   return {

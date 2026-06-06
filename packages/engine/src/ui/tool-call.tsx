@@ -8,6 +8,7 @@ function statusGlyph(status: ToolStatus): string {
     case 'running': return '◉';
     case 'completed': return '✓';
     case 'error': return '✗';
+    default: return '?';
   }
 }
 
@@ -17,6 +18,7 @@ function statusColor(status: ToolStatus): string {
     case 'running': return 'cyan';
     case 'completed': return 'green';
     case 'error': return 'red';
+    default: return 'white';
   }
 }
 
@@ -31,8 +33,8 @@ export function ToolCallCard({ part }: { part: ToolCallPart }) {
   return (
     <Box flexDirection="column" marginBottom={1}>
       <Box>
-        <Text color={statusColor(part.status)}>
-          {statusGlyph(part.status)} {displayName}
+        <Text color={statusColor(part.status as ToolStatus)}>
+          {statusGlyph(part.status as ToolStatus)} {displayName}
         </Text>
       </Box>
       <Box marginLeft={3}>
@@ -41,7 +43,7 @@ export function ToolCallCard({ part }: { part: ToolCallPart }) {
         </Text>
       </Box>
       <Box marginLeft={3}>
-        <Text color={statusColor(part.status)}>
+        <Text color={statusColor(part.status as ToolStatus)}>
           {'━'.repeat(Math.min(20, Math.max(10, (process.stdout.columns ?? 80) - 10)))}
           {' '}{part.status}
         </Text>

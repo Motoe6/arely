@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
 import http from "node:http";
-import { createHttpServer } from "../../src/transport/http-server.js";
-import { SSEBus } from "../../src/server/sse.js";
-import { loadConfig } from "../../src/config/index.js";
+import { createHttpServer } from "@opencode/engine/transport/http-server.js";
+import { SSEBus } from "@opencode/engine/server/sse.js";
+import { loadConfig } from "@opencode/engine/config/index.js";
 
 const sse = new SSEBus();
 

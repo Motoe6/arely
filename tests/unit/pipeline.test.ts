@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { agentMemorySet, agentMemoryGet, agentMemoryClear } from "../../src/tools/memory.js";
-import { getDb } from "../../src/persistence/database.js";
-import { agents } from "../../src/persistence/schema.js";
+import { agentMemorySet, agentMemoryGet, agentMemoryClear } from "@opencode/engine/tools/memory.js";
+import { getDb } from "@opencode/engine/persistence/database.js";
+import { agents } from "@opencode/engine/persistence/schema.js";
 import {
   createPipeline,
   createPipelineStep,
   getPipelineSteps,
   createPipelineRun,
-} from "../../src/agents/pipeline-store.js";
+} from "@opencode/engine/agents/pipeline-store.js";
 
 function createTestAgent(id: string): void {
   const now = new Date().toISOString();
@@ -18,12 +18,12 @@ function createTestAgent(id: string): void {
   }).run();
 }
 
-vi.mock("../../src/agents/runtime.js", () => ({
+vi.mock("@opencode/engine/agents/runtime.js", () => ({
   executeAgent: vi.fn(),
 }));
 
-import { executeAgent } from "../../src/agents/runtime.js";
-import { executePipeline } from "../../src/agents/pipeline.js";
+import { executeAgent } from "@opencode/engine/agents/runtime.js";
+import { executePipeline } from "@opencode/engine/agents/pipeline.js";
 
 const mockConfig = {
   sessionManager: {} as any,

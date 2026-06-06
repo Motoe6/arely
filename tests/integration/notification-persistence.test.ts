@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeAll, beforeEach, vi } from "vitest";
-import { connect, getDb } from "../../src/persistence/database.js";
-import { notificationQueue, notificationEvents } from "../../src/persistence/schema.js";
+import { connect, getDb } from "@opencode/engine/persistence/database.js";
+import { notificationQueue, notificationEvents } from "@opencode/engine/persistence/schema.js";
 import { eq } from "drizzle-orm";
-import { createNotificationStore } from "../../src/agents/notifiers/notification-store.js";
-import { ReliableNotificationService } from "../../src/agents/notifiers/notification-service.js";
-import type { AlertNotifier } from "../../src/agents/notifiers/notifier-types.js";
-import type { Alert } from "../../src/agents/alert-rules.js";
+import { createNotificationStore } from "@opencode/engine/agents/notifiers/notification-store.js";
+import { ReliableNotificationService } from "@opencode/engine/agents/notifiers/notification-service.js";
+import type { AlertNotifier } from "@opencode/engine/agents/notifiers/notifier-types.js";
+import type { Alert } from "@opencode/engine/agents/alert-rules.js";
 
 const sampleAlert: Alert = {
   ruleId: "test_rule",

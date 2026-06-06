@@ -3,8 +3,6 @@
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "outDir": "dist",
-    "rootDir": "src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -15,8 +13,17 @@
     "sourceMap": true,
     "types": ["node", "vitest/globals"],
     "jsx": "react-jsx",
-    "jsxImportSource": "react"
+    "jsxImportSource": "react",
+    "composite": true,
+    "noEmit": true,
+    "paths": {
+      "@opencode/engine": ["./packages/engine/src"],
+      "@opencode/engine/*": ["./packages/engine/src/*"]
+    }
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "src/ui"]
+  "include": [],
+  "references": [
+    { "path": "packages/engine" }
+  ],
+  "exclude": ["node_modules", "dist", "packages/*/dist"]
 }

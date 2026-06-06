@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { LLMAdapter, LLMResponse } from "../../src/llm/adapter.js";
-import type { SessionMessage } from "../../src/types.js";
-import type { Tool, ToolResult } from "../../src/tools/base-tool.js";
+import type { LLMAdapter, LLMResponse } from "@opencode/engine/llm/adapter.js";
+import type { SessionMessage } from "@opencode/engine/types.js";
+import type { Tool, ToolResult } from "@opencode/engine/tools/base-tool.js";
 
 const emittedEvents: any[] = [];
 
@@ -34,7 +34,7 @@ function createMockFailingTool(name: string, errorMsg = "Execution failed"): Too
   };
 }
 
-import { runAgentLoop } from "../../src/server/agent-loop.js";
+import { runAgentLoop } from "@opencode/engine/server/agent-loop.js";
 
 describe("AgentLoop", () => {
   beforeEach(() => {

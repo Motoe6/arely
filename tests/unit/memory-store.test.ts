@@ -15,7 +15,7 @@ sqlite.exec(`
 `);
 sqlite.exec("CREATE INDEX IF NOT EXISTS idx_agent_memory_agent ON agent_memory(agent_id)");
 
-vi.mock("../../src/persistence/database.js", () => ({
+vi.mock("@opencode/engine/persistence/database.js", () => ({
   getDb: () => ({
     select: () => ({
       from: () => ({
@@ -42,7 +42,7 @@ vi.mock("../../src/persistence/database.js", () => ({
   }),
 }));
 
-import { agentMemoryGet, agentMemorySet, agentMemoryList, agentMemoryDelete, agentMemoryClear } from "../../src/tools/memory.js";
+import { agentMemoryGet, agentMemorySet, agentMemoryList, agentMemoryDelete, agentMemoryClear } from "@opencode/engine/tools/memory.js";
 
 describe("agentMemoryGet", () => {
   it("should return undefined for missing key", () => {

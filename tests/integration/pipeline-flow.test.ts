@@ -1,19 +1,19 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
 import { ulid } from "ulid";
-import { createPipeline, createPipelineStep, getPipelineSteps, getPipelineRuns, getPipelineRun } from "../../src/agents/pipeline-store.js";
-import { agentMemorySet, agentMemoryGet, agentMemoryClear } from "../../src/tools/memory.js";
+import { createPipeline, createPipelineStep, getPipelineSteps, getPipelineRuns, getPipelineRun } from "@opencode/engine/agents/pipeline-store.js";
+import { agentMemorySet, agentMemoryGet, agentMemoryClear } from "@opencode/engine/tools/memory.js";
 
-vi.mock("../../src/agents/runtime.js", () => ({
+vi.mock("@opencode/engine/agents/runtime.js", () => ({
   executeAgent: vi.fn(),
 }));
 
-import { executeAgent } from "../../src/agents/runtime.js";
-import { executePipeline } from "../../src/agents/pipeline.js";
+import { executeAgent } from "@opencode/engine/agents/runtime.js";
+import { executePipeline } from "@opencode/engine/agents/pipeline.js";
 
 // Insert agents directly via drizzle
-import { getDb } from "../../src/persistence/database.js";
-import { agents } from "../../src/persistence/schema.js";
+import { getDb } from "@opencode/engine/persistence/database.js";
+import { agents } from "@opencode/engine/persistence/schema.js";
 
 const mockConfig = {
   sessionManager: {} as any,

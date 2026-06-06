@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import type { PlanStepRecord } from "../../src/types.js";
-import type { LLMAdapter, LLMResponse } from "../../src/llm/adapter.js";
-import type { Tool } from "../../src/tools/base-tool.js";
+import type { PlanStepRecord } from "@opencode/engine/types.js";
+import type { LLMAdapter, LLMResponse } from "@opencode/engine/llm/adapter.js";
+import type { Tool } from "@opencode/engine/tools/base-tool.js";
 
 const mockEmit = vi.fn();
 
-vi.mock("../../src/config/index.js", () => ({
+vi.mock("@opencode/engine/config/index.js", () => ({
   loadConfig: vi.fn(),
   getConfig: () => ({
     TOOL_TIMEOUT_MS: 5000,
@@ -76,8 +76,8 @@ function makeStep(id: string, overrides: Partial<PlanStepRecord> = {}): PlanStep
 
 describe("Planning flow integration", () => {
   it("Test 1 — tool execution and synthesizer work end-to-end", async () => {
-    const { WorkflowExecutor } = await import("../../src/planner/workflow.js");
-    const { Synthesizer } = await import("../../src/planner/synthesizer.js");
+    const { WorkflowExecutor } = await import("@opencode/engine/planner/workflow.js");
+    const { Synthesizer } = await import("@opencode/engine/planner/synthesizer.js");
 
     const tools = new Map<string, Tool>([
       ["websearch", successTool("websearch")],
@@ -116,7 +116,7 @@ describe("Planning flow integration", () => {
   });
 
   it("Test 2 — tool failure propagates blocked state", async () => {
-    const { WorkflowExecutor } = await import("../../src/planner/workflow.js");
+    const { WorkflowExecutor } = await import("@opencode/engine/planner/workflow.js");
 
     const tools = new Map<string, Tool>([
       ["websearch", failingTool("websearch")],
@@ -137,7 +137,7 @@ describe("Planning flow integration", () => {
   });
 
   it("Test 3 — recovery resume: completed steps skipped, pending executed", async () => {
-    const { WorkflowExecutor } = await import("../../src/planner/workflow.js");
+    const { WorkflowExecutor } = await import("@opencode/engine/planner/workflow.js");
 
     const tools = new Map<string, Tool>([
       ["websearch", successTool("websearch")],
@@ -159,8 +159,8 @@ describe("Planning flow integration", () => {
   });
 
   it("Test 4 — recoverPlans + resumePlan from DB", async () => {
-    const { sessions, plans, planSteps } = await import("../../src/persistence/schema.js");
-    const { getDb } = await import("../../src/persistence/database.js");
+    const { sessions, plans, planSteps } = await import("@opencode/engine/persistence/schema.js");
+    const { getDb } = await import("@opencode/engine/persistence/database.js");
     const db = getDb();
     const now = new Date().toISOString();
     const planId = "plan-recovery-test";
@@ -171,8 +171,8 @@ describe("Planning flow integration", () => {
     db.insert(planSteps).values({ id: "rec_1", planId, description: "B", tool: "websearch", args: "{}", dependsOn: "[]", status: "running", result: null, error: null, order: 1, createdAt: now, completedAt: null }).run();
     db.insert(planSteps).values({ id: "rec_2", planId, description: "C", tool: "websearch", args: "{}", dependsOn: "[]", status: "pending", result: null, error: null, order: 2, createdAt: now, completedAt: null }).run();
 
-    const { recoverPlans, resumePlan } = await import("../../src/planner/recovery.js");
-    const { WorkflowExecutor } = await import("../../src/planner/workflow.js");
+    const { recoverPlans, resumePlan } = await import("@opencode/engine/planner/recovery.js");
+    const { WorkflowExecutor } = await import("@opencode/engine/planner/workflow.js");
 
     const tools = new Map<string, Tool>([["websearch", successTool("websearch")]]);
     const executor = new WorkflowExecutor({ tools, emit: () => undefined });
@@ -197,7 +197,7 @@ describe("Planning flow integration", () => {
   });
 
   it("Test 5 — abort before execution skips all steps", async () => {
-    const { WorkflowExecutor } = await import("../../src/planner/workflow.js");
+    const { WorkflowExecutor } = await import("@opencode/engine/planner/workflow.js");
 
     const tools = new Map<string, Tool>([
       ["websearch", successTool("websearch")],

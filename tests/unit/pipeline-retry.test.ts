@@ -1,17 +1,17 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { createPipeline, createPipelineStep, getPipelineStepRuns } from "../../src/agents/pipeline-store.js";
-import { executePipeline } from "../../src/agents/pipeline.js";
-import { createExecutionTracer } from "../../src/agents/execution-tracer.js";
-import { getDb } from "../../src/persistence/database.js";
-import { pipelineStepRuns, pipelineRuns, pipelineSteps, agentPipelines, agents } from "../../src/persistence/schema.js";
-import { TimeoutError } from "../../src/tools/errors.js";
+import { createPipeline, createPipelineStep, getPipelineStepRuns } from "@opencode/engine/agents/pipeline-store.js";
+import { executePipeline } from "@opencode/engine/agents/pipeline.js";
+import { createExecutionTracer } from "@opencode/engine/agents/execution-tracer.js";
+import { getDb } from "@opencode/engine/persistence/database.js";
+import { pipelineStepRuns, pipelineRuns, pipelineSteps, agentPipelines, agents } from "@opencode/engine/persistence/schema.js";
+import { TimeoutError } from "@opencode/engine/tools/errors.js";
 
-vi.mock("../../src/agents/runtime.js", () => ({
+vi.mock("@opencode/engine/agents/runtime.js", () => ({
   executeAgent: vi.fn(),
 }));
 
-import { executeAgent } from "../../src/agents/runtime.js";
+import { executeAgent } from "@opencode/engine/agents/runtime.js";
 
 const mockConfig = {
   sessionManager: {} as any,

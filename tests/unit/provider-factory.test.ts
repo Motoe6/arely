@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { createSearchProvider } from "../../src/tools/provider-factory.js";
-import { ExaProvider, ParallelProvider } from "../../src/tools/websearch.js";
+import { createSearchProvider } from "@opencode/engine/tools/provider-factory.js";
+import { ExaProvider, ParallelProvider } from "@opencode/engine/tools/websearch.js";
 
 describe("createSearchProvider", () => {
   it("returns ExaProvider for exa config", () => {

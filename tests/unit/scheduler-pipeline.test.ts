@@ -1,20 +1,20 @@
 import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { AgentScheduler } from "../../src/agents/scheduler.js";
-import { createPipeline, createPipelineStep, getPipelineRuns } from "../../src/agents/pipeline-store.js";
+import { AgentScheduler } from "@opencode/engine/agents/scheduler.js";
+import { createPipeline, createPipelineStep, getPipelineRuns } from "@opencode/engine/agents/pipeline-store.js";
 
-vi.mock("../../src/agents/runtime.js", () => ({
+vi.mock("@opencode/engine/agents/runtime.js", () => ({
   executeAgent: vi.fn().mockResolvedValue({ ok: true }),
 }));
 
-vi.mock("../../src/agents/pipeline.js", () => ({
+vi.mock("@opencode/engine/agents/pipeline.js", () => ({
   executePipeline: vi.fn().mockResolvedValue({ ok: true, runId: "mock-run", stepResults: [] }),
 }));
 
-import { executePipeline } from "../../src/agents/pipeline.js";
+import { executePipeline } from "@opencode/engine/agents/pipeline.js";
 import { ulid } from "ulid";
-import { getDb } from "../../src/persistence/database.js";
-import { agents, agentPipelines, pipelineSteps, pipelineRuns } from "../../src/persistence/schema.js";
+import { getDb } from "@opencode/engine/persistence/database.js";
+import { agents, agentPipelines, pipelineSteps, pipelineRuns } from "@opencode/engine/persistence/schema.js";
 
 const mockConfig = {
   sessionManager: {} as any,

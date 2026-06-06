@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
 import { ulid } from "ulid";
-import { getDb } from "../../src/persistence/database.js";
-import { agentPipelines, pipelineRuns, pipelineStepRuns } from "../../src/persistence/schema.js";
-import { getOverviewMetrics, getToolMetrics, getPipelineMetrics, getErrorMetrics } from "../../src/agents/pipeline-metrics.js";
+import { getDb } from "@opencode/engine/persistence/database.js";
+import { agentPipelines, pipelineRuns, pipelineStepRuns } from "@opencode/engine/persistence/schema.js";
+import { getOverviewMetrics, getToolMetrics, getPipelineMetrics, getErrorMetrics } from "@opencode/engine/agents/pipeline-metrics.js";
 
 function insertPipeline(name: string): string {
   const id = ulid();

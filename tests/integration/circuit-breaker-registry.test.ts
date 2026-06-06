@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { PipelineToolExecutor, PipelineToolError } from "../../src/agents/pipeline-tool-executor.js";
-import { PipelineCircuitBreakerRegistry } from "../../src/agents/circuit-breaker-registry.js";
+import { PipelineToolExecutor, PipelineToolError } from "@opencode/engine/agents/pipeline-tool-executor.js";
+import { PipelineCircuitBreakerRegistry } from "@opencode/engine/agents/circuit-breaker-registry.js";
 
 describe("Pipeline Circuit Breaker Integration", () => {
   beforeEach(() => {

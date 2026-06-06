@@ -1,6 +1,12 @@
 import { defineConfig } from "vitest/config";
+import { fileURLToPath } from "node:url";
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      "@opencode/engine": fileURLToPath(new URL("./packages/engine/src", import.meta.url)),
+    },
+  },
   test: {
     globals: true,
     environment: "node",
@@ -8,29 +14,29 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       include: [
-        "src/config/**/*.ts",
-        "src/persistence/**/*.ts",
-        "src/server/sse.ts",
-        "src/server/agent-loop.ts",
-        "src/server/session-manager.ts",
-        "src/transport/router.ts",
-        "src/transport/http-server.ts",
-        "src/tools/*.ts",
-        "src/permissions/*.ts",
-        "src/llm/adapter.ts",
-        "src/llm/openaicompat.ts",
-        "src/llm/conversation.ts",
+        "packages/engine/src/config/**/*.ts",
+        "packages/engine/src/persistence/**/*.ts",
+        "packages/engine/src/server/sse.ts",
+        "packages/engine/src/server/agent-loop.ts",
+        "packages/engine/src/server/session-manager.ts",
+        "packages/engine/src/transport/router.ts",
+        "packages/engine/src/transport/http-server.ts",
+        "packages/engine/src/tools/*.ts",
+        "packages/engine/src/permissions/*.ts",
+        "packages/engine/src/llm/adapter.ts",
+        "packages/engine/src/llm/openaicompat.ts",
+        "packages/engine/src/llm/conversation.ts",
       ],
       exclude: [
         "tests/**",
-        "src/types/**",
-        "src/ui/**",
-        "src/index.ts",
-        "src/tools/base-tool.ts",
-        "src/persistence/schema.ts",
-        "src/persistence/database.ts",
-        "src/persistence/migrate.ts",
-        "src/transport/http-server.ts",
+        "packages/engine/src/types/**",
+        "packages/engine/src/ui/**",
+        "packages/engine/src/index.ts",
+        "packages/engine/src/tools/base-tool.ts",
+        "packages/engine/src/persistence/schema.ts",
+        "packages/engine/src/persistence/database.ts",
+        "packages/engine/src/persistence/migrate.ts",
+        "packages/engine/src/transport/http-server.ts",
       ],
       thresholds: {
         lines: 80,

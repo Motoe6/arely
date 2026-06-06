@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createTracer, SpanStore } from "../../src/tracer.js";
+import { createTracer, SpanStore } from "@opencode/engine/tracer.js";
 
 describe("Tracer", () => {
   it("should start and end a span", () => {

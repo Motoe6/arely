@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { ImpactAnalyzer, type ImpactReport } from "../../src/agents/policy/impact-analyzer.js";
-import { SimulationEngine, type AuditStorePort } from "../../src/agents/simulation/simulation-engine.js";
-import type { PolicyPackStore } from "../../src/agents/policy/policy-pack.js";
-import type { PolicyRule } from "../../src/agents/policy/policy-types.js";
-import type { PolicyRecommendation, RecommendationType } from "../../src/agents/policy/policy-recommender.js";
-import type { PolicyAuditEvent } from "../../src/persistence/policy-audit-store.js";
+import { ImpactAnalyzer, type ImpactReport } from "@opencode/engine/agents/policy/impact-analyzer.js";
+import { SimulationEngine, type AuditStorePort } from "@opencode/engine/agents/simulation/simulation-engine.js";
+import type { PolicyPackStore } from "@opencode/engine/agents/policy/policy-pack.js";
+import type { PolicyRule } from "@opencode/engine/agents/policy/policy-types.js";
+import type { PolicyRecommendation, RecommendationType } from "@opencode/engine/agents/policy/policy-recommender.js";
+import type { PolicyAuditEvent } from "@opencode/engine/persistence/policy-audit-store.js";
 
 function makeRule(id: string, overrides: Partial<PolicyRule> = {}): PolicyRule {
   return {

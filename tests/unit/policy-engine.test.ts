@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { PolicyEngine } from "../../src/agents/policy/policy-engine.js";
-import type { PolicyRule, PolicyEvaluationInput } from "../../src/agents/policy/policy-types.js";
+import { PolicyEngine } from "@opencode/engine/agents/policy/policy-engine.js";
+import type { PolicyRule, PolicyEvaluationInput } from "@opencode/engine/agents/policy/policy-types.js";
 
 function makeInput(overrides?: Partial<PolicyEvaluationInput>): PolicyEvaluationInput {
   return {

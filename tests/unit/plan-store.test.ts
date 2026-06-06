@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { createSession } from "../../src/persistence/session-store.js";
+import { createSession } from "@opencode/engine/persistence/session-store.js";
 import {
   createPlan,
   getPlan,
@@ -13,9 +13,9 @@ import {
   markStepFailed,
   markStepBlocked,
   markStepSkipped,
-} from "../../src/persistence/plan-store.js";
-import { getDb } from "../../src/persistence/database.js";
-import { plans } from "../../src/persistence/schema.js";
+} from "@opencode/engine/persistence/plan-store.js";
+import { getDb } from "@opencode/engine/persistence/database.js";
+import { plans } from "@opencode/engine/persistence/schema.js";
 import { eq } from "drizzle-orm";
 
 describe("Plan Store", () => {

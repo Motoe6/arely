@@ -4,16 +4,16 @@ const mockGetAgent = vi.hoisted(() => vi.fn());
 const mockListPlansBySession = vi.hoisted(() => vi.fn());
 const mockUpdatePlanAgentId = vi.hoisted(() => vi.fn());
 
-vi.mock("../../src/agents/agent-store.js", () => ({
+vi.mock("@opencode/engine/agents/agent-store.js", () => ({
   getAgent: mockGetAgent,
 }));
 
-vi.mock("../../src/persistence/plan-store.js", () => ({
+vi.mock("@opencode/engine/persistence/plan-store.js", () => ({
   listPlansBySession: mockListPlansBySession,
   updatePlanAgentId: mockUpdatePlanAgentId,
 }));
 
-vi.mock("../../src/config/index.js", () => ({
+vi.mock("@opencode/engine/config/index.js", () => ({
   getConfig: () => ({
     OPENCODE_PERMIT_WEBSEARCH: "allow",
     OPENCODE_PERMIT_WEBFETCH: "allow",
@@ -24,7 +24,7 @@ vi.mock("../../src/config/index.js", () => ({
   }),
 }));
 
-import { executeAgent } from "../../src/agents/runtime.js";
+import { executeAgent } from "@opencode/engine/agents/runtime.js";
 
 function makeSessionManager(session: { id: string; run: ReturnType<typeof vi.fn> }) {
   return { createSession: vi.fn().mockReturnValue(session) } as never;

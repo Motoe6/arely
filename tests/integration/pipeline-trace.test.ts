@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { getDb } from "../../src/persistence/database.js";
-import { createPipeline, createPipelineStep, createPipelineRun, updatePipelineRunStatus, getPipelineStepRuns, incrementPipelineRunStepsCompleted, appendPipelineStepRunLog } from "../../src/agents/pipeline-store.js";
-import { getPipelineRuns } from "../../src/agents/pipeline-store.js";
-import { agents, pipelineRuns, pipelineSteps, pipelineStepRuns, agentPipelines } from "../../src/persistence/schema.js";
+import { getDb } from "@opencode/engine/persistence/database.js";
+import { createPipeline, createPipelineStep, createPipelineRun, updatePipelineRunStatus, getPipelineStepRuns, incrementPipelineRunStepsCompleted, appendPipelineStepRunLog } from "@opencode/engine/agents/pipeline-store.js";
+import { getPipelineRuns } from "@opencode/engine/agents/pipeline-store.js";
+import { agents, pipelineRuns, pipelineSteps, pipelineStepRuns, agentPipelines } from "@opencode/engine/persistence/schema.js";
 
 function createTestAgent(id: string): void {
   const now = new Date().toISOString();

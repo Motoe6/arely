@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { LLMAdapter } from "../../src/llm/adapter.js";
-import type { SessionMessage } from "../../src/types.js";
+import type { LLMAdapter } from "@opencode/engine/llm/adapter.js";
+import type { SessionMessage } from "@opencode/engine/types.js";
 
 const { mockCreatePlan, mockPersistPlan, mockCreateSteps, mockUpdatePlanStatus, mockExecute, mockSynthesize } = vi.hoisted(() => ({
   mockCreatePlan: vi.fn(),
@@ -11,11 +11,11 @@ const { mockCreatePlan, mockPersistPlan, mockCreateSteps, mockUpdatePlanStatus, 
   mockSynthesize: vi.fn(),
 }));
 
-vi.mock("../../src/planner/planner.js", () => ({
+vi.mock("@opencode/engine/planner/planner.js", () => ({
   createPlan: mockCreatePlan,
 }));
 
-vi.mock("../../src/persistence/plan-store.js", () => ({
+vi.mock("@opencode/engine/persistence/plan-store.js", () => ({
   createPlan: mockPersistPlan,
   createSteps: mockCreateSteps,
   updatePlanStatus: mockUpdatePlanStatus,
@@ -26,19 +26,19 @@ vi.mock("../../src/persistence/plan-store.js", () => ({
   markStepSkipped: vi.fn(),
 }));
 
-vi.mock("../../src/planner/workflow.js", () => ({
+vi.mock("@opencode/engine/planner/workflow.js", () => ({
   WorkflowExecutor: vi.fn(function () {
     return { execute: mockExecute };
   }),
 }));
 
-vi.mock("../../src/planner/synthesizer.js", () => ({
+vi.mock("@opencode/engine/planner/synthesizer.js", () => ({
   Synthesizer: vi.fn(function () {
     return { synthesize: mockSynthesize };
   }),
 }));
 
-import { PlanningModeExecution } from "../../src/server/modes/planning-mode.js";
+import { PlanningModeExecution } from "@opencode/engine/server/modes/planning-mode.js";
 
 const mockMessages: SessionMessage[] = [];
 const mockEmit = vi.fn();
