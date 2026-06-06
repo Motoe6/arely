@@ -1,0 +1,51 @@
+{
+  "name": "opencode-agent",
+  "version": "0.1.0",
+  "description": "AI agent coding assistant with live tool-call streaming TUI",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "opencode-agent": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.10.0",
+    "drizzle-orm": "^0.45.2",
+    "ink": "^7.0.4",
+    "nodemailer": "^8.0.10",
+    "react": "^19.2.6",
+    "turndown": "^7.2.4",
+    "ulid": "^3.0.2",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^22.19.19",
+    "@types/nodemailer": "^8.0.0",
+    "@types/react": "^19.2.16",
+    "@types/turndown": "^5.0.5",
+    "@vitest/coverage-v8": "^4.1.8",
+    "drizzle-kit": "^0.31.10",
+    "eslint": "^9.39.2",
+    "prettier": "^3.5.3",
+    "tsx": "^4.19.4",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.4",
+    "vitest": "^4.1.6"
+  }
+}
