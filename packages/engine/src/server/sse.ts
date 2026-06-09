@@ -2,7 +2,7 @@ import { EventEmitter } from "node:events";
 import type { ServerResponse } from "node:http";
 import type { AgentEvent } from "../types/events.js";
 import { getConfig } from "../config/index.js";
-import { persistEvent, getEventsAfter, getLatestSequence } from "../persistence/event-store.js";
+import { persistEvent, persistSystemEvent, getEventsAfter, getLatestSequence } from "../persistence/event-store.js";
 
 type SessionClients = Map<string, Set<ServerResponse>>;
 type SessionSequences = Map<string, number>;
@@ -30,6 +30,22 @@ export class SSEBus {
     if (wrapped) {
       this.emitter.off("sse", wrapped);
       this.listenerMap.delete(handler);
+    }
+  }
+
+  emitSystem(event: AgentEvent): void {
+    const sequence = persistSystemEvent(event);
+    this.emitter.emit("sse", null, event);
+    this.sessionSequences.set("__system__", sequence);
+    const data = `event: ${event.type}\nid: ${sequence}\nversion: ${event.version}\ndata: ${JSON.stringify(event)}\n\n`;
+    for (const [, clients] of this.sessionClients) {
+      for (const res of clients) {
+        try {
+          res.write(data);
+        } catch {
+          clients.delete(res);
+        }
+      }
     }
   }
 

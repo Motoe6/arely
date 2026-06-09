@@ -1,7 +1,9 @@
 import type { IncomingMessage, ServerResponse } from "node:http"
 import { existsSync } from "node:fs"
 import { isAbsolute, join, resolve, normalize } from "node:path"
+import { ulid } from "ulid"
 import type { Router } from "../transport/router.js"
+import type { SSEBus } from "../server/sse.js"
 import type { NodePackageLoader } from "./node-package-loader.js"
 import { listInstalledPackages, getInstalledPackage } from "./package-store.js"
 import { listInstalledNodes } from "./node-marketplace-store.js"
@@ -9,10 +11,11 @@ import { listInstalledNodes } from "./node-marketplace-store.js"
 interface PackageRoutesOptions {
   loader: NodePackageLoader
   packagesDir: string
+  sse: SSEBus
 }
 
 export function registerPackageRoutes(router: Router, opts: PackageRoutesOptions): void {
-  const { loader, packagesDir } = opts
+  const { loader, packagesDir, sse } = opts
 
   router.post("/api/flow/packages/install", (req: IncomingMessage, res: ServerResponse) => {
     try {
@@ -47,6 +50,17 @@ export function registerPackageRoutes(router: Router, opts: PackageRoutesOptions
       })
         .then((id) => {
           const record = getInstalledPackage(id)
+          if (record) {
+            sse.emitSystem({
+              id: ulid(),
+              version: 1 as const,
+              timestamp: Date.now(),
+              type: "package_installed",
+              packageId: record.id,
+              name: record.name,
+              version: record.version,
+            })
+          }
           res.writeHead(201, { "Content-Type": "application/json" })
           res.end(JSON.stringify({ ok: true, package: record }))
         })
@@ -85,6 +99,15 @@ export function registerPackageRoutes(router: Router, opts: PackageRoutesOptions
         return
       }
       loader.removePackage(params.id)
+      sse.emitSystem({
+        id: ulid(),
+        version: 1 as const,
+        timestamp: Date.now(),
+        type: "package_removed",
+        packageId: record.id,
+        name: record.name,
+        version: record.version,
+      })
       res.writeHead(200, { "Content-Type": "application/json" })
       res.end(JSON.stringify({ ok: true }))
     } catch (err) {

@@ -1,8 +1,10 @@
 import { readFileSync, existsSync, writeFileSync, mkdirSync, rmSync } from "node:fs"
 import { join } from "node:path"
 import type { IncomingMessage, ServerResponse } from "node:http"
+import { ulid } from "ulid"
 import { stringify as stringifyYAML } from "yaml"
 import type { Router } from "../transport/router.js"
+import type { SSEBus } from "../server/sse.js"
 import type { TemplateRegistry } from "./template-registry.js"
 import type { TemplateMetadata, TemplateSource } from "./template-types.js"
 import { TemplateRecommender } from "./template-recommender.js"
@@ -18,15 +20,16 @@ export function registerTemplateRoutes(
   registry: TemplateRegistry,
   builtinDir: string,
   userDir: string,
+  sse?: SSEBus,
 ): void {
   router.get("/api/flow/templates/categories", handleListCategories(registry))
   router.get("/api/flow/templates", handleListTemplates(registry))
   router.get("/api/flow/templates/:id", handleGetTemplate(registry, builtinDir, userDir))
   router.post("/api/flow/templates/:id/instantiate", handleInstantiate(registry))
-  router.post("/api/flow/templates", handleCreateTemplate(registry, userDir))
+  router.post("/api/flow/templates", handleCreateTemplate(registry, userDir, sse))
   router.put("/api/flow/templates/:id", handleUpdateTemplate(registry, userDir))
-  router.delete("/api/flow/templates/:id", handleDeleteTemplate(registry, userDir))
-  router.post("/api/flow/workflows/:id/save-as-template", handleSaveAsTemplate(registry, userDir))
+  router.delete("/api/flow/templates/:id", handleDeleteTemplate(registry, userDir, sse))
+  router.post("/api/flow/workflows/:id/save-as-template", handleSaveAsTemplate(registry, userDir, sse))
   router.post("/api/flow/templates/recommend", handleRecommend(registry))
 }
 
@@ -118,7 +121,7 @@ function handleInstantiate(registry: TemplateRegistry) {
   }
 }
 
-function handleCreateTemplate(registry: TemplateRegistry, userDir: string) {
+function handleCreateTemplate(registry: TemplateRegistry, userDir: string, sse?: SSEBus) {
   return (req: IncomingMessage, res: ServerResponse) => {
     const body = ((req as unknown as Record<string, unknown>).body ?? {}) as Record<string, unknown>
 
@@ -185,6 +188,18 @@ function handleCreateTemplate(registry: TemplateRegistry, userDir: string) {
       return
     }
 
+    if (sse) {
+      sse.emitSystem({
+        id: ulid(),
+        version: 1 as const,
+        timestamp: Date.now(),
+        type: "template_created",
+        templateId: metadata.id,
+        name: metadata.name,
+        source: "user",
+      })
+    }
+
     res.writeHead(201, { "Content-Type": "application/json" })
     res.end(JSON.stringify(metadata))
   }
@@ -245,7 +260,7 @@ function handleUpdateTemplate(registry: TemplateRegistry, userDir: string) {
   }
 }
 
-function handleDeleteTemplate(registry: TemplateRegistry, userDir: string) {
+function handleDeleteTemplate(registry: TemplateRegistry, userDir: string, sse?: SSEBus) {
   return (_req: IncomingMessage, res: ServerResponse, params: Record<string, string>) => {
     const existing = registry.get(params.id)
     if (!existing) {
@@ -269,12 +284,24 @@ function handleDeleteTemplate(registry: TemplateRegistry, userDir: string) {
 
     registry.unregisterTemplate(params.id)
 
+    if (sse) {
+      sse.emitSystem({
+        id: ulid(),
+        version: 1 as const,
+        timestamp: Date.now(),
+        type: "template_deleted",
+        templateId: params.id,
+        name: existing.metadata.name,
+        source: existing.metadata.source,
+      })
+    }
+
     res.writeHead(200, { "Content-Type": "application/json" })
     res.end(JSON.stringify({ success: true }))
   }
 }
 
-function handleSaveAsTemplate(registry: TemplateRegistry, userDir: string) {
+function handleSaveAsTemplate(registry: TemplateRegistry, userDir: string, sse?: SSEBus) {
   return (req: IncomingMessage, res: ServerResponse, params: Record<string, string>) => {
     const workflowId = params.id
 
@@ -368,6 +395,18 @@ function handleSaveAsTemplate(registry: TemplateRegistry, userDir: string) {
       res.writeHead(422, { "Content-Type": "application/json" })
       res.end(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }))
       return
+    }
+
+    if (sse) {
+      sse.emitSystem({
+        id: ulid(),
+        version: 1 as const,
+        timestamp: Date.now(),
+        type: "template_created",
+        templateId: metadata.id,
+        name: metadata.name,
+        source: "user",
+      })
     }
 
     res.writeHead(201, { "Content-Type": "application/json" })

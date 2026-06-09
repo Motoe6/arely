@@ -302,6 +302,39 @@ export type WorkflowExportedEvent = BaseEvent & {
   exportedAt: string;
 };
 
+export type PackageInstalledEvent = BaseEvent & {
+  type: "package_installed";
+  packageId: string;
+  name: string;
+  version: string;
+};
+
+export type PackageRemovedEvent = BaseEvent & {
+  type: "package_removed";
+  packageId: string;
+  name: string;
+  version: string;
+};
+
+export type PackageReloadedEvent = BaseEvent & {
+  type: "package_reloaded";
+  packageCount: number;
+};
+
+export type TemplateCreatedEvent = BaseEvent & {
+  type: "template_created";
+  templateId: string;
+  name: string;
+  source: string;
+};
+
+export type TemplateDeletedEvent = BaseEvent & {
+  type: "template_deleted";
+  templateId: string;
+  name: string;
+  source: string;
+};
+
 export type WorkflowImportedEvent = BaseEvent & {
   type: "workflow_imported";
   workflowId: string;
@@ -354,7 +387,12 @@ export type AgentEvent =
   | PolicyChangeApprovedEvent
   | PolicyChangeAppliedEvent
   | WorkflowExportedEvent
-  | WorkflowImportedEvent;
+  | WorkflowImportedEvent
+  | PackageInstalledEvent
+  | PackageRemovedEvent
+  | PackageReloadedEvent
+  | TemplateCreatedEvent
+  | TemplateDeletedEvent;
 
 export interface SSEEventData {
   event: AgentEvent["type"];

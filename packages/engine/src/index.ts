@@ -34,6 +34,7 @@ import { BuilderService } from "./compiler/builder-service.js";
 import { registerBuilderRoutes } from "./compiler/builder-routes.js";
 import { NodePackageLoader } from "./compiler/node-package-loader.js";
 import { registerPackageRoutes } from "./compiler/package-routes.js";
+import { listInstalledPackages } from "./compiler/package-store.js";
 import { createRemoteAdapter } from "@opencode/flow-ai-compiler";
 import { performWebSearch } from "./tools/websearch.js";
 import { performWebFetch } from "./tools/webfetch.js";
@@ -52,6 +53,7 @@ import {
 } from "./transport/middleware.js";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { fileURLToPath } from "node:url";
+import { ulid } from "ulid";
 
 function main() {
   const config = loadConfig();
@@ -89,7 +91,7 @@ function main() {
   logger.info("bootstrap", "Recovering interrupted sessions");
   const recovered = recoverSessions();
   if (recovered.length > 0) {
-    emitRecoveryEvents((event) => { sse.emit("default", event); }, recovered);
+    emitRecoveryEvents((event) => { sse.emitSystem(event); }, recovered);
   }
   metrics.increment(`sessions.interrupted`, { count: String(recovered.length) });
 
@@ -541,8 +543,8 @@ function main() {
         });
 
         registerBuilderRoutes(router, builderService, sse, packageLoader, templateRegistry);
-        registerTemplateRoutes(router, templateRegistry, TEMPLATES_DIR, USER_TEMPLATES_DIR);
-        registerPackageRoutes(router, { loader: packageLoader, packagesDir: config.PACKAGES_DIR });
+        registerTemplateRoutes(router, templateRegistry, TEMPLATES_DIR, USER_TEMPLATES_DIR, sse);
+        registerPackageRoutes(router, { loader: packageLoader, packagesDir: config.PACKAGES_DIR, sse });
       }
     },
   });
@@ -552,7 +554,15 @@ function main() {
   });
   try {
     packageLoader.reloadPackages();
-    logger.info("bootstrap", "Reloaded installed v2 packages");
+    const pkgCount = listInstalledPackages().length;
+    sse.emitSystem({
+      id: ulid(),
+      version: 1 as const,
+      timestamp: Date.now(),
+      type: "package_reloaded",
+      packageCount: pkgCount,
+    });
+    logger.info("bootstrap", "Reloaded installed v2 packages", { metadata: { count: pkgCount } });
   } catch (err) {
     logger.warn("bootstrap", "Failed to reload installed v2 packages", { error: String(err) });
   }
@@ -580,7 +590,6 @@ function main() {
       startDrain({
         sse,
         sessionManager,
-        emit: (event) => { sse.emit("default", event); },
         reason,
         getActiveRequests: () => counter.active(),
         onDrainComplete: () => {

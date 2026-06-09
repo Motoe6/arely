@@ -58,7 +58,7 @@ export const CREATE_TABLES = [
   )`,
   `CREATE TABLE IF NOT EXISTS event_log (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    session_id TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
+    session_id TEXT REFERENCES sessions(id) ON DELETE CASCADE,
     event_type TEXT NOT NULL,
     event_data TEXT NOT NULL,
     event_version INTEGER NOT NULL DEFAULT 1,
@@ -360,6 +360,12 @@ export const MIGRATIONS = [
   "ALTER TABLE workflow_runs ADD COLUMN replay_of_run_id TEXT",
   "ALTER TABLE workflow_runs ADD COLUMN replay_from_step_id TEXT",
   "ALTER TABLE workflow_step_runs ADD COLUMN copied_from_step_run_id TEXT",
+  // M5: Make event_log.session_id nullable for system events
+  // SQLite requires table recreation to drop NOT NULL
+  "CREATE TABLE IF NOT EXISTS event_log_new (id INTEGER PRIMARY KEY AUTOINCREMENT, session_id TEXT REFERENCES sessions(id) ON DELETE CASCADE, event_type TEXT NOT NULL, event_data TEXT NOT NULL, event_version INTEGER NOT NULL DEFAULT 1, correlation_id TEXT, created_at TEXT NOT NULL DEFAULT (datetime('now')))",
+  "INSERT OR IGNORE INTO event_log_new SELECT * FROM event_log",
+  "DROP TABLE IF EXISTS event_log",
+  "ALTER TABLE event_log_new RENAME TO event_log",
 ];
 
 export function pushSchema(databasePath?: string): void {

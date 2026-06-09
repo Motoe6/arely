@@ -16,7 +16,6 @@ let forceExitTimer: ReturnType<typeof setTimeout> | null = null;
 export interface GracefulShutdownOptions {
   sse: SSEBus;
   sessionManager: SessionManager;
-  emit: (event: AgentEvent) => void;
   reason?: string;
   getActiveRequests?: () => number;
   onDrainComplete?: () => void;
@@ -36,7 +35,7 @@ export function startDrain(opts: GracefulShutdownOptions): Promise<void> {
     reason,
     timeoutMs,
   };
-  opts.emit(startedEvent);
+  opts.sse.emitSystem(startedEvent);
 
   logger.info("shutdown", `Shutdown started: ${reason}`, {
     metadata: { timeoutMs },
@@ -57,6 +56,7 @@ export function startDrain(opts: GracefulShutdownOptions): Promise<void> {
 
     try {
       opts.sse.removeAllClients("default");
+      opts.sse.removeAllClients("__system__");
     } catch (err) {
       logger.error("shutdown", "Error draining SSE clients", { error: err });
     }
@@ -84,7 +84,7 @@ export function startDrain(opts: GracefulShutdownOptions): Promise<void> {
         type: "process_shutdown_completed",
         ok: true,
       };
-      opts.emit(completedEvent);
+      opts.sse.emitSystem(completedEvent);
 
       logger.info("shutdown", "Drain complete");
       opts.onDrainComplete?.();

@@ -40,7 +40,7 @@ export function registerBuilderRoutes(router: Router, builder: BuilderService, s
   router.get("/api/flow/workflows/:id", handleGetWorkflow(builder))
   router.put("/api/flow/workflows/:id", handleUpdateWorkflow(builder))
   router.delete("/api/flow/workflows/:id", handleDeleteWorkflow(builder))
-  router.get("/api/flow/workflows/:id/export", handleExportWorkflow)
+  router.get("/api/flow/workflows/:id/export", handleExportWorkflow(sse))
   router.post("/api/flow/workflows/import", handleImportWorkflow(sse))
   router.get("/api/flow/workflows/:id/versions", handleListWorkflowVersions(builder))
   router.get("/api/flow/nodes", handleListNodes)
@@ -173,30 +173,39 @@ function handleGetWorkflow(builder: BuilderService) {
 
 const WORKFLOW_EXPORT_FORMAT_VERSION = "1.0" as const
 
-function handleExportWorkflow(
-  _req: IncomingMessage, res: ServerResponse, params: Record<string, string>
-): void {
-  const entry = getWorkflowWithCurrentVersion(params.id)
-  if (!entry || !entry.version) {
-    res.writeHead(404, { "Content-Type": "application/json" })
-    res.end(JSON.stringify({ error: "Workflow not found" }))
-    return
-  }
+function handleExportWorkflow(sse: SSEBus) {
+  return (_req: IncomingMessage, res: ServerResponse, params: Record<string, string>): void => {
+    const entry = getWorkflowWithCurrentVersion(params.id)
+    if (!entry || !entry.version) {
+      res.writeHead(404, { "Content-Type": "application/json" })
+      res.end(JSON.stringify({ error: "Workflow not found" }))
+      return
+    }
 
-  const workflow = JSON.parse(entry.version.workflowDsl)
-  const payload = {
-    formatVersion: WORKFLOW_EXPORT_FORMAT_VERSION,
-    exportedAt: new Date().toISOString(),
-    engineVersion: "0.1.0",
-    source: {
+    const workflow = JSON.parse(entry.version.workflowDsl)
+    const payload = {
+      formatVersion: WORKFLOW_EXPORT_FORMAT_VERSION,
+      exportedAt: new Date().toISOString(),
+      engineVersion: "0.1.0",
+      source: {
+        workflowId: entry.workflow.id,
+        versionId: entry.version.id,
+      },
+      workflow,
+    }
+
+    sse.emitSystem({
+      id: ulid(),
+      version: 1 as const,
+      timestamp: Date.now(),
+      type: "workflow_exported",
       workflowId: entry.workflow.id,
-      versionId: entry.version.id,
-    },
-    workflow,
-  }
+      exportedAt: new Date().toISOString(),
+    })
 
-  res.writeHead(200, { "Content-Type": "application/json" })
-  res.end(JSON.stringify(payload))
+    res.writeHead(200, { "Content-Type": "application/json" })
+    res.end(JSON.stringify(payload))
+  }
 }
 
 function handleImportWorkflow(sse: SSEBus) {
@@ -236,7 +245,7 @@ function handleImportWorkflow(sse: SSEBus) {
     const record = createWorkflow({ id: newId, name: importedWorkflow.name, description: importedWorkflow.description })
     const version = createWorkflowVersion(record.id, JSON.stringify(importedWorkflow), "active")
 
-    sse.emit("default", {
+    sse.emitSystem({
       id: ulid(),
       version: 1 as const,
       timestamp: Date.now(),

@@ -87,7 +87,7 @@ export const eventLog = sqliteTable(
   "event_log",
   {
     sequence: integer("id").primaryKey({ autoIncrement: true }),
-    sessionId: text("session_id").notNull().references(() => sessions.id, { onDelete: "cascade" }),
+    sessionId: text("session_id").references(() => sessions.id, { onDelete: "cascade" }),
     eventType: text("event_type").notNull(),
     eventData: text("event_data").notNull(),
     eventVersion: integer("event_version").notNull().default(1),

@@ -106,7 +106,7 @@ export interface StepExecutionResult {
 
 export interface EventLogEntry {
   sequence: number;
-  sessionId: string;
+  sessionId: string | null;
   eventType: string;
   eventData: unknown;
   eventVersion: number;

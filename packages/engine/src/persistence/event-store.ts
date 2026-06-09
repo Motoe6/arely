@@ -22,6 +22,21 @@ export function persistEvent(
   return Number(result.lastInsertRowid);
 }
 
+export function persistSystemEvent(event: AgentEvent): number {
+  const result = getDb()
+    .insert(eventLog)
+    .values({
+      sessionId: null,
+      eventType: event.type,
+      eventData: JSON.stringify(event),
+      eventVersion: event.version,
+      correlationId: event.correlationId ?? null,
+    })
+    .run();
+
+  return Number(result.lastInsertRowid);
+}
+
 export function getEventsAfter(
   sessionId: string,
   lastSequence: number,
@@ -72,7 +87,7 @@ export function getLatestSequence(sessionId: string): number {
 function toDomain(row: Record<string, unknown>): EventLogEntry {
   return {
     sequence: row.sequence as number,
-    sessionId: row.sessionId as string,
+    sessionId: row.sessionId as string | null,
     eventType: row.eventType as string,
     eventData: JSON.parse(row.eventData as string),
     eventVersion: row.eventVersion as number,
