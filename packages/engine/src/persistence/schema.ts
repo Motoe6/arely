@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, index, primaryKey } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, index, primaryKey, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const sessions = sqliteTable(
   "sessions",
@@ -249,6 +249,80 @@ export const pipelineStepRuns = sqliteTable(
   ],
 );
 
+export const workflows = sqliteTable(
+  "workflows",
+  {
+    id: text("id").primaryKey(),
+    name: text("name"),
+    description: text("description"),
+    currentVersionId: text("current_version_id"),
+    createdAt: text("created_at").notNull().default("datetime('now')"),
+    updatedAt: text("updated_at").notNull().default("datetime('now')"),
+  },
+  (table) => [index("idx_workflows_updated").on(table.updatedAt)],
+);
+
+export const workflowVersions = sqliteTable(
+  "workflow_versions",
+  {
+    id: text("id").primaryKey(),
+    workflowId: text("workflow_id").notNull().references(() => workflows.id, { onDelete: "cascade" }),
+    version: integer("version").notNull(),
+    workflowDsl: text("workflow_dsl").notNull(),
+    status: text("status").notNull().default("active"),
+    createdAt: text("created_at").notNull().default("datetime('now')"),
+  },
+  (table) => [
+    index("idx_wf_versions_workflow").on(table.workflowId),
+    uniqueIndex("idx_wf_versions_unique").on(table.workflowId, table.version),
+  ],
+);
+
+export const workflowRuns = sqliteTable(
+  "workflow_runs",
+  {
+    id: text("id").primaryKey(),
+    workflowId: text("workflow_id").notNull().references(() => workflows.id, { onDelete: "cascade" }),
+    workflowVersion: integer("workflow_version").notNull(),
+    status: text("status").notNull().default("running"),
+    triggerInput: text("trigger_input"),
+    replayOfRunId: text("replay_of_run_id"),
+    replayFromStepId: text("replay_from_step_id"),
+    startedAt: text("started_at").notNull().default("datetime('now')"),
+    completedAt: text("completed_at"),
+    durationMs: integer("duration_ms"),
+    error: text("error"),
+  },
+  (table) => [
+    index("idx_wf_runs_workflow").on(table.workflowId),
+    index("idx_wf_runs_status").on(table.status),
+    index("idx_wf_runs_started").on(table.startedAt),
+    index("idx_wf_runs_replay_of").on(table.replayOfRunId),
+  ],
+);
+
+export const workflowStepRuns = sqliteTable(
+  "workflow_step_runs",
+  {
+    id: text("id").primaryKey(),
+    runId: text("run_id").notNull().references(() => workflowRuns.id, { onDelete: "cascade" }),
+    stepId: text("step_id").notNull(),
+    stepType: text("step_type").notNull(),
+    status: text("status").notNull().default("running"),
+    input: text("input"),
+    output: text("output"),
+    error: text("error"),
+    copiedFromStepRunId: text("copied_from_step_run_id"),
+    startedAt: text("started_at").notNull().default("datetime('now')"),
+    completedAt: text("completed_at"),
+    durationMs: integer("duration_ms"),
+  },
+  (table) => [
+    index("idx_wf_step_runs_run").on(table.runId),
+    index("idx_wf_step_runs_copied").on(table.copiedFromStepRunId),
+  ],
+);
+
 export const notificationQueue = sqliteTable(
   "notification_queue",
   {
@@ -321,6 +395,84 @@ export const planSteps = sqliteTable(
   (table) => [
     index("idx_plan_steps_plan").on(table.planId),
     index("idx_plan_steps_status").on(table.status),
+  ],
+);
+
+export const scheduledTriggers = sqliteTable(
+  "scheduled_triggers",
+  {
+    id: text("id").primaryKey(),
+    workflowId: text("workflow_id").notNull().references(() => workflows.id, { onDelete: "cascade" }),
+    triggerMode: text("trigger_mode").notNull(),
+    cronExpression: text("cron_expression"),
+    intervalMs: integer("interval_ms"),
+    enabled: integer("enabled").notNull().default(1),
+    nextRunAt: text("next_run_at").notNull(),
+    lastRunAt: text("last_run_at"),
+    lastError: text("last_error"),
+    runCount: integer("run_count").notNull().default(0),
+    lockedUntil: text("locked_until"),
+    createdAt: text("created_at").notNull().default("datetime('now')"),
+    updatedAt: text("updated_at").notNull().default("datetime('now')"),
+  },
+  (table) => [
+    index("idx_scheduled_triggers_workflow").on(table.workflowId),
+    index("idx_scheduled_triggers_next_run").on(table.nextRunAt),
+    index("idx_scheduled_triggers_enabled_next").on(table.enabled, table.nextRunAt),
+  ],
+);
+
+export const secrets = sqliteTable(
+  "secrets",
+  {
+    id: text("id").primaryKey(),
+    name: text("name").notNull().unique(),
+    valueEncrypted: text("value_encrypted").notNull(),
+    createdAt: text("created_at").notNull().default("datetime('now')"),
+    updatedAt: text("updated_at").notNull().default("datetime('now')"),
+  },
+  (table) => [
+    index("idx_secrets_name").on(table.name),
+  ],
+);
+
+export const installedPackages = sqliteTable(
+  "installed_packages",
+  {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    version: text("version").notNull(),
+    description: text("description"),
+    author: text("author"),
+    packageDir: text("package_dir").notNull(),
+    manifestVersion: integer("manifest_version").notNull().default(2),
+    installedAt: text("installed_at").notNull().default("datetime('now')"),
+    enabled: integer("enabled").notNull().default(1),
+  },
+  (table) => [
+    uniqueIndex("idx_installed_packages_name_version").on(table.name, table.version),
+    index("idx_installed_packages_enabled").on(table.enabled),
+  ],
+);
+
+export const installedNodes = sqliteTable(
+  "installed_nodes",
+  {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    version: text("version").notNull(),
+    nodeType: text("node_type").notNull().unique(),
+    category: text("category"),
+    description: text("description"),
+    author: text("author"),
+    entryPath: text("entry_path").notNull(),
+    manifestVersion: integer("manifest_version").notNull().default(1),
+    installedAt: text("installed_at").notNull().default("datetime('now')"),
+    enabled: integer("enabled").notNull().default(1),
+  },
+  (table) => [
+    uniqueIndex("idx_installed_nodes_name_version").on(table.name, table.version),
+    index("idx_installed_nodes_type").on(table.nodeType),
   ],
 );
 

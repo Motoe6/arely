@@ -296,6 +296,19 @@ export type PolicyChangeAppliedEvent = BaseEvent & {
   status: "applied";
 };
 
+export type WorkflowExportedEvent = BaseEvent & {
+  type: "workflow_exported";
+  workflowId: string;
+  exportedAt: string;
+};
+
+export type WorkflowImportedEvent = BaseEvent & {
+  type: "workflow_imported";
+  workflowId: string;
+  importedAt: string;
+  sourceFormatVersion: string;
+};
+
 export type AgentEvent =
   | SessionStartedEvent
   | SessionCompletedEvent
@@ -339,7 +352,9 @@ export type AgentEvent =
   | PolicyExecutionEvent
   | PolicyChangeCreatedEvent
   | PolicyChangeApprovedEvent
-  | PolicyChangeAppliedEvent;
+  | PolicyChangeAppliedEvent
+  | WorkflowExportedEvent
+  | WorkflowImportedEvent;
 
 export interface SSEEventData {
   event: AgentEvent["type"];

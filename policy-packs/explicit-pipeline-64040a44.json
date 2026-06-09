@@ -1,0 +1,23 @@
+{
+  "id": "explicit-pipeline-64040a44",
+  "name": "explicit-pipeline",
+  "description": "",
+  "rules": [
+    {
+      "id": "high_success",
+      "when": {
+        "successRate": {
+          "lt": 0.9
+        }
+      },
+      "then": {
+        "type": "trigger_remediation",
+        "payload": {}
+      },
+      "cooldownMs": 60000,
+      "maxExecutionsPerHour": 10
+    }
+  ],
+  "createdAt": "2026-06-07T00:04:17.160Z",
+  "updatedAt": "2026-06-07T00:04:17.160Z"
+}

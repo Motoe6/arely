@@ -1,0 +1,10 @@
+version: "1.0.0"
+name: "Webhook LLM Responder"
+trigger:
+  type: webhook
+steps:
+  - id: process
+    type: llm
+    input:
+      systemPrompt: "{{ param:system_prompt }}"
+      temperature: "{{ param:temperature }}"

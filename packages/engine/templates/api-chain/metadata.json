@@ -1,0 +1,42 @@
+{
+  "id": "api-chain",
+  "name": "API Chain",
+  "description": "Call one API, then pipe its result into a second API call",
+  "category": "integration",
+  "tags": ["api", "chain", "http", "multi-step", "dag"],
+  "templateVersion": "1.0.0",
+  "author": "OpenCode",
+  "parameters": [
+    {
+      "name": "first_url",
+      "label": "First URL",
+      "type": "string",
+      "required": true,
+      "description": "First API endpoint to call"
+    },
+    {
+      "name": "second_url",
+      "label": "Second URL",
+      "type": "string",
+      "required": true,
+      "description": "Second API endpoint to receive the result"
+    },
+    {
+      "name": "first_method",
+      "label": "First Method",
+      "type": "string",
+      "required": false,
+      "default": "GET",
+      "description": "HTTP method for the first call"
+    },
+    {
+      "name": "second_method",
+      "label": "Second Method",
+      "type": "string",
+      "required": false,
+      "default": "POST",
+      "description": "HTTP method for the second call"
+    }
+  ],
+  "requires": ["http"]
+}

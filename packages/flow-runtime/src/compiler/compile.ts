@@ -57,6 +57,20 @@ export function compileWorkflow(
 
   const validSteps = steps.filter((s): s is NonNullable<typeof s> => s !== null)
 
+  // Handle explicit next references: if step_a has next: step_b,
+  // then step_b dependsOn must include step_a
+  for (const step of workflow.steps) {
+    if (step.next) {
+      const nextIds = typeof step.next === "string" ? [step.next] : step.next
+      for (const nextId of nextIds) {
+        const target = validSteps.find((s) => s.id === nextId)
+        if (target && !target.dependsOn.includes(step.id)) {
+          target.dependsOn.push(step.id)
+        }
+      }
+    }
+  }
+
   const pipeline: CompiledPipeline = {
     name: workflow.id,
     steps: validSteps,

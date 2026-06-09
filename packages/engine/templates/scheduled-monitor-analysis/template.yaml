@@ -1,0 +1,18 @@
+version: "1.0.0"
+name: "Scheduled Monitor - {{ param:target_url }}"
+trigger:
+  type: schedule
+  config:
+    triggerMode: interval
+    intervalMs: "{{ param:interval_ms }}"
+steps:
+  - id: fetch
+    type: http
+    input:
+      url: "{{ param:target_url }}"
+      method: GET
+    next: analyze
+  - id: analyze
+    type: llm
+    input:
+      prompt: "{{ param:analysis_prompt }}"

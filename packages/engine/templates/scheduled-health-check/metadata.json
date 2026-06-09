@@ -1,0 +1,43 @@
+{
+  "id": "scheduled-health-check",
+  "name": "Scheduled Health Check",
+  "description": "Periodically check if an HTTP endpoint is responding",
+  "category": "monitoring",
+  "tags": ["health", "monitoring", "http", "schedule", "interval"],
+  "templateVersion": "1.0.0",
+  "author": "OpenCode",
+  "parameters": [
+    {
+      "name": "target_url",
+      "label": "Target URL",
+      "type": "string",
+      "required": true,
+      "description": "The URL to health-check"
+    },
+    {
+      "name": "interval_ms",
+      "label": "Check Interval (ms)",
+      "type": "number",
+      "required": false,
+      "default": 60000,
+      "description": "How often to check in milliseconds"
+    },
+    {
+      "name": "method",
+      "label": "HTTP Method",
+      "type": "string",
+      "required": false,
+      "default": "GET",
+      "description": "HTTP method for the health check"
+    },
+    {
+      "name": "timeout_ms",
+      "label": "Timeout (ms)",
+      "type": "number",
+      "required": false,
+      "default": 30000,
+      "description": "Request timeout in milliseconds"
+    }
+  ],
+  "requires": ["http"]
+}

@@ -1,0 +1,16 @@
+version: "1.0.0"
+name: "API Chain"
+trigger:
+  type: manual
+steps:
+  - id: first
+    type: http
+    input:
+      url: "{{ param:first_url }}"
+      method: "{{ param:first_method }}"
+    next: second
+  - id: second
+    type: http
+    input:
+      url: "{{ param:second_url }}"
+      method: "{{ param:second_method }}"

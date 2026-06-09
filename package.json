@@ -4,7 +4,9 @@
   "private": true,
   "description": "OpenCode monorepo — engine + platform",
   "type": "module",
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "main": "packages/engine/dist/index.js",
   "bin": {
     "opencode-agent": "packages/engine/dist/index.js"
@@ -22,10 +24,13 @@
     "db:push": "npm run db:push -w @opencode/engine",
     "db:studio": "npm run db:studio -w @opencode/engine",
     "db:generate": "npm run db:generate -w @opencode/engine",
-    "db:migrate": "npm run db:migrate -w @opencode/engine"
+    "db:migrate": "npm run db:migrate -w @opencode/engine",
+    "dev:editor": "npm run dev -w @opencode/flow-editor",
+    "build:editor": "npm run build -w @opencode/flow-editor"
   },
   "dependencies": {
     "better-sqlite3": "^12.10.0",
+    "cron-parser": "^5.5.0",
     "drizzle-orm": "^0.45.2",
     "ink": "^7.0.4",
     "nodemailer": "^8.0.10",

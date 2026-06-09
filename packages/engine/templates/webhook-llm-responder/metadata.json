@@ -1,0 +1,27 @@
+{
+  "id": "webhook-llm-responder",
+  "name": "Webhook LLM Responder",
+  "description": "Receive a webhook, process it with an LLM, and respond with the result",
+  "category": "ai",
+  "tags": ["webhook", "llm", "ai", "response"],
+  "templateVersion": "1.0.0",
+  "author": "OpenCode",
+  "parameters": [
+    {
+      "name": "system_prompt",
+      "label": "System Prompt",
+      "type": "string",
+      "required": true,
+      "description": "System-level instruction for how to process webhook input"
+    },
+    {
+      "name": "temperature",
+      "label": "Temperature",
+      "type": "number",
+      "required": false,
+      "default": 0.7,
+      "description": "LLM temperature (0.0 to 1.0)"
+    }
+  ],
+  "requires": ["llm"]
+}

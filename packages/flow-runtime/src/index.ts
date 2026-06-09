@@ -32,6 +32,7 @@ export { validateDAG } from "./validator/dag-validator.js"
 // Parser
 export type { InputFormat } from "./parser/parser.js"
 export { parseWorkflow } from "./parser/parser.js"
+export { normalizeWorkflow } from "./parser/normalize.js"
 
 // Compiler
 export type { MappedTrigger } from "./compiler/trigger-mapper.js"

@@ -15,18 +15,23 @@
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "composite": true,
-    "noEmit": true,
     "paths": {
       "@opencode/engine": ["./packages/engine/src"],
       "@opencode/engine/*": ["./packages/engine/src/*"],
       "@opencode/flow-runtime": ["./packages/flow-runtime/src"],
-      "@opencode/flow-runtime/*": ["./packages/flow-runtime/src/*"]
+      "@opencode/flow-runtime/*": ["./packages/flow-runtime/src/*"],
+      "@opencode/flow-sdk": ["./packages/flow-sdk/src"],
+      "@opencode/flow-sdk/*": ["./packages/flow-sdk/src/*"],
+      "@opencode/flow-ai-compiler": ["./packages/flow-ai-compiler/src"],
+      "@opencode/flow-ai-compiler/*": ["./packages/flow-ai-compiler/src/*"]
     }
   },
   "include": [],
   "references": [
     { "path": "packages/engine" },
-    { "path": "packages/flow-runtime" }
+    { "path": "packages/flow-runtime" },
+    { "path": "packages/flow-sdk" },
+    { "path": "packages/flow-ai-compiler" }
   ],
   "exclude": ["node_modules", "dist", "packages/*/dist"]
 }

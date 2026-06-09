@@ -1,0 +1,35 @@
+{
+  "id": "llm-query",
+  "name": "LLM Query",
+  "description": "Send a prompt to an LLM and get a response",
+  "category": "ai",
+  "tags": ["llm", "ai", "prompt", "generation"],
+  "templateVersion": "1.0.0",
+  "author": "OpenCode",
+  "parameters": [
+    {
+      "name": "prompt_template",
+      "label": "Prompt Template",
+      "type": "string",
+      "required": true,
+      "description": "The prompt to send to the LLM"
+    },
+    {
+      "name": "system_prompt",
+      "label": "System Prompt",
+      "type": "string",
+      "required": false,
+      "default": "You are a helpful assistant.",
+      "description": "System-level instruction for the LLM"
+    },
+    {
+      "name": "temperature",
+      "label": "Temperature",
+      "type": "number",
+      "required": false,
+      "default": 0.7,
+      "description": "LLM temperature (0.0 to 1.0)"
+    }
+  ],
+  "requires": ["llm"]
+}

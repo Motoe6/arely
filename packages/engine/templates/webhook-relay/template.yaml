@@ -1,0 +1,11 @@
+version: "1.0.0"
+name: "Webhook Relay - {{ param:target_url }}"
+trigger:
+  type: webhook
+steps:
+  - id: relay
+    type: http
+    input:
+      url: "{{ param:target_url }}"
+      method: "{{ param:method }}"
+      headers: "{{ param:headers }}"

@@ -41,11 +41,7 @@ export function resolveTemplate(
 
     const expr = parseExpression(raw)
     if (!expr) {
-      throw new TemplateResolutionError(
-        `Invalid source in "${raw}": must be "trigger", "steps", or "secrets"`,
-        raw,
-        "INVALID_SOURCE"
-      )
+      return _match
     }
 
     expressions.push(expr)

@@ -1,0 +1,10 @@
+{
+  "manifestVersion": 1,
+  "name": "test-fixture-node",
+  "version": "1.0.0",
+  "nodeType": "test-fixture-node",
+  "category": "action",
+  "description": "Test fixture for node marketplace integration tests",
+  "author": "OpenCode",
+  "entry": "./dist/index.js"
+}

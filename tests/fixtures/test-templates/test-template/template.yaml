@@ -1,0 +1,15 @@
+version: "1.0.0"
+name: "Monitor - {{ param:target_url }}"
+description: "Periodically check {{ param:target_url }}"
+trigger:
+  type: interval
+  config:
+    intervalMs: "{{ param:timeout_ms }}"
+steps:
+  - id: fetch
+    type: http
+    input:
+      url: "{{ param:target_url }}"
+      method: "{{ param:method }}"
+      followRedirects: "{{ param:follow_redirects }}"
+      headers: "{{ param:headers }}"

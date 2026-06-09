@@ -1,0 +1,51 @@
+{
+  "id": "test-fixture",
+  "name": "Test Fixture",
+  "description": "A test fixture for template registry unit tests",
+  "category": "testing",
+  "tags": ["test", "fixture", "http"],
+  "templateVersion": "1.0.0",
+  "author": "OpenCode",
+  "parameters": [
+    {
+      "name": "target_url",
+      "label": "Target URL",
+      "type": "string",
+      "required": true,
+      "description": "The URL to fetch"
+    },
+    {
+      "name": "method",
+      "label": "HTTP Method",
+      "type": "string",
+      "required": false,
+      "default": "GET",
+      "description": "HTTP method to use"
+    },
+    {
+      "name": "timeout_ms",
+      "label": "Timeout (ms)",
+      "type": "number",
+      "required": false,
+      "default": 30000,
+      "description": "Request timeout"
+    },
+    {
+      "name": "follow_redirects",
+      "label": "Follow Redirects",
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Whether to follow HTTP redirects"
+    },
+    {
+      "name": "headers",
+      "label": "Custom Headers",
+      "type": "json",
+      "required": false,
+      "default": { "User-Agent": "Flow" },
+      "description": "Custom HTTP headers as JSON object"
+    }
+  ],
+  "requires": ["http"]
+}

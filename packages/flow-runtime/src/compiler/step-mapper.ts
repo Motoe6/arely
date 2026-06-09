@@ -32,11 +32,9 @@ function computeDependsOn(
   index: number,
   allSteps: WorkflowStep[]
 ): string[] {
-  if (step.next) {
-    return typeof step.next === "string" ? [step.next] : step.next
-  }
-  if (index < allSteps.length - 1) {
-    return [allSteps[index + 1].id]
+  // Sequential: the previous step must complete before this step runs
+  if (index > 0) {
+    return [allSteps[index - 1].id]
   }
   return []
 }
@@ -48,16 +46,9 @@ function resolveStepInput(
   const resolved: Record<string, unknown> = {}
   for (const [key, value] of Object.entries(input)) {
     if (typeof value === "string") {
-      try {
-        resolved[key] = resolveTemplate(value, context).resolved
-      } catch (err) {
-        if (err instanceof CompilationError) throw err
-        throw new CompilationError(
-          `Failed to resolve template in input["${key}"]: ${(err as Error).message}`,
-          "RESOLVE",
-          (err as { expression?: string }).expression
-        )
-      }
+      const converted = convertStepReferences(value)
+      const resolvedVal = resolveTemplate(converted, context).resolved
+      resolved[key] = resolvedVal
     } else if (value !== null && typeof value === "object" && !Array.isArray(value)) {
       resolved[key] = resolveStepInput(value as Record<string, unknown>, context)
     } else {
@@ -65,4 +56,10 @@ function resolveStepInput(
     }
   }
   return resolved
+}
+
+const STEP_REF_REGEX = /\{\{\s*steps\.([a-zA-Z0-9_-]+)(?:\.[a-zA-Z0-9_-]+)*\s*\}\}/g
+
+function convertStepReferences(input: string): string {
+  return input.replace(STEP_REF_REGEX, "{{$1}}")
 }

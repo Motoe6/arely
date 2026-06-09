@@ -28,6 +28,13 @@ import { metrics } from "./metrics.js";
 import { HealthRegistry } from "./health.js";
 import { getDb } from "./persistence/database.js";
 import { createSearchProvider } from "./tools/provider-factory.js";
+import { TemplateRegistry } from "./templates/template-registry.js";
+import { registerTemplateRoutes } from "./templates/template-routes.js";
+import { BuilderService } from "./compiler/builder-service.js";
+import { registerBuilderRoutes } from "./compiler/builder-routes.js";
+import { NodePackageLoader } from "./compiler/node-package-loader.js";
+import { registerPackageRoutes } from "./compiler/package-routes.js";
+import { createRemoteAdapter } from "@opencode/flow-ai-compiler";
 import { performWebSearch } from "./tools/websearch.js";
 import { performWebFetch } from "./tools/webfetch.js";
 import { RedditProvider, formatRedditPosts } from "./tools/reddit.js";
@@ -44,6 +51,7 @@ import {
   requestContext,
 } from "./transport/middleware.js";
 import type { IncomingMessage, ServerResponse } from "node:http";
+import { fileURLToPath } from "node:url";
 
 function main() {
   const config = loadConfig();
@@ -141,6 +149,36 @@ function main() {
   const toolExecutor = new PipelineToolExecutor(toolHandlers, {
     timeoutMs: config.TOOL_TIMEOUT_MS,
   }, breakerRegistry);
+
+  const compilerAdapter = createRemoteAdapter({
+    endpoint: config.OPENCODE_BASE_URL,
+    apiKey: config.OPENCODE_API_KEY,
+    model: config.OPENCODE_MODEL,
+    timeoutMs: 30_000,
+    provider: "generic",
+  })
+  const builderService = new BuilderService(compilerAdapter)
+
+  const packageLoader = new NodePackageLoader()
+
+  const templateRegistry = new TemplateRegistry()
+  packageLoader.setTemplateRegistry(templateRegistry)
+  const TEMPLATES_DIR = fileURLToPath(new URL("../templates", import.meta.url))
+  const templateCount = templateRegistry.reloadBuiltins(TEMPLATES_DIR, (entry, err) => {
+    logger.warn("templates", `Failed to load template "${entry}"`, { error: err.message })
+  })
+  logger.info("bootstrap", `Loaded ${templateCount} built-in templates`, {
+    metadata: { count: templateCount },
+  })
+  const USER_TEMPLATES_DIR = config.USER_TEMPLATES_DIR
+  const userTemplateCount = templateRegistry.reloadBuiltins(USER_TEMPLATES_DIR, (entry, err) => {
+    logger.warn("templates", `Failed to load user template "${entry}"`, { error: err.message })
+  }, "user")
+  if (userTemplateCount > 0) {
+    logger.info("bootstrap", `Loaded ${userTemplateCount} user templates`, {
+      metadata: { count: userTemplateCount },
+    })
+  }
 
   const runtimeConfig = {
     sessionManager,
@@ -501,9 +539,23 @@ function main() {
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ ok: true, metrics: m }));
         });
+
+        registerBuilderRoutes(router, builderService, sse, packageLoader, templateRegistry);
+        registerTemplateRoutes(router, templateRegistry, TEMPLATES_DIR, USER_TEMPLATES_DIR);
+        registerPackageRoutes(router, { loader: packageLoader, packagesDir: config.PACKAGES_DIR });
       }
     },
   });
+
+  packageLoader.reloadEnabled().catch((err: unknown) => {
+    logger.warn("bootstrap", "Failed to reload some installed node packages", { error: String(err) });
+  });
+  try {
+    packageLoader.reloadPackages();
+    logger.info("bootstrap", "Reloaded installed v2 packages");
+  } catch (err) {
+    logger.warn("bootstrap", "Failed to reload installed v2 packages", { error: String(err) });
+  }
 
   server.listen(config.PORT, () => {
     logger.info("bootstrap", `Server listening on port ${config.PORT}`, {

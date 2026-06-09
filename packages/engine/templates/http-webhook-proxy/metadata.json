@@ -1,0 +1,35 @@
+{
+  "id": "http-webhook-proxy",
+  "name": "HTTP Webhook Proxy",
+  "description": "Proxy incoming webhooks to a target endpoint with configurable header forwarding",
+  "category": "communication",
+  "tags": ["webhook", "proxy", "http", "headers"],
+  "templateVersion": "1.0.0",
+  "author": "OpenCode",
+  "parameters": [
+    {
+      "name": "target_url",
+      "label": "Target URL",
+      "type": "string",
+      "required": true,
+      "description": "The URL to proxy the webhook to"
+    },
+    {
+      "name": "method",
+      "label": "HTTP Method",
+      "type": "string",
+      "required": false,
+      "default": "POST",
+      "description": "HTTP method to use"
+    },
+    {
+      "name": "forward_headers",
+      "label": "Forward Headers",
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Whether to forward original webhook headers"
+    }
+  ],
+  "requires": ["http"]
+}

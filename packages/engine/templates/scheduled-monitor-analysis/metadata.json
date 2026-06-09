@@ -1,0 +1,34 @@
+{
+  "id": "scheduled-monitor-analysis",
+  "name": "Scheduled Monitor Analysis",
+  "description": "Periodically fetch data from an HTTP endpoint and analyze it with an LLM",
+  "category": "monitoring",
+  "tags": ["monitoring", "llm", "http", "analysis", "schedule"],
+  "templateVersion": "1.0.0",
+  "author": "OpenCode",
+  "parameters": [
+    {
+      "name": "target_url",
+      "label": "Target URL",
+      "type": "string",
+      "required": true,
+      "description": "The data source URL to monitor"
+    },
+    {
+      "name": "interval_ms",
+      "label": "Check Interval (ms)",
+      "type": "number",
+      "required": false,
+      "default": 300000,
+      "description": "How often to check in milliseconds"
+    },
+    {
+      "name": "analysis_prompt",
+      "label": "Analysis Prompt",
+      "type": "string",
+      "required": true,
+      "description": "Instructions for what to look for in the fetched data"
+    }
+  ],
+  "requires": ["http", "llm"]
+}

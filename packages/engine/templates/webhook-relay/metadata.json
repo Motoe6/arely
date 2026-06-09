@@ -1,0 +1,35 @@
+{
+  "id": "webhook-relay",
+  "name": "Webhook Relay",
+  "description": "Receive a webhook and relay its payload to another HTTP endpoint",
+  "category": "communication",
+  "tags": ["webhook", "relay", "http", "proxy"],
+  "templateVersion": "1.0.0",
+  "author": "OpenCode",
+  "parameters": [
+    {
+      "name": "target_url",
+      "label": "Target URL",
+      "type": "string",
+      "required": true,
+      "description": "The URL to forward the webhook payload to"
+    },
+    {
+      "name": "method",
+      "label": "HTTP Method",
+      "type": "string",
+      "required": false,
+      "default": "POST",
+      "description": "HTTP method to use when forwarding"
+    },
+    {
+      "name": "headers",
+      "label": "Custom Headers",
+      "type": "json",
+      "required": false,
+      "default": {},
+      "description": "Additional headers to include in the relay request"
+    }
+  ],
+  "requires": ["http"]
+}

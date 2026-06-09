@@ -1,0 +1,11 @@
+version: "1.0.0"
+name: "LLM Query"
+trigger:
+  type: manual
+steps:
+  - id: generate
+    type: llm
+    input:
+      prompt: "{{ param:prompt_template }}"
+      systemPrompt: "{{ param:system_prompt }}"
+      temperature: "{{ param:temperature }}"

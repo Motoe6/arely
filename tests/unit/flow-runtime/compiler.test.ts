@@ -52,28 +52,28 @@ describe("compileWorkflow", () => {
     expect(input.name).toBe("Alice")
   })
 
-  it("computes dependsOn from next field", () => {
-    const wf = parseWorkflow(simpleJSON, "json")
-    const result = compileWorkflow(wf, makeContext())
-
-    const processStep = result.pipeline.steps.find((s) => s.id === "process")
-    expect(processStep!.dependsOn).toEqual(["save"])
-  })
-
-  it("computes dependsOn from implicit ordering (last step)", () => {
-    const wf = parseWorkflow(simpleJSON, "json")
-    const result = compileWorkflow(wf, makeContext())
-
-    const saveStep = result.pipeline.steps.find((s) => s.id === "save")
-    expect(saveStep!.dependsOn).toEqual([])
-  })
-
-  it("computes dependsOn from implicit ordering (middle steps)", () => {
+  it("computes dependsOn from implicit ordering (first step depends on nothing)", () => {
     const wf = parseWorkflow(simpleJSON, "json")
     const result = compileWorkflow(wf, makeContext())
 
     const fetchStep = result.pipeline.steps.find((s) => s.id === "fetch")
-    expect(fetchStep!.dependsOn).toEqual(["process"])
+    expect(fetchStep!.dependsOn).toEqual([])
+  })
+
+  it("computes dependsOn from implicit ordering (previous step)", () => {
+    const wf = parseWorkflow(simpleJSON, "json")
+    const result = compileWorkflow(wf, makeContext())
+
+    const processStep = result.pipeline.steps.find((s) => s.id === "process")
+    expect(processStep!.dependsOn).toEqual(["fetch"])
+  })
+
+  it("computes dependsOn from next field adds dep to target", () => {
+    const wf = parseWorkflow(simpleJSON, "json")
+    const result = compileWorkflow(wf, makeContext())
+
+    const saveStep = result.pipeline.steps.find((s) => s.id === "save")
+    expect(saveStep!.dependsOn).toContain("process")
   })
 
   it("sets stepOrder correctly", () => {
@@ -155,28 +155,30 @@ describe("compileWorkflow", () => {
     expect(result.warnings.some((w) => w.message.includes("unreachable"))).toBe(true)
   })
 
-  it("reports template resolution errors", () => {
+  it("converts step references to F30 {{stepId}} format (no errors)", () => {
     const input = JSON.stringify({
       id: "wf-tpl",
       version: "1.0.0",
       steps: [
-        { id: "s1", type: "log", input: { val: "{{ steps.missing_step.out }}" } },
+        { id: "s1", type: "step1_tool", input: { val: "initial" } },
+        { id: "s2", type: "step2_tool", input: { ref: "{{ steps.s1.output }}" } },
       ],
     })
     const wf = parseWorkflow(input, "json")
     const result = compileWorkflow(wf, makeContext())
 
-    expect(result.errors.length).toBeGreaterThan(0)
-    expect(result.errors.some((e) => e.message.includes("Step"))).toBe(true)
+    expect(result.errors).toHaveLength(0)
+    const s2Input = JSON.parse(result.pipeline.steps.find((s) => s.id === "s2")!.inputMapping)
+    expect(s2Input.ref).toBe("{{s1}}")
   })
 
-  it("continues on error — other steps still compiled", () => {
+  it("continues on non-step-template errors — other steps still compiled", () => {
     const input = JSON.stringify({
       id: "wf-partial",
       version: "1.0.0",
       steps: [
         { id: "good", type: "log", input: { msg: "hello" } },
-        { id: "bad", type: "log", input: { val: "{{ steps.missing.out }}" } },
+        { id: "bad", type: "log", input: { val: "{{ secrets.missing_key }}" } },
         { id: "also_good", type: "log", input: { msg: "world" } },
       ],
     })
@@ -188,6 +190,19 @@ describe("compileWorkflow", () => {
     expect(stepIds).toContain("good")
     expect(stepIds).not.toContain("bad")
     expect(stepIds).toContain("also_good")
+  })
+
+  it("propagates template errors for non-step references", () => {
+    const input = JSON.stringify({
+      id: "wf-partial",
+      version: "1.0.0",
+      steps: [
+        { id: "s1", type: "log", input: { val: "{{ secrets.missing }}" } },
+      ],
+    })
+    const wf = parseWorkflow(input, "json")
+    const result = compileWorkflow(wf, makeContext())
+    expect(result.errors.length).toBeGreaterThan(0)
   })
 
   it("assigns default stepOrder based on array index", () => {

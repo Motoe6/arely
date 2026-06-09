@@ -178,10 +178,9 @@ describe("resolveTemplate — errors", () => {
     ).toThrow(TemplateResolutionError)
   })
 
-  it("throws on invalid source", () => {
-    expect(() =>
-      resolveTemplate("{{ invalid.path }}", makeContext())
-    ).toThrow(TemplateResolutionError)
+  it("leaves invalid source expressions as-is for runtime", () => {
+    const result = resolveTemplate("{{ invalid.path }}", makeContext())
+    expect(result.resolved).toBe("{{ invalid.path }}")
   })
 
   it("throws on steps without step id", () => {

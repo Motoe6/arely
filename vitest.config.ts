@@ -6,6 +6,8 @@ export default defineConfig({
     alias: {
       "@opencode/engine": fileURLToPath(new URL("./packages/engine/src", import.meta.url)),
       "@opencode/flow-runtime": fileURLToPath(new URL("./packages/flow-runtime/src", import.meta.url)),
+      "@opencode/flow-sdk": fileURLToPath(new URL("./packages/flow-sdk/src", import.meta.url)),
+      "@opencode/flow-ai-compiler": fileURLToPath(new URL("./packages/flow-ai-compiler/src", import.meta.url)),
     },
   },
   test: {

@@ -2,7 +2,7 @@ import { ulid } from "ulid"
 import type { Workflow, TriggerDef } from "../types.js"
 import { CompilationError } from "../errors/compilation-error.js"
 
-const VALID_TRIGGER_TYPES = new Set(["manual", "webhook", "interval", "event"])
+const VALID_TRIGGER_TYPES = new Set(["manual", "webhook", "interval", "schedule", "event"])
 
 export function normalizeWorkflow(raw: Record<string, unknown>): Workflow {
   if (!raw.id) {
@@ -61,6 +61,7 @@ export function normalizeWorkflow(raw: Record<string, unknown>): Workflow {
     version,
     trigger,
     steps,
+    metadata: raw.metadata as Record<string, unknown> | undefined,
   }
 }
 

@@ -154,6 +154,30 @@ export const CREATE_TABLES = [
     retry_count INTEGER NOT NULL DEFAULT 0,
     log TEXT NOT NULL DEFAULT '[]'
   )`,
+  `CREATE TABLE IF NOT EXISTS workflow_runs (
+    id TEXT PRIMARY KEY,
+    workflow_id TEXT NOT NULL REFERENCES workflows(id) ON DELETE CASCADE,
+    workflow_version INTEGER NOT NULL,
+    status TEXT NOT NULL DEFAULT 'running',
+    trigger_input TEXT,
+    started_at TEXT NOT NULL DEFAULT (datetime('now')),
+    completed_at TEXT,
+    duration_ms INTEGER,
+    error TEXT
+  )`,
+  `CREATE TABLE IF NOT EXISTS workflow_step_runs (
+    id TEXT PRIMARY KEY,
+    run_id TEXT NOT NULL REFERENCES workflow_runs(id) ON DELETE CASCADE,
+    step_id TEXT NOT NULL,
+    step_type TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'running',
+    input TEXT,
+    output TEXT,
+    error TEXT,
+    started_at TEXT NOT NULL DEFAULT (datetime('now')),
+    completed_at TEXT,
+    duration_ms INTEGER
+  )`,
   `CREATE TABLE IF NOT EXISTS notification_queue (
     id TEXT PRIMARY KEY,
     channel TEXT NOT NULL,
@@ -194,6 +218,22 @@ export const CREATE_TABLES = [
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
   )`,
+  `CREATE TABLE IF NOT EXISTS workflows (
+    id TEXT PRIMARY KEY,
+    name TEXT,
+    description TEXT,
+    current_version_id TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )`,
+  `CREATE TABLE IF NOT EXISTS workflow_versions (
+    id TEXT PRIMARY KEY,
+    workflow_id TEXT NOT NULL REFERENCES workflows(id) ON DELETE CASCADE,
+    version INTEGER NOT NULL,
+    workflow_dsl TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'active',
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )`,
   `CREATE TABLE IF NOT EXISTS policy_changes (
     id TEXT PRIMARY KEY,
     pack_id TEXT NOT NULL,
@@ -205,6 +245,52 @@ export const CREATE_TABLES = [
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     approved_at TEXT,
     applied_at TEXT
+  )`,
+  `CREATE TABLE IF NOT EXISTS scheduled_triggers (
+    id TEXT PRIMARY KEY,
+    workflow_id TEXT NOT NULL REFERENCES workflows(id) ON DELETE CASCADE,
+    trigger_mode TEXT NOT NULL,
+    cron_expression TEXT,
+    interval_ms INTEGER,
+    enabled INTEGER NOT NULL DEFAULT 1,
+    next_run_at TEXT NOT NULL,
+    last_run_at TEXT,
+    last_error TEXT,
+    run_count INTEGER NOT NULL DEFAULT 0,
+    locked_until TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )`,
+  `CREATE TABLE IF NOT EXISTS installed_packages (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    version TEXT NOT NULL,
+    description TEXT,
+    author TEXT,
+    package_dir TEXT NOT NULL,
+    manifest_version INTEGER NOT NULL DEFAULT 2,
+    installed_at TEXT NOT NULL DEFAULT (datetime('now')),
+    enabled INTEGER NOT NULL DEFAULT 1
+  )`,
+  `CREATE TABLE IF NOT EXISTS installed_nodes (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    version TEXT NOT NULL,
+    node_type TEXT NOT NULL UNIQUE,
+    category TEXT,
+    description TEXT,
+    author TEXT,
+    entry_path TEXT NOT NULL,
+    manifest_version INTEGER NOT NULL DEFAULT 1,
+    installed_at TEXT NOT NULL DEFAULT (datetime('now')),
+    enabled INTEGER NOT NULL DEFAULT 1
+  )`,
+  `CREATE TABLE IF NOT EXISTS secrets (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE,
+    value_encrypted TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
   )`,
 ];
 
@@ -236,6 +322,23 @@ export const CREATE_INDEXES = [
   "CREATE INDEX IF NOT EXISTS idx_policy_audit_created ON policy_audit_events(created_at)",
   "CREATE INDEX IF NOT EXISTS idx_policy_changes_status ON policy_changes(status)",
   "CREATE INDEX IF NOT EXISTS idx_policy_changes_pack ON policy_changes(pack_id)",
+  "CREATE INDEX IF NOT EXISTS idx_workflows_updated ON workflows(updated_at)",
+  "CREATE INDEX IF NOT EXISTS idx_wf_versions_workflow ON workflow_versions(workflow_id)",
+  "CREATE UNIQUE INDEX IF NOT EXISTS idx_wf_versions_unique ON workflow_versions(workflow_id, version)",
+  "CREATE INDEX IF NOT EXISTS idx_wf_runs_workflow ON workflow_runs(workflow_id)",
+  "CREATE INDEX IF NOT EXISTS idx_wf_runs_status ON workflow_runs(status)",
+  "CREATE INDEX IF NOT EXISTS idx_wf_runs_started ON workflow_runs(started_at)",
+  "CREATE INDEX IF NOT EXISTS idx_wf_step_runs_run ON workflow_step_runs(run_id)",
+  "CREATE INDEX IF NOT EXISTS idx_wf_step_runs_copied ON workflow_step_runs(copied_from_step_run_id)",
+  "CREATE INDEX IF NOT EXISTS idx_wf_runs_replay_of ON workflow_runs(replay_of_run_id)",
+  "CREATE INDEX IF NOT EXISTS idx_scheduled_triggers_workflow ON scheduled_triggers(workflow_id)",
+  "CREATE INDEX IF NOT EXISTS idx_scheduled_triggers_next_run ON scheduled_triggers(next_run_at)",
+  "CREATE INDEX IF NOT EXISTS idx_scheduled_triggers_enabled_next ON scheduled_triggers(enabled, next_run_at)",
+  "CREATE UNIQUE INDEX IF NOT EXISTS idx_installed_packages_name_version ON installed_packages(name, version)",
+  "CREATE INDEX IF NOT EXISTS idx_installed_packages_enabled ON installed_packages(enabled)",
+  "CREATE UNIQUE INDEX IF NOT EXISTS idx_installed_nodes_name_version ON installed_nodes(name, version)",
+  "CREATE INDEX IF NOT EXISTS idx_installed_nodes_type ON installed_nodes(node_type)",
+  "CREATE INDEX IF NOT EXISTS idx_secrets_name ON secrets(name)",
 ];
 
 export const MIGRATIONS = [
@@ -254,6 +357,9 @@ export const MIGRATIONS = [
   "ALTER TABLE pipeline_steps ADD COLUMN idempotent INTEGER",
   "ALTER TABLE pipeline_steps ADD COLUMN retryable_errors TEXT",
   "ALTER TABLE pipeline_steps ADD COLUMN retry_strategy TEXT",
+  "ALTER TABLE workflow_runs ADD COLUMN replay_of_run_id TEXT",
+  "ALTER TABLE workflow_runs ADD COLUMN replay_from_step_id TEXT",
+  "ALTER TABLE workflow_step_runs ADD COLUMN copied_from_step_run_id TEXT",
 ];
 
 export function pushSchema(databasePath?: string): void {

@@ -1,0 +1,14 @@
+version: "1.0.0"
+name: "Health Check - {{ param:target_url }}"
+trigger:
+  type: schedule
+  config:
+    triggerMode: interval
+    intervalMs: "{{ param:interval_ms }}"
+steps:
+  - id: check
+    type: http
+    input:
+      url: "{{ param:target_url }}"
+      method: "{{ param:method }}"
+      timeoutMs: "{{ param:timeout_ms }}"

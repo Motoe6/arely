@@ -75,6 +75,8 @@ const envSchema = z.object({
   AUDIT_RETENTION_DAYS: z.coerce.number().int().min(1).default(30),
 
   POLICY_PACKS_DIR: z.string().default("./policy-packs"),
+  USER_TEMPLATES_DIR: z.string().default("./data/user_templates"),
+  PACKAGES_DIR: z.string().default("./data/packages"),
 
   OPENCODE_AUTH_HEADER: z.string().default("Authorization"),
   OPENCODE_AUTH_PREFIX: z.string().default("Bearer"),

@@ -12,6 +12,9 @@
     "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
+    "@opencode/flow-ai-compiler": "*",
+    "@opencode/flow-runtime": "*",
+    "@opencode/flow-sdk": "*",
     "better-sqlite3": "^12.10.0",
     "drizzle-orm": "^0.45.2",
     "ink": "^7.0.4",
@@ -19,6 +22,7 @@
     "react": "^19.2.6",
     "turndown": "^7.2.4",
     "ulid": "^3.0.2",
+    "yaml": "^2.9.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {

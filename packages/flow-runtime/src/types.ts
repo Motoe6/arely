@@ -17,7 +17,7 @@ export interface WorkflowStep {
 }
 
 export interface TriggerDef {
-  type: "manual" | "webhook" | "interval" | "event"
+  type: "manual" | "webhook" | "interval" | "schedule" | "event"
   config?: Record<string, unknown>
 }
 
@@ -28,6 +28,7 @@ export interface Workflow {
   version: string
   trigger?: TriggerDef
   steps: WorkflowStep[]
+  metadata?: Record<string, unknown>
 }
 
 export interface DAGEdge {
