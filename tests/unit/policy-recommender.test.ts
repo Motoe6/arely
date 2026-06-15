@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { PolicyRecommender, type RecommenderAuditPort, type TraceEvent } from "@opencode/engine/agents/policy/policy-recommender.js";
-import type { PolicyPackStore } from "@opencode/engine/agents/policy/policy-pack.js";
-import type { PolicyRule } from "@opencode/engine/agents/policy/policy-types.js";
+import { PolicyRecommender, type RecommenderAuditPort, type TraceEvent } from "@arely/engine/agents/policy/policy-recommender.js";
+import type { PolicyPackStore } from "@arely/engine/agents/policy/policy-pack.js";
+import type { PolicyRule } from "@arely/engine/agents/policy/policy-types.js";
 
 function makeRule(id: string, overrides: Partial<PolicyRule> = {}): PolicyRule {
   return {

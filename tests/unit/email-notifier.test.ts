@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { EmailNotifier, type EmailConfig, type EmailTransport } from "@opencode/engine/agents/notifiers/email-notifier.js";
-import type { Alert } from "@opencode/engine/agents/alert-rules.js";
+import { EmailNotifier, type EmailConfig, type EmailTransport } from "@arely/engine/agents/notifiers/email-notifier.js";
+import type { Alert } from "@arely/engine/agents/alert-rules.js";
 
 const sampleAlert: Alert = {
   ruleId: "test_rule",

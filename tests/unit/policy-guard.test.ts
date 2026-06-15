@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { PolicyGuard } from "@opencode/engine/agents/policy/policy-guard.js";
-import type { PolicyRule } from "@opencode/engine/agents/policy/policy-types.js";
+import { PolicyGuard } from "@arely/engine/agents/policy/policy-guard.js";
+import type { PolicyRule } from "@arely/engine/agents/policy/policy-types.js";
 
 function makeRule(id: string, overrides?: Partial<PolicyRule>): PolicyRule {
   return {

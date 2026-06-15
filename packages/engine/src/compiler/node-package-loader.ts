@@ -7,8 +7,8 @@
 import { readFileSync, existsSync } from "node:fs"
 import { join, isAbsolute } from "node:path"
 import { pathToFileURL } from "node:url"
-import { globalNodeRegistry } from "@opencode/flow-sdk"
-import type { NodeDefinition } from "@opencode/flow-sdk"
+import { globalNodeRegistry } from "@arely/flow-sdk"
+import type { NodeDefinition } from "@arely/flow-sdk"
 import type { InstalledNodeRecord } from "./node-marketplace-store.js"
 import {
   createInstalledPackage,

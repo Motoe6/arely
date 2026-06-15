@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest"
 import { initTestDb, cleanupTestDb } from "../setup.js"
-import { parseWorkflow, compileWorkflow } from "@opencode/flow-runtime"
-import { createPipeline, createPipelineStep, getPipelineRun, getPipelineSteps, getPipelineStepRuns } from "@opencode/engine/agents/pipeline-store.js"
-import { executePipeline } from "@opencode/engine/agents/pipeline.js"
-import { createExecutionTracer } from "@opencode/engine/agents/execution-tracer.js"
-import { getDb } from "@opencode/engine/persistence/database.js"
-import { pipelineStepRuns, pipelineSteps, pipelineRuns, agentPipelines } from "@opencode/engine/persistence/schema.js"
+import { parseWorkflow, compileWorkflow } from "@arely/flow-runtime"
+import { createPipeline, createPipelineStep, getPipelineRun, getPipelineSteps, getPipelineStepRuns } from "@arely/engine/agents/pipeline-store.js"
+import { executePipeline } from "@arely/engine/agents/pipeline.js"
+import { createExecutionTracer } from "@arely/engine/agents/execution-tracer.js"
+import { getDb } from "@arely/engine/persistence/database.js"
+import { pipelineStepRuns, pipelineSteps, pipelineRuns, agentPipelines } from "@arely/engine/persistence/schema.js"
 
 describe("Flow Runtime E2E — YAML → Compiler → F30 → Audit", () => {
   beforeAll(() => {

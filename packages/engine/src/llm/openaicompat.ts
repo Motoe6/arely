@@ -1,4 +1,4 @@
-import type { LLMAdapter, LLMResponse } from './adapter.js';
+import type { LLMAdapter, LLMResponse } from '@arely/llm-core';
 import type { SessionMessage } from '../types.js';
 
 interface ChatMessage {
@@ -102,6 +102,7 @@ export class OpenAICompatAdapter implements LLMAdapter {
 
           if (delta.content) {
             currentContent += delta.content;
+            yield { content: delta.content, type: "delta" as const };
           }
 
           if (delta.tool_calls) {

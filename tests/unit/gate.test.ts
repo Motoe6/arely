@@ -5,24 +5,24 @@ const mockConfig = vi.fn();
 const emittedEvents: string[] = [];
 const requestIdsByType: Record<string, string> = {};
 
-vi.mock("@opencode/engine/config/index.js", () => ({
+vi.mock("@arely/engine/config/index.js", () => ({
   getConfig: () => mockConfig(),
 }));
 
-vi.mock("@opencode/engine/persistence/permission-store.js", () => ({
+vi.mock("@arely/engine/persistence/permission-store.js", () => ({
   createPermissionApproval: vi.fn(),
 }));
 
-vi.mock("@opencode/engine/persistence/audit-store.js", () => ({
+vi.mock("@arely/engine/persistence/audit-store.js", () => ({
   createAuditLog: vi.fn(),
 }));
 
-vi.mock("@opencode/engine/persistence/approval-cache-store.js", () => ({
+vi.mock("@arely/engine/persistence/approval-cache-store.js", () => ({
   findMatchingApproval: vi.fn().mockReturnValue(undefined),
   setApproval: vi.fn(),
 }));
 
-import { PermissionGate } from "@opencode/engine/permissions/gate.js";
+import { PermissionGate } from "@arely/engine/permissions/gate.js";
 
 function createSseMock() {
   return {
@@ -36,8 +36,8 @@ function createSseMock() {
 
 function setConfigAsk(timeoutMs = 5000) {
   mockConfig.mockReturnValue({
-    OPENCODE_PERMIT_WEBSEARCH: "ask",
-    OPENCODE_PERMIT_WEBFETCH: "ask",
+    ARELY_PERMIT_WEBSEARCH: "ask",
+    ARELY_PERMIT_WEBFETCH: "ask",
     PERMISSION_TIMEOUT_MS: timeoutMs,
   });
 }
@@ -55,7 +55,7 @@ describe("PermissionGate", () => {
   describe("mode=deny", () => {
     it("throws for denied tool", async () => {
       mockConfig.mockReturnValue({
-        OPENCODE_PERMIT_WEBSEARCH: "deny",
+        ARELY_PERMIT_WEBSEARCH: "deny",
         PERMISSION_TIMEOUT_MS: 5000,
       });
       const gate = new PermissionGate(createSseMock() as any, "session-1");
@@ -66,7 +66,7 @@ describe("PermissionGate", () => {
   describe("mode=allow", () => {
     it("returns true without prompting", async () => {
       mockConfig.mockReturnValue({
-        OPENCODE_PERMIT_WEBSEARCH: "allow",
+        ARELY_PERMIT_WEBSEARCH: "allow",
         PERMISSION_TIMEOUT_MS: 5000,
       });
       const gate = new PermissionGate(createSseMock() as any, "session-1");
@@ -78,7 +78,7 @@ describe("PermissionGate", () => {
 
   describe("mode=ask with cache hit", () => {
     it("returns true when cache matches", async () => {
-      const approvalCache = await import("@opencode/engine/persistence/approval-cache-store.js");
+      const approvalCache = await import("@arely/engine/persistence/approval-cache-store.js");
       (approvalCache.findMatchingApproval as any).mockReturnValue({
         id: "cache-1",
         granted: true,

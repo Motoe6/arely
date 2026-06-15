@@ -5,10 +5,10 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import http from "node:http";
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { createHttpServer } from "@opencode/engine/transport/http-server.js";
-import { SSEBus } from "@opencode/engine/server/sse.js";
-import { loadConfig } from "@opencode/engine/config/index.js";
-import type { PolicyRule } from "@opencode/engine/agents/policy/policy-types.js";
+import { createHttpServer } from "@arely/engine/transport/http-server.js";
+import { SSEBus } from "@arely/engine/server/sse.js";
+import { loadConfig } from "@arely/engine/config/index.js";
+import type { PolicyRule } from "@arely/engine/agents/policy/policy-types.js";
 
 type Middleware = (req: IncomingMessage, res: ServerResponse, next: () => void) => void;
 
@@ -91,9 +91,9 @@ const sampleRule: PolicyRule = {
 
 describe("F36 HTTP /control/change/*", () => {
   beforeAll(() => {
-    process.env.OPENCODE_API_KEY = "test-key";
+    process.env.ARELY_API_KEY = "test-key";
     process.env.POLICY_PACKS_DIR = tmpDir;
-    process.env.OPENCODE_POLICY_PACKS_DIR = tmpDir;
+    process.env.ARELY_POLICY_PACKS_DIR = tmpDir;
     loadConfig();
     initTestDb();
     mkdirSync(tmpDir, { recursive: true });
@@ -112,7 +112,7 @@ describe("F36 HTTP /control/change/*", () => {
   afterAll(async () => {
     cleanupTestDb();
     rmSync(tmpDir, { recursive: true, force: true });
-    delete process.env.OPENCODE_POLICY_PACKS_DIR;
+    delete process.env.ARELY_POLICY_PACKS_DIR;
     await new Promise<void>((resolve) => server.close(() => resolve()));
   });
 

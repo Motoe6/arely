@@ -8,6 +8,7 @@ import type { SSEBus } from "../server/sse.js"
 import type { TemplateRegistry } from "./template-registry.js"
 import type { TemplateMetadata, TemplateSource } from "./template-types.js"
 import { TemplateRecommender } from "./template-recommender.js"
+import { ParameterRecommenderService } from "./parameter-recommender.js"
 import {
   TemplateNotFoundError,
   TemplateValidationError,
@@ -97,9 +98,58 @@ function handleInstantiate(registry: TemplateRegistry) {
     const userParams = (body.params ?? {}) as Record<string, unknown>
 
     try {
-      const result = registry.instantiate(params.id, userParams)
+      const template = registry.get(params.id)
+      if (!template) {
+        res.writeHead(404, { "Content-Type": "application/json" })
+        res.end(JSON.stringify({
+          error: { code: "TEMPLATE_NOT_FOUND", message: `Template "${params.id}" not found` },
+        }))
+        return
+      }
+
+      const paramTypeMap = new Map<string, string>()
+      for (const p of template.metadata.parameters) {
+        paramTypeMap.set(p.name, p.type)
+      }
+
+      function convertValue(value: string, type: string): unknown {
+        switch (type) {
+          case "number": {
+            const n = Number(value)
+            return isNaN(n) ? value : n
+          }
+          case "boolean": return value === "true" || value === "1"
+          case "json": try { return JSON.parse(value) } catch { return value }
+          default: return value
+        }
+      }
+
+      const recommender = new ParameterRecommenderService()
+      const recResult = recommender.getRecommendations(params.id)
+      const appliedRecommendations: Array<{ parameter: string; value: string; confidence: number; evidence: string }> = []
+
+      const mergedParams: Record<string, unknown> = {}
+      for (const rec of recResult.recommendations) {
+        if (!(rec.parameter in userParams)) {
+          const targetType = paramTypeMap.get(rec.parameter) ?? "string"
+          mergedParams[rec.parameter] = convertValue(rec.suggestedValue, targetType)
+          appliedRecommendations.push({
+            parameter: rec.parameter,
+            value: rec.suggestedValue,
+            confidence: rec.confidence,
+            evidence: rec.evidence,
+          })
+        }
+      }
+
+      const instantiateParams = { ...userParams, ...mergedParams }
+      const result = registry.instantiate(params.id, instantiateParams)
+
       res.writeHead(200, { "Content-Type": "application/json" })
-      res.end(JSON.stringify(result))
+      res.end(JSON.stringify({
+        ...result,
+        appliedRecommendations: appliedRecommendations.length > 0 ? appliedRecommendations : undefined,
+      }))
     } catch (err) {
       if (err instanceof TemplateNotFoundError) {
         res.writeHead(404, { "Content-Type": "application/json" })

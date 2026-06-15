@@ -1,6 +1,6 @@
 import type { NodeMatch } from "./types.js"
 import type { SelectableNode } from "./types.js"
-import type { NodeDefinition } from "@opencode/flow-sdk"
+import type { NodeDefinition } from "@arely/flow-sdk"
 
 export interface IntentStepLike {
   id: string

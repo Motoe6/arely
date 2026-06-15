@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest"
-import { resolveTemplate, extractPlaceholders } from "@opencode/flow-runtime"
-import { TemplateResolutionError } from "@opencode/flow-runtime"
-import type { ExecutionContext } from "@opencode/flow-runtime"
+import { resolveTemplate, extractPlaceholders } from "@arely/flow-runtime"
+import { TemplateResolutionError } from "@arely/flow-runtime"
+import type { ExecutionContext } from "@arely/flow-runtime"
 
 function makeContext(overrides?: Partial<ExecutionContext>): ExecutionContext {
   return {

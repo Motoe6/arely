@@ -1,4 +1,4 @@
-import type { Workflow, WorkflowStep, TriggerDef } from "@opencode/flow-runtime"
+import type { Workflow, WorkflowStep, TriggerDef } from "@arely/flow-runtime"
 import type { WorkflowIntent } from "../intent/intent-schema.js"
 import type { ResolvedStep } from "../selector/types.js"
 

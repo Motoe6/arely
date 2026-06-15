@@ -1,8 +1,8 @@
 import { ulid } from "ulid"
-import { compileFromPrompt } from "@opencode/flow-ai-compiler"
-import { globalNodeRegistry } from "@opencode/flow-sdk"
-import type { CompilerLLMAdapter, CompileResult } from "@opencode/flow-ai-compiler"
-import type { Workflow } from "@opencode/flow-runtime"
+import { compileFromPrompt } from "@arely/flow-ai-compiler"
+import { globalNodeRegistry } from "@arely/flow-sdk"
+import type { CompilerLLMAdapter, CompileResult } from "@arely/flow-ai-compiler"
+import type { Workflow } from "@arely/flow-runtime"
 import {
   createWorkflow,
   getWorkflow as getWorkflowRecord,

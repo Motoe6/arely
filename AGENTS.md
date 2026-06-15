@@ -1,4 +1,4 @@
-# OpenCode Agent — Build Notes
+# Arely Agent — Build Notes
 
 ## Goal
 
@@ -89,7 +89,7 @@ src/
 - Only `http:` and `https:` schemes allowed (blocks `file:`, `ftp:`, `data:`, `javascript:`)
 - Rejects private IP ranges: localhost, 127.0.0.1, ::1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
 - HTML converted to Markdown via TurndownService; extracts `<title>` and up to 5 `<img>` URLs
-- User-Agent: `OpenCodeAgent/1.0`
+- User-Agent: `ArelyAgent/1.0`
 
 ### Persistence Guarantees
 - Events persisted BEFORE SSE emit (SSEBus.emit() calls persistEvent() first)
@@ -172,7 +172,7 @@ src/
 ### Files Modified
 | File | Change |
 |------|--------|
-| `src/config/index.ts` | +3 Zod config keys: OPENCODE_MAX_ITERATIONS (default 20), OPENCODE_STREAMING (default true), OPENCODE_TOOL_MODE (default "native") |
+| `src/config/index.ts` | +3 Zod config keys: ARELY_MAX_ITERATIONS (default 20), ARELY_STREAMING (default true), ARELY_TOOL_MODE (default "native") |
 | `src/types/events.ts` | +7 event types to AgentEvent union: session_thinking, assistant_message_created, assistant_message_stream_delta, assistant_message_completed, tool_result_received, agent_loop_completed, agent_loop_failed |
 | `src/server/session.ts` | Delegates core loop to runAgentLoop(); persists session to DB on run(); emits session_started; uses config for max iterations |
 | `src/transport/http-server.ts` | Accepts optional setupRoutes callback for adding routes externally |
@@ -219,8 +219,8 @@ src/
 - Agent loop extracted as pure async function (not class) for testability
 - M4 events are additive (no existing event shapes modified)
 - session-manager.ts is a thin wrapper around AgentSession instances
-- Config keys OPENCODE_* prefix follows existing convention
-- `OPENCODE_STREAMING` is defined but streaming support deferred to M5+
+- Config keys ARELY_* prefix follows existing convention
+- `ARELY_STREAMING` is defined but streaming support deferred to M5+
 - `SessionMessage` deprecation kept for LLMAdapter interface compatibility
 - session_store.createSession() accepts optional `id` param to align with AgentSession.id
 

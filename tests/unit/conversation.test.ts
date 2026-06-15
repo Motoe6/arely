@@ -1,24 +1,24 @@
 import { describe, it, expect, vi, beforeAll, beforeEach, afterEach } from "vitest";
-import type { Message } from "@opencode/engine/types.js";
+import type { Message } from "@arely/engine/types.js";
 
 const mockMessages: Message[] = [];
 let mockSequence = 0;
 
-vi.mock("@opencode/engine/persistence/message-store.js", () => ({
+vi.mock("@arely/engine/persistence/message-store.js", () => ({
   getSessionMessages: vi.fn(() => mockMessages),
 }));
 
-import { loadConfig } from "@opencode/engine/config/index.js";
+import { loadConfig } from "@arely/engine/config/index.js";
 import {
   loadConversation,
   injectToolResult,
   injectSystemPrompt,
   hasReachedTokenLimit,
-} from "@opencode/engine/llm/conversation.js";
+} from "@arely/engine/llm/conversation.js";
 
 describe("conversation", () => {
   beforeAll(() => {
-    process.env.OPENCODE_API_KEY = "test-key";
+    process.env.ARELY_API_KEY = "test-key";
     loadConfig();
   });
 

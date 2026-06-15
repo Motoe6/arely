@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { classifyExecutionError } from "@opencode/engine/agents/error-classifier.js";
-import { TimeoutError, CancelledError } from "@opencode/engine/tools/errors.js";
-import { PipelineToolError } from "@opencode/engine/agents/pipeline-tool-executor.js";
+import { classifyExecutionError } from "@arely/engine/agents/error-classifier.js";
+import { TimeoutError, CancelledError } from "@arely/engine/tools/errors.js";
+import { PipelineToolError } from "@arely/engine/agents/pipeline-tool-executor.js";
 
 describe("classifyExecutionError", () => {
   it("classifies TimeoutError instance as timeout", () => {

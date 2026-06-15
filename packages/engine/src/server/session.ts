@@ -2,7 +2,7 @@ import { ulid } from "ulid";
 /* eslint-disable @typescript-eslint/no-deprecated */
 import type { SessionState, SessionMessage, ToolCallPart } from "../types.js";
 import type { SSEBus } from "./sse.js";
-import type { LLMAdapter } from "../llm/adapter.js";
+import type { LLMAdapter } from "@arely/llm-core";
 import { createToolRegistry, type Tool } from "../tools/registry.js";
 import { PermissionGate } from "../permissions/gate.js";
 import { createSearchProvider } from "../tools/provider-factory.js";
@@ -18,10 +18,13 @@ import type {
   SessionStartedEvent,
   SessionStateChangedEvent,
   SessionCompletedEvent,
+  ModelSelectedEvent,
 } from "../types/events.js";
 import type { ExecutionMode } from "./execution-mode.js";
 import { AgentModeExecution } from "./modes/agent-mode.js";
 import { PlanningModeExecution } from "./modes/planning-mode.js";
+import { SwarmModeExecution } from "./modes/swarm-mode.js";
+import { initEpoch, addEpochMessageToSession } from "../llm/context-epoch-service.js";
 
 export type ToolCallMode = "native" | "text";
 
@@ -70,6 +73,7 @@ export class AgentSession {
   private abortController = new AbortController();
   private systemPromptInjected = false;
   private executionMode: ExecutionMode;
+  modelId: string;
 
   get abortSignal(): AbortSignal {
     return this.abortController.signal;
@@ -82,17 +86,19 @@ export class AgentSession {
       permissions: { websearch: string; webfetch: string };
       searchProvider?: "exa" | "parallel";
       model?: string;
+      modelId?: string;
       toolMode?: ToolCallMode;
-      mode?: "agent" | "planning";
+      mode?: "agent" | "planning" | "swarm";
       agentId?: string;
     },
   ) {
+    this.modelId = config.modelId ?? config.model ?? "deepseek-v4";
     loadConfig();
     this.sse = sse;
     this.llm = llm;
     this.gate = new PermissionGate(sse, this.id);
     const searchProvider = createSearchProvider({
-      OPENCODE_WEBSEARCH_PROVIDER: config.searchProvider ?? "exa",
+      ARELY_WEBSEARCH_PROVIDER: config.searchProvider ?? "exa",
     } as Parameters<typeof createSearchProvider>[0]);
     this.tools = createToolRegistry({
       sse,
@@ -104,7 +110,9 @@ export class AgentSession {
     this.toolCallMode = config.toolMode ?? detectToolCallMode(config.model ?? "");
     this.executionMode = config.mode === "planning"
       ? new PlanningModeExecution()
-      : new AgentModeExecution();
+      : config.mode === "swarm"
+        ? new SwarmModeExecution()
+        : new AgentModeExecution();
   }
 
   private emit(event: AgentEvent): void {
@@ -139,6 +147,14 @@ export class AgentSession {
     this.emit(event);
   }
 
+  /** Persist a message to the epoch store and append to the in-memory array. */
+  pushMessage(role: "user" | "assistant" | "system", content: string): SessionMessage {
+    const msg: SessionMessage = { role, content, timestamp: Date.now() };
+    this.messages.push(msg);
+    addEpochMessageToSession(this.id, role, content);
+    return msg;
+  }
+
   private ensureSystemPrompt(): void {
     if (this.systemPromptInjected) return;
     if (this.toolCallMode !== "text") return;
@@ -155,9 +171,21 @@ export class AgentSession {
   }
 
   async run(query: string): Promise<void> {
-    createSession({ id: this.id, query, model: this.config.model ?? "unknown", toolMode: this.toolCallMode });
+    createSession({ id: this.id, query, model: this.modelId, toolMode: this.toolCallMode });
     this.setState("running");
     this.ensureSystemPrompt();
+    initEpoch(this.id);
+
+    const modelEvent: ModelSelectedEvent = {
+      id: ulid(),
+      version: 1,
+      timestamp: Date.now(),
+      type: "model_selected",
+      sessionId: this.id,
+      modelId: this.modelId,
+      modelName: this.modelId,
+    };
+    this.emit(modelEvent);
 
     const startedEvent: SessionStartedEvent = {
       id: ulid(),
@@ -166,7 +194,7 @@ export class AgentSession {
       type: "session_started",
       sessionId: this.id,
       query,
-      model: this.config.model ?? "unknown",
+      model: this.modelId,
       toolMode: this.toolCallMode,
     };
     this.emit(startedEvent);
@@ -181,7 +209,7 @@ export class AgentSession {
     const cfg = getConfig();
     const result = await this.executionMode.run(this, query);
 
-    this.sessionEnd("completed", result.turns >= cfg.OPENCODE_MAX_ITERATIONS ? "max_iterations" : undefined);
+    this.sessionEnd("completed", result.turns >= cfg.ARELY_MAX_ITERATIONS ? "max_iterations" : undefined);
   }
 
   resolvePermission(id: string, granted: boolean): void {

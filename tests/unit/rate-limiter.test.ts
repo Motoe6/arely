@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { RateLimiter, RateLimitExceededError } from "@opencode/engine/tools/rate-limiter.js";
+import { RateLimiter, RateLimitExceededError } from "@arely/engine/tools/rate-limiter.js";
 
 function makeLimiter(opts?: Partial<{ maxRequests: number; windowMs: number; enabled: boolean }>) {
   const emit = vi.fn();

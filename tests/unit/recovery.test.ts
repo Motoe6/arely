@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { PlanRecord, PlanStepRecord } from "@opencode/engine/types.js";
-import type { WorkflowResult } from "@opencode/engine/planner/workflow.js";
+import type { PlanRecord, PlanStepRecord } from "@arely/engine/types.js";
+import type { WorkflowResult } from "@arely/engine/planner/workflow.js";
 
 const {
   mockListPlansByStatus,
@@ -16,11 +16,11 @@ const {
   mockUpdatePlanStatus: vi.fn(),
 }));
 
-vi.mock("@opencode/engine/config/index.js", () => ({
+vi.mock("@arely/engine/config/index.js", () => ({
   getConfig: () => ({ PLAN_PARALLELISM: 3 }),
 }));
 
-vi.mock("@opencode/engine/persistence/plan-store.js", () => ({
+vi.mock("@arely/engine/persistence/plan-store.js", () => ({
   listPlansByStatus: mockListPlansByStatus,
   getPlan: mockGetPlan,
   getStepsByPlan: mockGetStepsByPlan,
@@ -28,7 +28,7 @@ vi.mock("@opencode/engine/persistence/plan-store.js", () => ({
   updatePlanStatus: mockUpdatePlanStatus,
 }));
 
-import { recoverPlans, resumePlan } from "@opencode/engine/planner/recovery.js";
+import { recoverPlans, resumePlan } from "@arely/engine/planner/recovery.js";
 
 function makePlan(overrides: Partial<PlanRecord> = {}): PlanRecord {
   return {
@@ -215,7 +215,7 @@ describe("WorkflowExecutor resume (pre-existing terminal states)", () => {
   });
 
   it("skips completed steps and only executes pending ones", async () => {
-    const { WorkflowExecutor } = await import("@opencode/engine/planner/workflow.js");
+    const { WorkflowExecutor } = await import("@arely/engine/planner/workflow.js");
 
     const steps = [
       { id: "step_0", planId: "plan_1", description: "Step A", tool: null, args: null, dependsOn: "[]", status: "completed", result: "already done", error: null, order: 0, createdAt: "", completedAt: null },
@@ -231,7 +231,7 @@ describe("WorkflowExecutor resume (pre-existing terminal states)", () => {
   });
 
   it("returns immediately if all steps are already terminal", async () => {
-    const { WorkflowExecutor } = await import("@opencode/engine/planner/workflow.js");
+    const { WorkflowExecutor } = await import("@arely/engine/planner/workflow.js");
 
     const steps = [
       { id: "step_0", planId: "plan_1", description: "Step A", tool: null, args: null, dependsOn: "[]", status: "completed", result: "done", error: null, order: 0, createdAt: "", completedAt: null },
@@ -248,7 +248,7 @@ describe("WorkflowExecutor resume (pre-existing terminal states)", () => {
   });
 
   it("handles partial workflow with mixed states correctly", async () => {
-    const { WorkflowExecutor } = await import("@opencode/engine/planner/workflow.js");
+    const { WorkflowExecutor } = await import("@arely/engine/planner/workflow.js");
 
     const steps = [
       { id: "step_0", planId: "plan_1", description: "A", tool: null, args: null, dependsOn: "[]", status: "completed", result: "result A", error: null, order: 0, createdAt: "", completedAt: null },

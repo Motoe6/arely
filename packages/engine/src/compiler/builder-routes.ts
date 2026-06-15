@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "node:http"
 import { ulid } from "ulid"
-import { globalNodeRegistry } from "@opencode/flow-sdk"
-import { normalizeWorkflow } from "@opencode/flow-runtime"
+import { globalNodeRegistry } from "@arely/flow-sdk"
+import { normalizeWorkflow } from "@arely/flow-runtime"
 import type { Router } from "../transport/router.js"
 import type { SSEBus } from "../server/sse.js"
 import type { BuilderService, CompileWorkflowResult } from "./builder-service.js"
@@ -594,7 +594,7 @@ function renderBuilderPage(): string {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>OpenCode — AI Builder</title>
+<title>Arely — AI Builder</title>
 <style>
   :root { --bg: #0d1117; --surface: #161b22; --border: #30363d; --text: #c9d1d9; --text-muted: #8b949e; --accent: #58a6ff; --success: #3fb950; --error: #f85149; --warn: #d29922; --radius: 8px; font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,sans-serif; }
   * { box-sizing: border-box; margin: 0; padding: 0; }

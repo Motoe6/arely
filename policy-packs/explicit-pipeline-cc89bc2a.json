@@ -1,0 +1,23 @@
+{
+  "id": "explicit-pipeline-cc89bc2a",
+  "name": "explicit-pipeline",
+  "description": "",
+  "rules": [
+    {
+      "id": "high_success",
+      "when": {
+        "successRate": {
+          "lt": 0.9
+        }
+      },
+      "then": {
+        "type": "trigger_remediation",
+        "payload": {}
+      },
+      "cooldownMs": 60000,
+      "maxExecutionsPerHour": 10
+    }
+  ],
+  "createdAt": "2026-06-13T19:36:05.222Z",
+  "updatedAt": "2026-06-13T19:36:05.222Z"
+}

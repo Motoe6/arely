@@ -3,7 +3,7 @@ import { getWorkflowWithCurrentVersion, parseWorkflowDsl } from "../persistence/
 import { getRunWithSteps, createRun, createStepRun, completeStepRun, completeRun, getRunSteps } from "../persistence/run-store.js"
 import type { RunWithSteps } from "../persistence/run-store.js"
 import { getDb } from "../persistence/database.js"
-import { globalNodeRegistry } from "@opencode/flow-sdk"
+import { globalNodeRegistry } from "@arely/flow-sdk"
 import type { ExecuteWorkflowResult } from "./builder-service.js"
 
 type DbClient = any

@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import type { PlanStepRecord } from "@opencode/engine/types.js";
-import type { Tool } from "@opencode/engine/tools/base-tool.js";
-import { CancelledError } from "@opencode/engine/tools/errors.js";
-import { executePlanStep } from "@opencode/engine/planner/executor.js";
+import type { PlanStepRecord } from "@arely/engine/types.js";
+import type { Tool } from "@arely/engine/tools/base-tool.js";
+import { CancelledError } from "@arely/engine/tools/errors.js";
+import { executePlanStep } from "@arely/engine/planner/executor.js";
 
 function makeStep(overrides: Partial<PlanStepRecord> = {}): PlanStepRecord {
   return {

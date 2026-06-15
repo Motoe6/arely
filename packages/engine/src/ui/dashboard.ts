@@ -1,5 +1,5 @@
 export function renderDashboardPage(options?: { title?: string; version?: string }): string {
-  const pageTitle = options?.title ?? "OpenCode Agent — Policy Dashboard";
+  const pageTitle = options?.title ?? "Arely Agent — Policy Dashboard";
   const version = options?.version ?? "0.1.0";
 
   return `<!DOCTYPE html>

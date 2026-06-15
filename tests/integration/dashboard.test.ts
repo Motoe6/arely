@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
 import http from "node:http";
-import { createHttpServer } from "@opencode/engine/transport/http-server.js";
-import { SSEBus } from "@opencode/engine/server/sse.js";
-import { loadConfig } from "@opencode/engine/config/index.js";
+import { createHttpServer } from "@arely/engine/transport/http-server.js";
+import { SSEBus } from "@arely/engine/server/sse.js";
+import { loadConfig } from "@arely/engine/config/index.js";
 
 const sse = new SSEBus();
 
@@ -28,7 +28,7 @@ function listenOnRandomPort(server: http.Server): Promise<number> {
 
 describe("GET /dashboard", () => {
   beforeAll(() => {
-    process.env.OPENCODE_API_KEY = "test-key";
+    process.env.ARELY_API_KEY = "test-key";
     loadConfig();
     initTestDb();
   });

@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo"
+  },
+  "include": ["src"],
+  "references": [
+    { "path": "../llm-core" },
+    { "path": "../agent-core" },
+    { "path": "../memory" },
+    { "path": "../persistence" },
+    { "path": "../plugins" }
+  ]
+}

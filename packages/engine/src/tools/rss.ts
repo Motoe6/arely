@@ -17,7 +17,7 @@ export interface RSSItem {
 
 export async function fetchRSS(url: string, limit = 10, signal?: AbortSignal): Promise<RSSFeed> {
   const res = await fetch(url, {
-    headers: { "User-Agent": "OpenCodeAgent/1.0", Accept: "application/rss+xml, application/atom+xml, text/xml" },
+    headers: { "User-Agent": "ArelyAgent/1.0", Accept: "application/rss+xml, application/atom+xml, text/xml" },
     signal,
   });
   if (!res.ok) throw new Error(`RSS fetch error: ${res.status} ${res.statusText}`);

@@ -22,7 +22,7 @@ export function SessionView({
   return (
     <Box flexDirection="column" paddingX={1}>
       <Box marginBottom={1}>
-        <Text color="cyan" bold>OpenCode Agent Session</Text>
+        <Text color="cyan" bold>Arely Agent Session</Text>
       </Box>
 
       {messages.filter((m) => m.role === 'user').map((m, i) => (

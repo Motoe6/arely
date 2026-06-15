@@ -24,7 +24,7 @@ export class RedditProvider {
   private readonly clientSecret: string | null;
 
   constructor(clientId?: string, clientSecret?: string) {
-    this.userAgent = "OpenCodeAgent/1.0 (by /u/opencode)";
+    this.userAgent = "ArelyAgent/1.0 (by /u/opencode)";
     this.clientId = clientId ?? null;
     this.clientSecret = clientSecret ?? null;
   }

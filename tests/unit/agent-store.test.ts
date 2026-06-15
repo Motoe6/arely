@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import type { AgentDefinition } from "@opencode/engine/agents/types.js";
+import type { AgentDefinition } from "@arely/engine/agents/types.js";
 
 const testAgent: AgentDefinition = {
   name: "Reddit Trends",
@@ -13,11 +13,11 @@ const testAgent: AgentDefinition = {
 };
 
 describe("AgentStore", () => {
-  let store: typeof import("@opencode/engine/agents/agent-store.js");
+  let store: typeof import("@arely/engine/agents/agent-store.js");
 
   beforeEach(async () => {
     initTestDb();
-    store = await import("@opencode/engine/agents/agent-store.js");
+    store = await import("@arely/engine/agents/agent-store.js");
   });
 
   afterEach(() => {

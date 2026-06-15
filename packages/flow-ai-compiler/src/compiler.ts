@@ -1,5 +1,5 @@
-import type { Workflow } from "@opencode/flow-runtime"
-import { globalNodeRegistry } from "@opencode/flow-sdk"
+import type { Workflow } from "@arely/flow-runtime"
+import { globalNodeRegistry } from "@arely/flow-sdk"
 import { buildPrompt } from "./prompt-builder.js"
 import { assertValidWorkflow } from "./schema.js"
 import { assertValidWorkflowOrThrow, validateWorkflow } from "./validator.js"

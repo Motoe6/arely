@@ -1,4 +1,4 @@
-const PREFIX = "opencode_";
+const PREFIX = "arely_";
 
 const HISTOGRAM_BUCKETS = [1, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, Infinity];
 

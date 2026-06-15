@@ -1,5 +1,5 @@
 import type { SSEBus } from "./sse.js";
-import type { LLMAdapter } from "../llm/adapter.js";
+import type { LLMAdapter } from "@arely/llm-core";
 import type { ToolCallMode } from "../types.js";
 import { AgentSession } from "./session.js";
 
@@ -13,8 +13,9 @@ export class SessionManager {
       permissions: { websearch: string; webfetch: string };
       searchProvider?: "exa" | "parallel";
       model?: string;
+      modelId?: string;
       toolMode?: ToolCallMode;
-      mode?: "agent" | "planning";
+      mode?: "agent" | "planning" | "swarm";
       agentId?: string;
     },
   ): AgentSession {

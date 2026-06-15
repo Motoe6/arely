@@ -4,27 +4,27 @@ const mockGetAgent = vi.hoisted(() => vi.fn());
 const mockListPlansBySession = vi.hoisted(() => vi.fn());
 const mockUpdatePlanAgentId = vi.hoisted(() => vi.fn());
 
-vi.mock("@opencode/engine/agents/agent-store.js", () => ({
+vi.mock("@arely/engine/agents/agent-store.js", () => ({
   getAgent: mockGetAgent,
 }));
 
-vi.mock("@opencode/engine/persistence/plan-store.js", () => ({
+vi.mock("@arely/engine/persistence/plan-store.js", () => ({
   listPlansBySession: mockListPlansBySession,
   updatePlanAgentId: mockUpdatePlanAgentId,
 }));
 
-vi.mock("@opencode/engine/config/index.js", () => ({
+vi.mock("@arely/engine/config/index.js", () => ({
   getConfig: () => ({
-    OPENCODE_PERMIT_WEBSEARCH: "allow",
-    OPENCODE_PERMIT_WEBFETCH: "allow",
-    OPENCODE_WEBSEARCH_PROVIDER: "exa",
-    OPENCODE_MODEL: "gpt-4o",
-    OPENCODE_TOOL_MODE: "native",
+    ARELY_PERMIT_WEBSEARCH: "allow",
+    ARELY_PERMIT_WEBFETCH: "allow",
+    ARELY_WEBSEARCH_PROVIDER: "exa",
+    ARELY_MODEL: "gpt-4o",
+    ARELY_TOOL_MODE: "native",
     PLAN_PARALLELISM: 3,
   }),
 }));
 
-import { executeAgent } from "@opencode/engine/agents/runtime.js";
+import { executeAgent } from "@arely/engine/agents/runtime.js";
 
 function makeSessionManager(session: { id: string; run: ReturnType<typeof vi.fn> }) {
   return { createSession: vi.fn().mockReturnValue(session) } as never;

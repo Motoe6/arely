@@ -1,0 +1,37 @@
+{
+  "id": "full-pipeline-6eb551b7",
+  "name": "full-pipeline",
+  "description": "",
+  "rules": [
+    {
+      "id": "high_success",
+      "when": {
+        "successRate": {
+          "lt": 0.9
+        }
+      },
+      "then": {
+        "type": "trigger_remediation",
+        "payload": {}
+      },
+      "cooldownMs": 60000,
+      "maxExecutionsPerHour": 10
+    },
+    {
+      "id": "never_hit",
+      "when": {
+        "successRate": {
+          "lt": 0
+        }
+      },
+      "then": {
+        "type": "trigger_remediation",
+        "payload": {}
+      },
+      "cooldownMs": 60000,
+      "maxExecutionsPerHour": 10
+    }
+  ],
+  "createdAt": "2026-06-14T05:02:20.284Z",
+  "updatedAt": "2026-06-14T05:02:20.284Z"
+}

@@ -1,5 +1,5 @@
 {
-  "name": "@opencode/flow-runtime",
+  "name": "@arely/flow-runtime",
   "version": "0.1.0",
   "private": true,
   "type": "module",

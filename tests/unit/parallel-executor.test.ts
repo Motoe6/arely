@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { ParallelExecutor } from "@opencode/engine/tools/parallel-executor.js";
+import { ParallelExecutor } from "@arely/engine/tools/parallel-executor.js";
 
 function delayed(value: string, ms: number) {
   return () => new Promise<string>((resolve) => setTimeout(() => resolve(value), ms));

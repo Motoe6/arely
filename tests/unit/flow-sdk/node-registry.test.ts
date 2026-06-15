@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest"
-import { NodeRegistry, HttpNode, LLMNode, resolveNode } from "@opencode/flow-sdk"
-import type { NodeDefinition } from "@opencode/flow-sdk"
+import { NodeRegistry, HttpNode, LLMNode, resolveNode } from "@arely/flow-sdk"
+import type { NodeDefinition } from "@arely/flow-sdk"
 
 describe("NodeRegistry", () => {
   let registry: NodeRegistry

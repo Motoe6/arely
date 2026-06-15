@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { PolicyExecutor } from "@opencode/engine/agents/policy/policy-executor.js";
-import type { PolicyAction } from "@opencode/engine/agents/policy/policy-types.js";
-import type { PolicyActionHandlers } from "@opencode/engine/agents/policy/policy-execution-types.js";
+import { PolicyExecutor } from "@arely/engine/agents/policy/policy-executor.js";
+import type { PolicyAction } from "@arely/engine/agents/policy/policy-types.js";
+import type { PolicyActionHandlers } from "@arely/engine/agents/policy/policy-execution-types.js";
 
 function makeAction(overrides?: Partial<PolicyAction>): PolicyAction {
   return {

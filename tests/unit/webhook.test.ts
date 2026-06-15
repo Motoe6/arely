@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { handleWebhook } from "@opencode/engine/agents/triggers/webhook.js";
+import { handleWebhook } from "@arely/engine/agents/triggers/webhook.js";
 
-vi.mock("@opencode/engine/agents/runtime.js", () => ({
+vi.mock("@arely/engine/agents/runtime.js", () => ({
   executeAgent: vi.fn(),
 }));
 
-import { executeAgent } from "@opencode/engine/agents/runtime.js";
+import { executeAgent } from "@arely/engine/agents/runtime.js";
 
 const mockConfig = {
   sessionManager: {} as any,

@@ -365,14 +365,14 @@ export function createHttpServer(opts: HttpServerOptions): ReturnType<typeof cre
       }
 
       const config = getConfig();
-      const llmOk = Boolean(config.OPENCODE_BASE_URL && config.OPENCODE_API_KEY);
+      const llmOk = Boolean(config.ARELY_BASE_URL && config.ARELY_API_KEY);
 
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(
         JSON.stringify({
           db: { ok: dbOk, latencyMs: dbLatencyMs },
-          llm: { ok: llmOk, baseUrl: config.OPENCODE_BASE_URL, model: config.OPENCODE_MODEL },
-          search: { provider: config.OPENCODE_WEBSEARCH_PROVIDER },
+          llm: { ok: llmOk, baseUrl: config.ARELY_BASE_URL, model: config.ARELY_MODEL },
+          search: { provider: config.ARELY_WEBSEARCH_PROVIDER },
         }),
       );
     }

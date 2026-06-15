@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
-import { compileWorkflow, parseWorkflow, mapTrigger } from "@opencode/flow-runtime"
-import type { ExecutionContext, Workflow } from "@opencode/flow-runtime"
+import { compileWorkflow, parseWorkflow, mapTrigger } from "@arely/flow-runtime"
+import type { ExecutionContext, Workflow } from "@arely/flow-runtime"
 
 function makeContext(): ExecutionContext {
   return {

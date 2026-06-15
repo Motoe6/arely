@@ -1,16 +1,16 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest"
-import { globalNodeRegistry, HttpNode, LLMNode } from "@opencode/flow-sdk"
-import type { CompilerLLMAdapter, WorkflowIntent } from "@opencode/flow-ai-compiler"
-import type { NodeDefinition } from "@opencode/flow-sdk"
-import { BuilderService } from "@opencode/engine/compiler/builder-service.js"
-import { createHttpServer } from "@opencode/engine/transport/http-server.js"
-import { registerBuilderRoutes } from "@opencode/engine/compiler/builder-routes.js"
-import { SSEBus } from "@opencode/engine/server/sse.js"
-import { loadConfig } from "@opencode/engine/config/index.js"
-import { connect, close } from "@opencode/engine/persistence/database.js"
-import { pushSchema } from "@opencode/engine/persistence/migrate.js"
-import { bodyParser } from "@opencode/engine/transport/middleware.js"
-import { getWorkflowWithCurrentVersion } from "@opencode/engine/persistence/workflow-store.js"
+import { globalNodeRegistry, HttpNode, LLMNode } from "@arely/flow-sdk"
+import type { CompilerLLMAdapter, WorkflowIntent } from "@arely/flow-ai-compiler"
+import type { NodeDefinition } from "@arely/flow-sdk"
+import { BuilderService } from "@arely/engine/compiler/builder-service.js"
+import { createHttpServer } from "@arely/engine/transport/http-server.js"
+import { registerBuilderRoutes } from "@arely/engine/compiler/builder-routes.js"
+import { SSEBus } from "@arely/engine/server/sse.js"
+import { loadConfig } from "@arely/engine/config/index.js"
+import { connect, close } from "@arely/engine/persistence/database.js"
+import { pushSchema } from "@arely/engine/persistence/migrate.js"
+import { bodyParser } from "@arely/engine/transport/middleware.js"
+import { getWorkflowWithCurrentVersion } from "@arely/engine/persistence/workflow-store.js"
 import http from "node:http"
 
 const EchoNode: NodeDefinition = {
@@ -78,9 +78,9 @@ function postJson(url: string, data: unknown): Promise<{ statusCode: number; bod
   })
 }
 
-import { createWorkflow as cwf, createWorkflowVersion as cwfv } from "@opencode/engine/persistence/workflow-store.js"
-import { createSession } from "@opencode/engine/persistence/session-store.js"
-import { normalizeWorkflow } from "@opencode/flow-runtime"
+import { createWorkflow as cwf, createWorkflowVersion as cwfv } from "@arely/engine/persistence/workflow-store.js"
+import { createSession } from "@arely/engine/persistence/session-store.js"
+import { normalizeWorkflow } from "@arely/flow-runtime"
 import { ulid } from "ulid"
 
 describe("Workflow Export / Import", () => {
@@ -105,7 +105,7 @@ describe("Workflow Export / Import", () => {
   let workflowId: string
 
   beforeAll(async () => {
-    process.env.OPENCODE_API_KEY = "test-key"
+    process.env.ARELY_API_KEY = "test-key"
     loadConfig()
     connect(":memory:")
     pushSchema()

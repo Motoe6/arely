@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { CircuitBreaker } from "@opencode/engine/tools/circuit-breaker.js";
-import { CircuitBreakerOpenError } from "@opencode/engine/tools/errors.js";
+import { CircuitBreaker } from "@arely/engine/tools/circuit-breaker.js";
+import { CircuitBreakerOpenError } from "@arely/engine/tools/errors.js";
 
 function makeBreaker(opts?: Partial<{ threshold: number; resetTimeout: number; enabled: boolean }>) {
   const emit = vi.fn();

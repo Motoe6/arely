@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest"
-import { compilePrompt, processLLMOutput, buildPrompt, validateWorkflow, assertValidWorkflow, FEW_SHOT_EXAMPLES, AICompilerError } from "@opencode/flow-ai-compiler"
-import { globalNodeRegistry, LLMNode, HttpNode } from "@opencode/flow-sdk"
-import type { LLMAdapter } from "@opencode/flow-ai-compiler"
+import { compilePrompt, processLLMOutput, buildPrompt, validateWorkflow, assertValidWorkflow, FEW_SHOT_EXAMPLES, AICompilerError } from "@arely/flow-ai-compiler"
+import { globalNodeRegistry, LLMNode, HttpNode } from "@arely/flow-sdk"
+import type { LLMAdapter } from "@arely/flow-ai-compiler"
 
 describe("Flow AI Compiler", () => {
   beforeEach(() => {

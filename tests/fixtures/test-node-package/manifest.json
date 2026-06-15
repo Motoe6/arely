@@ -5,6 +5,6 @@
   "nodeType": "test-fixture-node",
   "category": "action",
   "description": "Test fixture for node marketplace integration tests",
-  "author": "OpenCode",
+  "author": "Arely",
   "entry": "./dist/index.js"
 }

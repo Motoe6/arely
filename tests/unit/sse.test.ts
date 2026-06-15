@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { EventEmitter } from "node:events";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { SSEBus } from "@opencode/engine/server/sse.js";
-import { loadConfig } from "@opencode/engine/config/index.js";
-import { createSession } from "@opencode/engine/persistence/session-store.js";
-import type { SessionStartedEvent, ToolCallStartedEvent } from "@opencode/engine/types/events.js";
+import { SSEBus } from "@arely/engine/server/sse.js";
+import { loadConfig } from "@arely/engine/config/index.js";
+import { createSession } from "@arely/engine/persistence/session-store.js";
+import type { SessionStartedEvent, ToolCallStartedEvent } from "@arely/engine/types/events.js";
 
 function createMockRes() {
   const emitter = new EventEmitter();
@@ -33,7 +33,7 @@ function createMockRes() {
 
 describe("SSEBus", () => {
   beforeAll(() => {
-    process.env.OPENCODE_API_KEY = "test-key";
+    process.env.ARELY_API_KEY = "test-key";
     loadConfig();
     initTestDb();
   });

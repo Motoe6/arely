@@ -13,8 +13,8 @@ import { findMatchingApproval, setApproval } from "../persistence/approval-cache
 
 function getToolMode(tool: string): PermissionMode {
   const config = getConfig();
-  if (tool === "websearch") return config.OPENCODE_PERMIT_WEBSEARCH;
-  if (tool === "webfetch") return config.OPENCODE_PERMIT_WEBFETCH;
+  if (tool === "websearch") return config.ARELY_PERMIT_WEBSEARCH;
+  if (tool === "webfetch") return config.ARELY_PERMIT_WEBFETCH;
   return "ask";
 }
 

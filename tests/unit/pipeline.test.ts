@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { agentMemorySet, agentMemoryGet, agentMemoryClear } from "@opencode/engine/tools/memory.js";
-import { getDb } from "@opencode/engine/persistence/database.js";
-import { agents } from "@opencode/engine/persistence/schema.js";
+import { agentMemorySet, agentMemoryGet, agentMemoryClear } from "@arely/engine/tools/memory.js";
+import { getDb } from "@arely/engine/persistence/database.js";
+import { agents } from "@arely/engine/persistence/schema.js";
 import {
   createPipeline,
   createPipelineStep,
   getPipelineSteps,
   createPipelineRun,
-} from "@opencode/engine/agents/pipeline-store.js";
+} from "@arely/engine/agents/pipeline-store.js";
 
 function createTestAgent(id: string): void {
   const now = new Date().toISOString();
@@ -18,12 +18,12 @@ function createTestAgent(id: string): void {
   }).run();
 }
 
-vi.mock("@opencode/engine/agents/runtime.js", () => ({
+vi.mock("@arely/engine/agents/runtime.js", () => ({
   executeAgent: vi.fn(),
 }));
 
-import { executeAgent } from "@opencode/engine/agents/runtime.js";
-import { executePipeline } from "@opencode/engine/agents/pipeline.js";
+import { executeAgent } from "@arely/engine/agents/runtime.js";
+import { executePipeline } from "@arely/engine/agents/pipeline.js";
 
 const mockConfig = {
   sessionManager: {} as any,

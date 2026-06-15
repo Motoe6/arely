@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest"
-import { TemplateRegistry } from "@opencode/engine/templates/template-registry.js"
-import { globalNodeRegistry, HttpNode, LLMNode } from "@opencode/flow-sdk"
-import type { Template } from "@opencode/engine/templates/template-types.js"
+import { TemplateRegistry } from "@arely/engine/templates/template-registry.js"
+import { globalNodeRegistry, HttpNode, LLMNode } from "@arely/flow-sdk"
+import type { Template } from "@arely/engine/templates/template-types.js"
 import { fileURLToPath } from "node:url"
 import { dirname, join } from "node:path"
 

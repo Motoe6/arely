@@ -1,219 +1,110 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { createSession } from "@opencode/engine/persistence/session-store.js";
 import {
-  createPlan,
-  getPlan,
-  updatePlanStatus,
-  listPlansBySession,
-  createSteps,
-  getStepsByPlan,
-  markStepRunning,
-  markStepCompleted,
-  markStepFailed,
-  markStepBlocked,
-  markStepSkipped,
-} from "@opencode/engine/persistence/plan-store.js";
-import { getDb } from "@opencode/engine/persistence/database.js";
-import { plans } from "@opencode/engine/persistence/schema.js";
-import { eq } from "drizzle-orm";
+  createGoalPlan,
+  getGoalPlan,
+  updateGoalPlan,
+  queryGoalPlans,
+  countGoalPlans,
+  deleteGoalPlan,
+} from "../../packages/engine/src/persistence/goal-plan-store.js";
+import { createGoal } from "../../packages/engine/src/persistence/goal-store.js";
 
-describe("Plan Store", () => {
-  let sessionId: string;
+describe("GoalPlanStore", () => {
+  let goalId: string;
 
-  beforeAll(() => {
+  beforeEach(() => {
     initTestDb();
-    sessionId = createSession({ query: "plan test", model: "gpt-4o", toolMode: "native" }).id;
+    const goal = createGoal({ id: "goal1", title: "Test Goal", description: "desc" });
+    goalId = goal.id;
   });
 
-  afterAll(() => cleanupTestDb());
-
-  it("createPlan should insert and return a plan record", () => {
-    const plan = createPlan({ sessionId, goal: "test goal" });
-
-    expect(plan.id).toBeTruthy();
-    expect(plan.sessionId).toBe(sessionId);
-    expect(plan.goal).toBe("test goal");
-    expect(plan.status).toBe("pending");
-    expect(plan.createdAt).toBeTruthy();
-    expect(plan.completedAt).toBeNull();
-
-    const retrieved = getPlan(plan.id);
-    expect(retrieved).toBeDefined();
-    expect(retrieved!.id).toBe(plan.id);
-    expect(retrieved!.goal).toBe("test goal");
+  afterEach(() => {
+    cleanupTestDb();
   });
 
-  it("getPlan should return a plan for an existing id", () => {
-    const plan = createPlan({ sessionId, goal: "get me" });
-    const retrieved = getPlan(plan.id);
-    expect(retrieved).toBeDefined();
-    expect(retrieved!.id).toBe(plan.id);
-    expect(retrieved!.goal).toBe("get me");
-    expect(retrieved!.sessionId).toBe(sessionId);
+  it("should create and get a goal plan", () => {
+    createGoalPlan({ id: "p1", goalId, title: "Plan A", description: "desc" });
+    const p = getGoalPlan("p1");
+    expect(p).not.toBeNull();
+    expect(p!.title).toBe("Plan A");
+    expect(p!.status).toBe("pending");
+    expect(p!.goalId).toBe(goalId);
+    expect(p!.dependencies).toEqual([]);
   });
 
-  it("getPlan should return undefined for missing plan", () => {
-    const result = getPlan("nonexistent");
-    expect(result).toBeUndefined();
+  it("should return null for missing plan", () => {
+    expect(getGoalPlan("nonexistent")).toBeNull();
   });
 
-  it("listPlansBySession should return plans for a session", () => {
-    createPlan({ sessionId, goal: "goal 1" });
-    createPlan({ sessionId, goal: "goal 2" });
-
-    const results = listPlansBySession(sessionId);
-    expect(results.length).toBeGreaterThanOrEqual(2);
-    expect(results.every((p) => p.sessionId === sessionId)).toBe(true);
+  it("should query plans by goalId", () => {
+    createGoalPlan({ id: "p1", goalId, title: "A", description: "d" });
+    createGoalPlan({ id: "p2", goalId, title: "B", description: "d" });
+    expect(queryGoalPlans({ goalId }).length).toBe(2);
   });
 
-  it("updatePlanStatus should transition status and set completedAt on terminal", () => {
-    const plan = createPlan({ sessionId, goal: "status test" });
-
-    updatePlanStatus(plan.id, "executing");
-    expect(getPlan(plan.id)!.status).toBe("executing");
-    expect(getPlan(plan.id)!.completedAt).toBeNull();
-
-    updatePlanStatus(plan.id, "completed");
-    expect(getPlan(plan.id)!.status).toBe("completed");
-    expect(getPlan(plan.id)!.completedAt).toBeTruthy();
+  it("should query plans by status", () => {
+    createGoalPlan({ id: "p1", goalId, title: "A", description: "d" });
+    createGoalPlan({ id: "p2", goalId, title: "B", description: "d", status: "completed", progressPct: 100 });
+    expect(queryGoalPlans({ status: "pending" }).length).toBe(1);
+    expect(queryGoalPlans({ status: "completed" }).length).toBe(1);
   });
 
-  it("updatePlanStatus should be idempotent for completedAt", () => {
-    const plan = createPlan({ sessionId, goal: "idempotent test" });
-
-    updatePlanStatus(plan.id, "executing");
-    updatePlanStatus(plan.id, "completed");
-    const firstCompletedAt = getPlan(plan.id)!.completedAt;
-
-    updatePlanStatus(plan.id, "completed");
-    const secondCompletedAt = getPlan(plan.id)!.completedAt;
-
-    expect(secondCompletedAt).toBe(firstCompletedAt);
-  });
-});
-
-describe("Plan Step Store", () => {
-  let sessionId: string;
-  let planId: string;
-
-  beforeAll(() => {
-    initTestDb();
-    sessionId = createSession({ query: "step test", model: "gpt-4o", toolMode: "native" }).id;
-    planId = createPlan({ sessionId, goal: "step plan" }).id;
+  it("should update a plan", () => {
+    createGoalPlan({ id: "p1", goalId, title: "Original", description: "d" });
+    updateGoalPlan("p1", { title: "Updated", status: "in_progress" });
+    const p = getGoalPlan("p1");
+    expect(p!.title).toBe("Updated");
+    expect(p!.status).toBe("in_progress");
   });
 
-  afterAll(() => cleanupTestDb());
-
-  it("createSteps should batch insert and return step records", () => {
-    const steps = createSteps([
-      { planId, description: "Step A", dependsOn: "[]", order: 0 },
-      { planId, description: "Step B", tool: "websearch", args: '{"query":"test"}', dependsOn: "[]", order: 1 },
-    ]);
-
-    expect(steps.length).toBe(2);
-    expect(steps[0].id).toBeTruthy();
-    expect(steps[0].planId).toBe(planId);
-    expect(steps[0].description).toBe("Step A");
-    expect(steps[0].status).toBe("pending");
-    expect(steps[0].completedAt).toBeNull();
-
-    expect(steps[1].tool).toBe("websearch");
-    expect(steps[1].args).toBe('{"query":"test"}');
+  it("should update progress", () => {
+    createGoalPlan({ id: "p1", goalId, title: "Progress", description: "d" });
+    updateGoalPlan("p1", { progressPct: 75 });
+    expect(getGoalPlan("p1")!.progressPct).toBe(75);
   });
 
-  it("getStepsByPlan should return steps ordered by order", () => {
-    createSteps([
-      { planId, description: "Z", dependsOn: "[]", order: 3 },
-      { planId, description: "A", dependsOn: "[]", order: 0 },
-      { planId, description: "M", dependsOn: "[]", order: 1 },
-    ]);
-
-    const results = getStepsByPlan(planId);
-    const descs = results.map((s) => s.description);
-
-    expect(descs.indexOf("A")).toBeLessThan(descs.indexOf("M"));
-    expect(descs.indexOf("M")).toBeLessThan(descs.indexOf("Z"));
+  it("should support dependencies serialization", () => {
+    createGoalPlan({ id: "p1", goalId, title: "Dependent", description: "d", dependencies: ["p0", "p_prev"] });
+    const p = getGoalPlan("p1");
+    expect(p!.dependencies).toEqual(["p0", "p_prev"]);
   });
 
-  it("markStepRunning should set status to running", () => {
-    const step = createSteps([{ planId, description: "run test", dependsOn: "[]", order: 10 }])[0];
-
-    markStepRunning(step.id);
-
-    const updated = getStepsByPlan(planId).find((s) => s.id === step.id);
-    expect(updated!.status).toBe("running");
+  it("should order by sortOrder field", () => {
+    createGoalPlan({ id: "p1", goalId, title: "First", description: "d", sortOrder: 1 });
+    createGoalPlan({ id: "p2", goalId, title: "Second", description: "d", sortOrder: 2 });
+    const results = queryGoalPlans({ goalId });
+    expect(results[0].id).toBe("p1");
+    expect(results[1].id).toBe("p2");
   });
 
-  it("markStepCompleted should set status, result, and completedAt", () => {
-    const step = createSteps([{ planId, description: "complete test", dependsOn: "[]", order: 11 }])[0];
-
-    markStepCompleted(step.id, "success result");
-
-    const updated = getStepsByPlan(planId).find((s) => s.id === step.id);
-    expect(updated!.status).toBe("completed");
-    expect(updated!.result).toBe("success result");
-    expect(updated!.completedAt).toBeTruthy();
+  it("should paginate", () => {
+    for (let i = 0; i < 5; i++) {
+      createGoalPlan({ id: `p${i}`, goalId, title: `Plan ${i}`, description: "d" });
+    }
+    expect(queryGoalPlans({ limit: 2, offset: 0 }).length).toBe(2);
+    expect(queryGoalPlans({ limit: 2, offset: 2 }).length).toBe(2);
   });
 
-  it("markStepFailed should set status, error, and completedAt", () => {
-    const step = createSteps([{ planId, description: "fail test", dependsOn: "[]", order: 12 }])[0];
-
-    markStepFailed(step.id, "something went wrong");
-
-    const updated = getStepsByPlan(planId).find((s) => s.id === step.id);
-    expect(updated!.status).toBe("failed");
-    expect(updated!.error).toBe("something went wrong");
-    expect(updated!.completedAt).toBeTruthy();
+  it("should delete a plan", () => {
+    createGoalPlan({ id: "p1", goalId, title: "Delete", description: "d" });
+    expect(deleteGoalPlan("p1")).toBe(true);
+    expect(getGoalPlan("p1")).toBeNull();
   });
 
-  it("markStepBlocked should set status and completedAt", () => {
-    const step = createSteps([{ planId, description: "block test", dependsOn: "[]", order: 13 }])[0];
-
-    markStepBlocked(step.id);
-
-    const updated = getStepsByPlan(planId).find((s) => s.id === step.id);
-    expect(updated!.status).toBe("blocked");
-    expect(updated!.completedAt).toBeTruthy();
+  it("should return false deleting nonexistent", () => {
+    expect(deleteGoalPlan("nonexistent")).toBe(false);
   });
 
-  it("markStepSkipped should set status and completedAt", () => {
-    const step = createSteps([{ planId, description: "skip test", dependsOn: "[]", order: 14 }])[0];
-
-    markStepSkipped(step.id);
-
-    const updated = getStepsByPlan(planId).find((s) => s.id === step.id);
-    expect(updated!.status).toBe("skipped");
-    expect(updated!.completedAt).toBeTruthy();
+  it("should count plans", () => {
+    createGoalPlan({ id: "p1", goalId, title: "A", description: "d" });
+    createGoalPlan({ id: "p2", goalId, title: "B", description: "d" });
+    expect(countGoalPlans({ goalId })).toBe(2);
   });
 
-  it("cascade delete should remove steps when plan is deleted", () => {
-    const tmpPlan = createPlan({ sessionId, goal: "cascade test" });
-    createSteps([
-      { planId: tmpPlan.id, description: "Cascade A", dependsOn: "[]", order: 0 },
-      { planId: tmpPlan.id, description: "Cascade B", dependsOn: "[]", order: 1 },
-    ]);
-
-    expect(getStepsByPlan(tmpPlan.id).length).toBeGreaterThan(0);
-
-    getDb().delete(plans).where(eq(plans.id, tmpPlan.id)).run();
-
-    expect(getPlan(tmpPlan.id)).toBeUndefined();
-    expect(getStepsByPlan(tmpPlan.id).length).toBe(0);
-  });
-
-  it("terminal states should be immutable", () => {
-    const step = createSteps([{ planId, description: "immutable test", dependsOn: "[]", order: 15 }])[0];
-
-    markStepCompleted(step.id, "done");
-
-    markStepRunning(step.id);
-    markStepFailed(step.id, "should not apply");
-    markStepBlocked(step.id);
-    markStepSkipped(step.id);
-
-    const updated = getStepsByPlan(planId).find((s) => s.id === step.id);
-    expect(updated!.status).toBe("completed");
-    expect(updated!.result).toBe("done");
+  it("should support metadata as JSON", () => {
+    const meta = { tags: ["core"], priority: "high" };
+    createGoalPlan({ id: "p1", goalId, title: "Meta", description: "d", metadata: meta });
+    expect(getGoalPlan("p1")!.metadata).toEqual(meta);
   });
 });

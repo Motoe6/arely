@@ -2,15 +2,15 @@ import { describe, it, expect, beforeAll, beforeEach, afterEach } from "vitest"
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs"
 import { join } from "node:path"
 import { tmpdir } from "node:os"
-import { globalNodeRegistry } from "@opencode/flow-sdk"
-import { createInMemoryDb } from "@opencode/engine/persistence/database.js"
-import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@opencode/engine/persistence/migrate.js"
-import { NodePackageLoader } from "@opencode/engine/compiler/node-package-loader.js"
+import { globalNodeRegistry } from "@arely/flow-sdk"
+import { createInMemoryDb } from "@arely/engine/persistence/database.js"
+import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arely/engine/persistence/migrate.js"
+import { NodePackageLoader } from "@arely/engine/compiler/node-package-loader.js"
 import {
   listInstalledNodes,
   getInstalledNodeByType,
   getInstalledNode,
-} from "@opencode/engine/compiler/node-marketplace-store.js"
+} from "@arely/engine/compiler/node-marketplace-store.js"
 
 function writePackage(tmpDir: string, overrides: Record<string, unknown> = {}): string {
   mkdirSync(join(tmpDir, "dist"), { recursive: true })
@@ -183,7 +183,7 @@ describe("NodePackageLoader", () => {
     globalNodeRegistry.unregister("good-type")
 
     // Manually add a second enabled record pointing to a non-existent entry
-    const { createInstalledNode } = await import("@opencode/engine/compiler/node-marketplace-store.js")
+    const { createInstalledNode } = await import("@arely/engine/compiler/node-marketplace-store.js")
     createInstalledNode({
       name: "broken-pkg", version: "1.0.0", nodeType: "broken-type",
       category: null, description: null, author: null,

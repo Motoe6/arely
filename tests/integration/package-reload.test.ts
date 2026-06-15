@@ -1,15 +1,15 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest"
-import { TemplateRegistry } from "@opencode/engine/templates/template-registry.js"
-import { NodePackageLoader } from "@opencode/engine/compiler/node-package-loader.js"
-import { globalNodeRegistry, HttpNode, LLMNode } from "@opencode/flow-sdk"
-import { loadConfig } from "@opencode/engine/config/index.js"
-import { connect, close, createInMemoryDb } from "@opencode/engine/persistence/database.js"
-import { pushSchema } from "@opencode/engine/persistence/migrate.js"
+import { TemplateRegistry } from "@arely/engine/templates/template-registry.js"
+import { NodePackageLoader } from "@arely/engine/compiler/node-package-loader.js"
+import { globalNodeRegistry, HttpNode, LLMNode } from "@arely/flow-sdk"
+import { loadConfig } from "@arely/engine/config/index.js"
+import { connect, close, createInMemoryDb } from "@arely/engine/persistence/database.js"
+import { pushSchema } from "@arely/engine/persistence/migrate.js"
 import { mkdtempSync, rmSync, writeFileSync, existsSync, mkdirSync } from "node:fs"
 import { join, dirname } from "node:path"
 import { tmpdir } from "node:os"
 import { fileURLToPath } from "node:url"
-import { listInstalledPackages } from "@opencode/engine/compiler/package-store.js"
+import { listInstalledPackages } from "@arely/engine/compiler/package-store.js"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -51,7 +51,7 @@ describe("Package Reload Roundtrip", () => {
   let tmpDir: string
 
   beforeAll(() => {
-    process.env.OPENCODE_API_KEY = "test-key"
+    process.env.ARELY_API_KEY = "test-key"
     loadConfig()
     connect(":memory:")
 

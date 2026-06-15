@@ -1,0 +1,31 @@
+{
+  "name": "@arely/memory",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./auto-memory-extractor": "./src/auto-memory-extractor.ts",
+    "./context-epoch-service": "./src/context-epoch-service.ts",
+    "./decision-outcome-learner": "./src/decision-outcome-learner.ts",
+    "./decision-service": "./src/decision-service.ts",
+    "./decision-types": "./src/decision-types.ts",
+    "./epoch-types": "./src/epoch-types.ts",
+    "./memory-retrieval-service": "./src/memory-retrieval-service.ts",
+    "./memory-service": "./src/memory-service.ts",
+    "./memory-types": "./src/memory-types.ts",
+    "./meta-reasoner": "./src/meta-reasoner.ts",
+    "./model-performance-service": "./src/model-performance-service.ts",
+    "./strategy-evaluator": "./src/strategy-evaluator.ts",
+    "./strategy-selector": "./src/strategy-selector.ts"
+  },
+  "dependencies": {
+    "@arely/llm-core": "*",
+    "@arely/persistence": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}

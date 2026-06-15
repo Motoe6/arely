@@ -1,5 +1,5 @@
 {
-  "name": "@opencode/flow-ai-compiler",
+  "name": "@arely/flow-ai-compiler",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -10,8 +10,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@opencode/flow-runtime": "*",
-    "@opencode/flow-sdk": "*",
+    "@arely/flow-runtime": "*",
+    "@arely/flow-sdk": "*",
     "zod": "^4.4.3"
   }
 }

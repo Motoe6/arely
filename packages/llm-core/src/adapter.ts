@@ -1,4 +1,4 @@
-import type { SessionMessage } from '../types.js';
+import type { SessionMessage } from "./types.js";
 
 export interface LLMResponse {
   content: string;
@@ -6,6 +6,8 @@ export interface LLMResponse {
     name: string;
     args: Record<string, unknown>;
   }>;
+  modelId?: string;
+  type?: "delta";
 }
 
 export interface LLMAdapter {

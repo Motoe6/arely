@@ -1,21 +1,21 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest"
-import { TemplateRegistry } from "@opencode/engine/templates/template-registry.js"
-import { registerTemplateRoutes } from "@opencode/engine/templates/template-routes.js"
-import { registerBuilderRoutes } from "@opencode/engine/compiler/builder-routes.js"
-import { BuilderService } from "@opencode/engine/compiler/builder-service.js"
-import { createHttpServer } from "@opencode/engine/transport/http-server.js"
-import { SSEBus } from "@opencode/engine/server/sse.js"
-import { globalNodeRegistry, HttpNode, LLMNode } from "@opencode/flow-sdk"
-import { loadConfig } from "@opencode/engine/config/index.js"
-import { connect, close } from "@opencode/engine/persistence/database.js"
-import { bodyParser } from "@opencode/engine/transport/middleware.js"
+import { TemplateRegistry } from "@arely/engine/templates/template-registry.js"
+import { registerTemplateRoutes } from "@arely/engine/templates/template-routes.js"
+import { registerBuilderRoutes } from "@arely/engine/compiler/builder-routes.js"
+import { BuilderService } from "@arely/engine/compiler/builder-service.js"
+import { createHttpServer } from "@arely/engine/transport/http-server.js"
+import { SSEBus } from "@arely/engine/server/sse.js"
+import { globalNodeRegistry, HttpNode, LLMNode } from "@arely/flow-sdk"
+import { loadConfig } from "@arely/engine/config/index.js"
+import { connect, close } from "@arely/engine/persistence/database.js"
+import { bodyParser } from "@arely/engine/transport/middleware.js"
 import { fileURLToPath } from "node:url"
 import { dirname, join } from "node:path"
 import { mkdtempSync, rmSync } from "node:fs"
 import { tmpdir } from "node:os"
 import http from "node:http"
-import type { CompilerLLMAdapter, WorkflowIntent } from "@opencode/flow-ai-compiler"
-import type { Template } from "@opencode/engine/templates/template-types.js"
+import type { CompilerLLMAdapter, WorkflowIntent } from "@arely/flow-ai-compiler"
+import type { Template } from "@arely/engine/templates/template-types.js"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -99,7 +99,7 @@ describe("Compile with Template Recommendation (T6.2)", () => {
   let userDir: string
 
   beforeAll(() => {
-    process.env.OPENCODE_API_KEY = "test-key"
+    process.env.ARELY_API_KEY = "test-key"
     loadConfig()
     connect(":memory:")
 

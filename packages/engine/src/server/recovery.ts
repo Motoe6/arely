@@ -39,7 +39,7 @@ export function recoverSessions(): RecoveredSession[] {
     });
   }
 
-  if (config.OPENCODE_AUTO_RECOVER_INTERRUPTED) {
+  if (config.ARELY_AUTO_RECOVER_INTERRUPTED) {
     logger.info("recovery", `Auto-recover enabled for ${recovered.length} sessions`, {
       metadata: { count: recovered.length },
     });

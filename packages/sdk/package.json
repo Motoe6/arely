@@ -1,0 +1,23 @@
+{
+  "name": "@arely/sdk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@arely/llm-core": "*",
+    "@arely/agent-core": "*",
+    "@arely/memory": "*",
+    "@arely/persistence": "*",
+    "@arely/plugins": "*",
+    "ulid": "^3.0.2",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}

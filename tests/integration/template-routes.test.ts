@@ -1,18 +1,19 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest"
-import { TemplateRegistry } from "@opencode/engine/templates/template-registry.js"
-import { registerTemplateRoutes } from "@opencode/engine/templates/template-routes.js"
-import { createHttpServer } from "@opencode/engine/transport/http-server.js"
-import { SSEBus } from "@opencode/engine/server/sse.js"
-import { globalNodeRegistry, HttpNode, LLMNode } from "@opencode/flow-sdk"
-import { loadConfig } from "@opencode/engine/config/index.js"
-import { connect, close } from "@opencode/engine/persistence/database.js"
-import { bodyParser } from "@opencode/engine/transport/middleware.js"
+import { TemplateRegistry } from "@arely/engine/templates/template-registry.js"
+import { registerTemplateRoutes } from "@arely/engine/templates/template-routes.js"
+import { createHttpServer } from "@arely/engine/transport/http-server.js"
+import { SSEBus } from "@arely/engine/server/sse.js"
+import { globalNodeRegistry, HttpNode, LLMNode } from "@arely/flow-sdk"
+import { loadConfig } from "@arely/engine/config/index.js"
+import { connect, close } from "@arely/engine/persistence/database.js"
+import { bodyParser } from "@arely/engine/transport/middleware.js"
 import { fileURLToPath } from "node:url"
 import { dirname, join } from "node:path"
 import { mkdtempSync, rmSync } from "node:fs"
 import { tmpdir } from "node:os"
 import http from "node:http"
-import { createWorkflow, createWorkflowVersion } from "@opencode/engine/persistence/workflow-store.js"
+import { createWorkflow, createWorkflowVersion } from "@arely/engine/persistence/workflow-store.js"
+import { createFeedback } from "@arely/engine/persistence/feedback-store.js"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -22,7 +23,7 @@ let registry: TemplateRegistry
 let userDir: string
 
 beforeAll(() => {
-  process.env.OPENCODE_API_KEY = "test-key"
+  process.env.ARELY_API_KEY = "test-key"
   loadConfig()
   connect(":memory:")
 
@@ -260,6 +261,143 @@ describe("Template Routes", () => {
         const data = JSON.parse(body)
         expect(data.workflow.steps).toHaveLength(2)
         expect(data.workflow.steps[0].next).toBe("second")
+      })
+    })
+
+    describe("T7.3c — recommendation injection", () => {
+      const REC_TPL_ID = "t73c-test-metrics"
+
+      beforeAll(() => {
+        registry.registerInline({
+          metadata: {
+            id: REC_TPL_ID,
+            name: "T7.3c Test Metrics",
+            description: "Template for recommendation injection tests",
+            category: "test",
+            tags: [],
+            templateVersion: "1.0.0",
+            author: "Test",
+            parameters: [
+              { name: "target_url", label: "Target URL", type: "string", required: true },
+              { name: "interval_ms", label: "Interval", type: "number", required: false, default: 60000 },
+              { name: "method", label: "Method", type: "string", required: false, default: "GET" },
+            ],
+            requires: ["http"],
+            source: "user",
+          },
+          workflowObj: {
+            version: "1.0.0",
+            name: "t73c-test",
+            steps: [
+              {
+                id: "check",
+                type: "http",
+                input: {
+                  url: "{{param:target_url}}",
+                  method: "{{param:method}}",
+                  interval_ms: "{{param:interval_ms}}",
+                },
+              },
+            ],
+          },
+          workflowDsl: "",
+        })
+      })
+
+      it("applies recommended defaults when user omits optional params", async () => {
+        for (let i = 0; i < 20; i++) {
+          createFeedback({
+            workflowId: `t73c-rec-${i}`,
+            templateId: REC_TPL_ID,
+            source: "evolved",
+            success: true,
+            parameters: { interval_ms: "300000" },
+          })
+        }
+        createFeedback({
+          workflowId: "t73c-rec-fail",
+          templateId: REC_TPL_ID,
+          source: "evolved",
+          success: false,
+          parameters: { interval_ms: "60000" },
+        })
+
+        await withServer(async (port) => {
+          const { statusCode, body } = await postJson(
+            `http://localhost:${port}/api/flow/templates/${REC_TPL_ID}/instantiate`,
+            { params: { target_url: "https://example.com/health" } },
+          )
+          expect(statusCode).toBe(200)
+          const data = JSON.parse(body)
+          expect(data.appliedRecommendations).toBeDefined()
+          expect(data.appliedRecommendations.length).toBeGreaterThanOrEqual(1)
+
+          const intervalRec = data.appliedRecommendations.find(
+            (r: { parameter: string }) => r.parameter === "interval_ms",
+          )
+          expect(intervalRec).toBeDefined()
+          expect(intervalRec.value).toBe("300000")
+          expect(intervalRec.confidence).toBeGreaterThan(0)
+          expect(intervalRec.evidence).toMatch(/20 executions/)
+
+          const stepsJson = JSON.stringify(data.workflow.steps)
+          expect(stepsJson).toContain("300000")
+        })
+      })
+
+      it("user value overrides recommendation", async () => {
+        await withServer(async (port) => {
+          const { statusCode, body } = await postJson(
+            `http://localhost:${port}/api/flow/templates/${REC_TPL_ID}/instantiate`,
+            { params: { target_url: "https://example.com/health", interval_ms: 120000 } },
+          )
+          expect(statusCode).toBe(200)
+          const data = JSON.parse(body)
+
+          const intervalRec = data.appliedRecommendations?.find(
+            (r: { parameter: string }) => r.parameter === "interval_ms",
+          )
+          expect(intervalRec).toBeUndefined()
+
+          const stepsJson = JSON.stringify(data.workflow.steps)
+          expect(stepsJson).toContain("120000")
+        })
+      })
+
+      it("returns no appliedRecommendations when no feedback exists", async () => {
+        const CLEAN_TPL = "t73c-clean-template"
+        registry.registerInline({
+          metadata: {
+            id: CLEAN_TPL,
+            name: "Clean Template",
+            description: "Template with no feedback data",
+            category: "test",
+            tags: [],
+            templateVersion: "1.0.0",
+            author: "Test",
+            parameters: [
+              { name: "msg", label: "Message", type: "string", required: false, default: "hello" },
+            ],
+            requires: ["http"],
+            source: "user",
+          },
+          workflowObj: {
+            version: "1.0.0",
+            name: "clean",
+            steps: [{ id: "s1", type: "http", input: { url: "{{param:msg}}" } }],
+          },
+          workflowDsl: "",
+        })
+
+        await withServer(async (port) => {
+          const { statusCode, body } = await postJson(
+            `http://localhost:${port}/api/flow/templates/${CLEAN_TPL}/instantiate`,
+            { params: {} },
+          )
+          expect(statusCode).toBe(200)
+          const data = JSON.parse(body)
+          expect(data.appliedRecommendations).toBeUndefined()
+        })
       })
     })
   })

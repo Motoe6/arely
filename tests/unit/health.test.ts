@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { HealthRegistry } from "@opencode/engine/health.js";
+import { HealthRegistry } from "@arely/engine/health.js";
 
 describe("HealthRegistry", () => {
   it("should return ok=true when all checks pass", () => {

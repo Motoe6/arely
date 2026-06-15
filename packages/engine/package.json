@@ -1,24 +1,36 @@
 {
-  "name": "@opencode/engine",
-  "version": "0.1.0",
+  "name": "@arely/engine",
+  "version": "1.0.0",
   "type": "module",
   "main": "dist/index.js",
+  "bin": {
+    "arely": "./dist/cli.cjs"
+  },
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "start": "npx tsx src/cli.ts",
+    "postinstall": "echo 'Build with: npm run build'"
   },
   "dependencies": {
-    "@opencode/flow-ai-compiler": "*",
-    "@opencode/flow-runtime": "*",
-    "@opencode/flow-sdk": "*",
+    "@arely/llm-core": "*",
+    "@arely/persistence": "*",
+    "@arely/memory": "*",
+    "@arely/agent-core": "*",
+    "@arely/evolution": "*",
+    "@arely/flow-ai-compiler": "*",
+    "@arely/flow-runtime": "*",
+    "@arely/flow-sdk": "*",
+    "@clack/prompts": "^1.5.1",
     "better-sqlite3": "^12.10.0",
     "drizzle-orm": "^0.45.2",
     "ink": "^7.0.4",
     "nodemailer": "^8.0.10",
+    "picocolors": "^1.1.1",
     "react": "^19.2.6",
     "turndown": "^7.2.4",
     "ulid": "^3.0.2",

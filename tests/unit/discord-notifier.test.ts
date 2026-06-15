@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { DiscordNotifier } from "@opencode/engine/agents/notifiers/discord-notifier.js";
-import type { Alert } from "@opencode/engine/agents/alert-rules.js";
+import { DiscordNotifier } from "@arely/engine/agents/notifiers/discord-notifier.js";
+import type { Alert } from "@arely/engine/agents/alert-rules.js";
 
 const sampleAlert: Alert = {
   ruleId: "test_rule",

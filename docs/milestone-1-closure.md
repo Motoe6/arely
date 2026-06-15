@@ -1,6 +1,6 @@
 # Milestone 1 Closure Report
 
-**Project:** OpenCode Agent
+**Project:** Arely Agent
 **Date:** 2026-06-02
 **Status:** 🟢 Ready for acceptance
 

@@ -5,7 +5,7 @@
   "category": "ai",
   "tags": ["webhook", "llm", "ai", "response"],
   "templateVersion": "1.0.0",
-  "author": "OpenCode",
+  "author": "Arely",
   "parameters": [
     {
       "name": "system_prompt",

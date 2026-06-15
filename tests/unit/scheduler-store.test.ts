@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, beforeEach } from "vitest"
-import { createInMemoryDb } from "@opencode/engine/persistence/database.js"
-import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@opencode/engine/persistence/migrate.js"
+import { createInMemoryDb } from "@arely/engine/persistence/database.js"
+import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arely/engine/persistence/migrate.js"
 import {
   createSchedule,
   getSchedule,
@@ -13,7 +13,7 @@ import {
   releaseSchedule,
   recordRun,
   ScheduleRecord,
-} from "@opencode/engine/compiler/scheduler-store.js"
+} from "@arely/engine/compiler/scheduler-store.js"
 
 describe("Scheduler Store", () => {
   let db: ReturnType<typeof createInMemoryDb>

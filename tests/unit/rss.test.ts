@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { fetchRSS, formatRSSEntries } from "@opencode/engine/tools/rss.js";
+import { fetchRSS, formatRSSEntries } from "@arely/engine/tools/rss.js";
 
 const mockRSSXml = `<?xml version="1.0"?>
 <rss version="2.0">

@@ -1,0 +1,23 @@
+{
+  "id": "shape-analyze-f658fd51",
+  "name": "shape-analyze",
+  "description": "",
+  "rules": [
+    {
+      "id": "high_success",
+      "when": {
+        "successRate": {
+          "lt": 0.9
+        }
+      },
+      "then": {
+        "type": "trigger_remediation",
+        "payload": {}
+      },
+      "cooldownMs": 60000,
+      "maxExecutionsPerHour": 10
+    }
+  ],
+  "createdAt": "2026-06-14T23:37:03.162Z",
+  "updatedAt": "2026-06-14T23:37:03.162Z"
+}

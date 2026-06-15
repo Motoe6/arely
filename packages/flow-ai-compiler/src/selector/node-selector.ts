@@ -1,4 +1,4 @@
-import type { NodeRegistry } from "@opencode/flow-sdk"
+import type { NodeRegistry } from "@arely/flow-sdk"
 import { deriveMetadata } from "./keywords.js"
 import { scoreStep, pickBest } from "./score-engine.js"
 import type { SelectableNode, ResolvedStep } from "./types.js"

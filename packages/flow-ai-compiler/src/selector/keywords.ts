@@ -1,4 +1,4 @@
-import type { NodeDefinition } from "@opencode/flow-sdk"
+import type { NodeDefinition } from "@arely/flow-sdk"
 import type { SelectorMetadata } from "./types.js"
 
 const CATEGORY_KEYWORDS: Record<NodeDefinition["category"], string[]> = {

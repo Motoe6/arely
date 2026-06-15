@@ -1,19 +1,20 @@
 {
-  "name": "@opencode/platform",
-  "version": "0.1.0",
+  "name": "@arely/platform",
+  "version": "1.0.0",
   "private": true,
-  "description": "OpenCode monorepo — engine + platform",
+  "description": "Arely monorepo — engine + platform",
   "type": "module",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "main": "packages/engine/dist/index.js",
   "bin": {
-    "opencode-agent": "packages/engine/dist/index.js"
+    "arely": "packages/cli/dist/bin.js"
   },
   "scripts": {
     "build": "tsc -b",
-    "start": "node packages/engine/dist/index.js",
+    "start": "tsx packages/engine/src/index.ts",
     "dev": "tsx watch packages/engine/src/index.ts",
     "typecheck": "tsc -b --noEmit",
     "lint": "eslint packages/engine/src/",
@@ -21,12 +22,16 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "db:push": "npm run db:push -w @opencode/engine",
-    "db:studio": "npm run db:studio -w @opencode/engine",
-    "db:generate": "npm run db:generate -w @opencode/engine",
-    "db:migrate": "npm run db:migrate -w @opencode/engine",
-    "dev:editor": "npm run dev -w @opencode/flow-editor",
-    "build:editor": "npm run build -w @opencode/flow-editor"
+    "bench": "tsx packages/benchmarks/src/cli.ts",
+    "cli": "tsx packages/cli/src/bin.ts",
+    "db:push": "npm run db:push -w @arely/engine",
+    "db:studio": "npm run db:studio -w @arely/engine",
+    "db:generate": "npm run db:generate -w @arely/engine",
+    "db:migrate": "npm run db:migrate -w @arely/engine",
+    "dev:editor": "npm run dev -w @arely/flow-editor",
+    "build:editor": "npm run build -w @arely/flow-editor",
+    "dev:web": "npm run dev -w @arely/web",
+    "build:web": "npm run build -w @arely/web"
   },
   "dependencies": {
     "better-sqlite3": "^12.10.0",

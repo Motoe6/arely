@@ -8,3 +8,4 @@ data/
 drizzle/
 .env
 coverage/
+benchmark-reports/

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { PipelineCircuitBreakerRegistry } from "@opencode/engine/agents/circuit-breaker-registry.js";
-import { CircuitBreakerOpenError } from "@opencode/engine/tools/errors.js";
+import { PipelineCircuitBreakerRegistry } from "@arely/engine/agents/circuit-breaker-registry.js";
+import { CircuitBreakerOpenError } from "@arely/engine/tools/errors.js";
 
 function makeRegistry(opts?: Partial<{ threshold: number; resetTimeout: number; enabled: boolean }>) {
   return new PipelineCircuitBreakerRegistry({

@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
 
 describe("Metrics", () => {
-  let metrics: import("@opencode/engine/metrics.js").MetricsInstance;
+  let metrics: import("@arely/engine/metrics.js").MetricsInstance;
 
   beforeEach(async () => {
     vi.resetModules();
-    const mod = await import("@opencode/engine/metrics.js");
+    const mod = await import("@arely/engine/metrics.js");
     metrics = mod.metrics;
   });
 
@@ -65,23 +65,23 @@ describe("Metrics", () => {
   it("should export Prometheus format for counters", () => {
     metrics.increment("http_requests", { method: "GET" });
     const output = metrics.prometheusExport();
-    expect(output).toContain('# TYPE opencode_http_requests counter');
-    expect(output).toContain('opencode_http_requests{method="GET"} 1');
+    expect(output).toContain('# TYPE arely_http_requests counter');
+    expect(output).toContain('arely_http_requests{method="GET"} 1');
   });
 
   it("should export Prometheus format for histograms", () => {
     metrics.observeDuration("http_duration", { route: "/health" }, 50);
     const output = metrics.prometheusExport();
-    expect(output).toContain('# TYPE opencode_http_duration histogram');
-    expect(output).toContain('opencode_http_duration_bucket{route="/health"}{le="1"}');
-    expect(output).toContain('opencode_http_duration_sum{route="/health"}');
-    expect(output).toContain('opencode_http_duration_count{route="/health"}');
+    expect(output).toContain('# TYPE arely_http_duration histogram');
+    expect(output).toContain('arely_http_duration_bucket{route="/health"}{le="1"}');
+    expect(output).toContain('arely_http_duration_sum{route="/health"}');
+    expect(output).toContain('arely_http_duration_count{route="/health"}');
   });
 
   it("should export Prometheus format for gauges", () => {
     metrics.setGauge("active_requests", {}, 5);
     const output = metrics.prometheusExport();
-    expect(output).toContain('# TYPE opencode_active_requests gauge');
-    expect(output).toContain('opencode_active_requests{} 5');
+    expect(output).toContain('# TYPE arely_active_requests gauge');
+    expect(output).toContain('arely_active_requests{} 5');
   });
 });

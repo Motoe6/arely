@@ -40,7 +40,7 @@ export async function performWebFetch(url: string, signal?: AbortSignal): Promis
   const validated = validateUrl(url);
   const res = await fetch(validated.href, {
     headers: {
-      "User-Agent": `OpenCodeAgent/1.0`,
+      "User-Agent": `ArelyAgent/1.0`,
       Accept: "text/html, text/plain, application/json",
     },
     redirect: "follow",

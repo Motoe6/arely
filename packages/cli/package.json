@@ -1,0 +1,28 @@
+{
+  "name": "@arely/cli",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/bin.js",
+  "bin": {
+    "arely": "./dist/bin.js"
+  },
+  "exports": {
+    ".": { "import": "./dist/bin.js", "types": "./dist/bin.d.ts" }
+  },
+  "dependencies": {
+    "@arely/engine": "*",
+    "@arely/ui-core": "*",
+    "@arely/memory": "*",
+    "@arely/persistence": "*",
+    "@arely/benchmarks": "*",
+    "@clack/prompts": "^1.5.1",
+    "ink": "^7.0.5",
+    "picocolors": "^1.1.1",
+    "react": "^19.2.7"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.16",
+    "typescript": "^6.0.3"
+  }
+}

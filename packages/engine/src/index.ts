@@ -5,7 +5,10 @@ import { pushSchema } from "./persistence/migrate.js";
 import { SSEBus } from "./server/sse.js";
 import { createHttpServer } from "./transport/http-server.js";
 import { SessionManager } from "./server/session-manager.js";
+import { registerBuiltInApiProviders, createModel, ProviderBridgeAdapter } from "@arely/llm-core";
 import { OpenAICompatAdapter } from "./llm/openaicompat.js";
+import { ModelRegistry } from "./models/model-registry.js";
+import { ModelAwareAdapter } from "./models/model-adapter.js";
 import { recoverSessions, emitRecoveryEvents } from "./server/recovery.js";
 import { AgentScheduler } from "./agents/scheduler.js";
 import { PipelineToolExecutor } from "./agents/pipeline-tool-executor.js";
@@ -34,13 +37,21 @@ import { BuilderService } from "./compiler/builder-service.js";
 import { registerBuilderRoutes } from "./compiler/builder-routes.js";
 import { NodePackageLoader } from "./compiler/node-package-loader.js";
 import { registerPackageRoutes } from "./compiler/package-routes.js";
+import { registerEvolutionRoutes } from "./compiler/evolution-routes.js";
+import { TemplateMetricsService } from "./templates/template-metrics.js";
 import { listInstalledPackages } from "./compiler/package-store.js";
-import { createRemoteAdapter } from "@opencode/flow-ai-compiler";
+import { createRemoteAdapter } from "@arely/flow-ai-compiler";
 import { performWebSearch } from "./tools/websearch.js";
 import { performWebFetch } from "./tools/webfetch.js";
 import { RedditProvider, formatRedditPosts } from "./tools/reddit.js";
 import { fetchRSS, formatRSSEntries } from "./tools/rss.js";
 import { agentMemoryGet, agentMemorySet } from "./tools/memory.js";
+import { getContextStats, buildContext } from "./llm/context-epoch-service.js";
+import { registerGoalRoutes } from "./routes/goal-routes.js";
+import { registerSwarmRoutes } from "./routes/swarm-routes.js";
+import { memoryService } from "./llm/memory-service.js";
+import { memoryRetrievalService } from "./llm/memory-retrieval-service.js";
+import { decisionService } from "./llm/decision-service.js";
 import {
   requestId,
   cors,
@@ -55,8 +66,9 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { fileURLToPath } from "node:url";
 import { ulid } from "ulid";
 
-function main() {
+export function main() {
   const config = loadConfig();
+  registerBuiltInApiProviders();
   connect(config.DB_PATH);
 
   try {
@@ -80,9 +92,10 @@ function main() {
     }
   });
   healthRegistry.registerCheck("sse", () => ({ ok: true }));
+  const modelRegistry = new ModelRegistry(config.ARELY_MODELS, config.ARELY_DEFAULT_MODEL);
   healthRegistry.registerCheck("llm", () => {
-    const ok = Boolean(config.OPENCODE_BASE_URL && config.OPENCODE_API_KEY);
-    return { ok, error: ok ? undefined : "LLM not configured" };
+    const ok = Boolean(config.ARELY_API_KEY);
+    return { ok, error: ok ? undefined : "ARELY_API_KEY not configured" };
   });
   healthRegistry.registerCheck("search", () => ({
     ok: true,
@@ -95,14 +108,7 @@ function main() {
   }
   metrics.increment(`sessions.interrupted`, { count: String(recovered.length) });
 
-  const llm = new OpenAICompatAdapter(
-    config.OPENCODE_BASE_URL,
-    config.OPENCODE_API_KEY,
-    config.OPENCODE_MODEL,
-    config.OPENCODE_TOOL_MODE === "text",
-    config.OPENCODE_AUTH_HEADER,
-    config.OPENCODE_AUTH_PREFIX,
-  );
+  const llm = new ModelAwareAdapter(modelRegistry, config.ARELY_API_KEY);
 
   function toolArg(val: unknown, fallback = ""): string {
     if (typeof val === "string") return val;
@@ -113,7 +119,7 @@ function main() {
   }
 
   const toolHandlers = new Map<string, (args: Record<string, unknown>, signal?: AbortSignal) => Promise<unknown>>();
-  const searchProvider = createSearchProvider({ OPENCODE_WEBSEARCH_PROVIDER: config.OPENCODE_WEBSEARCH_PROVIDER } as Parameters<typeof createSearchProvider>[0]);
+  const searchProvider = createSearchProvider({ ARELY_WEBSEARCH_PROVIDER: config.ARELY_WEBSEARCH_PROVIDER } as Parameters<typeof createSearchProvider>[0]);
   toolHandlers.set("websearch", (args, signal) =>
     performWebSearch(searchProvider, toolArg(args.query), Number(args.numResults ?? 8), signal));
   toolHandlers.set("webfetch", (args, signal) => performWebFetch(toolArg(args.url), signal));
@@ -153,9 +159,9 @@ function main() {
   }, breakerRegistry);
 
   const compilerAdapter = createRemoteAdapter({
-    endpoint: config.OPENCODE_BASE_URL,
-    apiKey: config.OPENCODE_API_KEY,
-    model: config.OPENCODE_MODEL,
+    endpoint: config.ARELY_BASE_URL,
+    apiKey: config.ARELY_API_KEY ?? "",
+    model: config.ARELY_MODEL,
     timeoutMs: 30_000,
     provider: "generic",
   })
@@ -254,7 +260,7 @@ function main() {
     requestId(),
     requestContext(),
     cors(config.HTTP_CORS_ORIGIN),
-    auth(config.HTTP_API_AUTH_ENABLED ? config.OPENCODE_API_KEY : undefined, authExclude),
+    auth(config.HTTP_API_AUTH_ENABLED ? config.ARELY_API_KEY : undefined, authExclude),
     bodyParser(config.HTTP_BODY_LIMIT_BYTES, bodyExclude),
     counter.middleware,
     requestLogger({ exclude: logExclude }),
@@ -274,17 +280,19 @@ function main() {
 
       router.post("/api/sessions", (req: IncomingMessage, res: ServerResponse) => {
         try {
-          const data = ((req as unknown as Record<string, unknown>).body as { query?: string; mode?: string }) ?? {};
+          const data = ((req as unknown as Record<string, unknown>).body as { query?: string; mode?: string; model?: string }) ?? {};
 
+          const modelId = data.model ?? modelRegistry.getDefaultId();
           const session = sessionManager.createSession(sse, llm, {
             permissions: {
-              websearch: config.OPENCODE_PERMIT_WEBSEARCH,
-              webfetch: config.OPENCODE_PERMIT_WEBFETCH,
+              websearch: config.ARELY_PERMIT_WEBSEARCH,
+              webfetch: config.ARELY_PERMIT_WEBFETCH,
             },
-            searchProvider: config.OPENCODE_WEBSEARCH_PROVIDER,
-            model: config.OPENCODE_MODEL,
-            toolMode: config.OPENCODE_TOOL_MODE,
-            mode: data.mode === "planning" ? "planning" : "agent",
+            searchProvider: config.ARELY_WEBSEARCH_PROVIDER,
+            model: modelId,
+            modelId,
+            toolMode: config.ARELY_TOOL_MODE,
+            mode: data.mode === "swarm" ? "swarm" : data.mode === "planning" ? "planning" : "agent",
           });
 
           if (data.query) {
@@ -307,7 +315,8 @@ function main() {
               id: session.id,
               state: session.state,
               toolCallMode: session.toolCallMode,
-              mode: data.mode === "planning" ? "planning" : "agent",
+            mode: data.mode === "swarm" ? "swarm" : data.mode === "planning" ? "planning" : "agent",
+              model: modelId,
             }),
           );
         } catch (err) {
@@ -545,7 +554,240 @@ function main() {
         registerBuilderRoutes(router, builderService, sse, packageLoader, templateRegistry);
         registerTemplateRoutes(router, templateRegistry, TEMPLATES_DIR, USER_TEMPLATES_DIR, sse);
         registerPackageRoutes(router, { loader: packageLoader, packagesDir: config.PACKAGES_DIR, sse });
+        const metricsService = new TemplateMetricsService();
+        registerEvolutionRoutes(router, templateRegistry, compilerAdapter, sse, metricsService);
+
+        router.get("/api/models", (_req: IncomingMessage, res: ServerResponse) => {
+          const models = modelRegistry.getEnabled().map((m) => ({
+            id: m.id,
+            name: m.name,
+            provider: m.provider,
+            capabilities: m.capabilities,
+            contextWindow: m.contextWindow,
+            costTier: m.costTier,
+          }));
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: true, models }));
+        });
+
+        router.get("/api/models/stats", (_req: IncomingMessage, res: ServerResponse) => {
+          const stats = llm.getModelMetrics().getAggregated();
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: true, stats }));
+        });
+
+        router.get("/api/models/:id", (_req: IncomingMessage, res: ServerResponse, params) => {
+          const def = modelRegistry.get(params.id);
+          if (!def) {
+            res.writeHead(404, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ ok: false, error: "Model not found" }));
+            return;
+          }
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: true, model: def }));
+        });
       }
+
+      router.get("/api/sessions/:id/epochs", (_req: IncomingMessage, res: ServerResponse, params) => {
+        try {
+          const stats = getContextStats(params.id);
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: true, ...stats }));
+        } catch (err) {
+          res.writeHead(500, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: String(err) }));
+        }
+      });
+
+      router.get("/api/sessions/:id/epochs/current", (_req: IncomingMessage, res: ServerResponse, params) => {
+        try {
+          const ctx = buildContext(params.id);
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: true, ...ctx }));
+        } catch (err) {
+          res.writeHead(500, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: String(err) }));
+        }
+      });
+
+      // Memory routes — async wrapper because router doesn't await
+      const asyncHandler = (
+        fn: (req: IncomingMessage, res: ServerResponse, params: Record<string, string>) => Promise<void>,
+      ) => {
+        return (req: IncomingMessage, res: ServerResponse, params: Record<string, string>) => {
+          fn(req, res, params).catch((err) => {
+            try {
+              if (!res.headersSent) {
+                res.writeHead(500, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ ok: false, error: String(err) }));
+              }
+            } catch { /* ignore */ }
+          });
+        };
+      };
+
+      router.post("/api/memories", asyncHandler(async (req, res) => {
+        const data = (req as any).body;
+        if (!data || !data.type || !data.key || !data.value) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: "Missing required fields: type, key, value" }));
+          return;
+        }
+        const memory = await memoryService.setMemory(
+          data.sessionId ?? null,
+          data.type,
+          data.key,
+          data.value,
+          data.confidence ?? 100,
+          data.source ?? "explicit",
+          data.tags ?? [],
+          data.epochId ?? null,
+          data.ttlSeconds ?? null,
+        );
+        res.writeHead(201, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: true, memory }));
+      }));
+
+      router.get("/api/memories", asyncHandler(async (req, res) => {
+        const url = new URL(req.url ?? "", "http://localhost");
+        const sessionId = url.searchParams.get("sessionId");
+        const type = url.searchParams.get("type");
+        const typeIn = url.searchParams.get("typeIn")?.split(",");
+        const minConfidence = url.searchParams.get("minConfidence") ? Number(url.searchParams.get("minConfidence")) : undefined;
+        const limit = url.searchParams.get("limit") ? Number(url.searchParams.get("limit")) : 100;
+        const offset = url.searchParams.get("offset") ? Number(url.searchParams.get("offset")) : 0;
+        const memories = await memoryService.searchMemories(sessionId, {
+          ...(type ? { type: type as any } : {}),
+          ...(typeIn ? { typeIn: typeIn as any[] } : {}),
+          minConfidence,
+          limit,
+          offset,
+        });
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: true, memories }));
+      }));
+
+      router.get("/api/memories/:type/:key", asyncHandler(async (req, res, params) => {
+        const memory = await memoryService.getMemory(params.type as any, params.key);
+        if (!memory) {
+          res.writeHead(404, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: "Memory not found" }));
+          return;
+        }
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: true, memory }));
+      }));
+
+      router.delete("/api/memories/:type/:key", asyncHandler(async (req, res, params) => {
+        const deleted = await memoryService.deleteMemory(params.type as any, params.key);
+        res.writeHead(deleted ? 200 : 404, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: deleted, deleted }));
+      }));
+
+      router.post("/api/memories/evict", asyncHandler(async (_req, res) => {
+        const expired = await memoryService.evictExpired();
+        const byCount = await memoryService.evictByCount();
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: true, evicted: { expired, byCount } }));
+      }));
+
+      router.get("/api/memory/relevant", asyncHandler(async (req, res) => {
+        const url = new URL(req.url ?? "", "http://localhost");
+        const query = url.searchParams.get("query");
+        if (!query) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: "Missing query" }));
+          return;
+        }
+        const sessionId = url.searchParams.get("sessionId");
+        const limit = url.searchParams.get("limit") ? Number(url.searchParams.get("limit")) : 10;
+        const types = url.searchParams.get("types")?.split(",") as any[] | undefined;
+        const memories = await memoryRetrievalService.getRelevant({
+          sessionId: sessionId ?? undefined,
+          query,
+          types,
+          limit,
+        });
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: true, memories }));
+      }));
+
+      router.post("/api/memory/reindex", asyncHandler(async (_req, res) => {
+        const expired = await memoryService.evictExpired();
+        const byCount = await memoryService.evictByCount();
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: true, reindexed: { expiredEvicted: expired, countEvicted: byCount } }));
+      }));
+
+      router.post("/api/decisions", asyncHandler(async (req, res) => {
+        const data = (req as any).body;
+        if (!data || !data.decisionType || !data.decision || !data.rationale) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: "Missing required fields: decisionType, decision, rationale" }));
+          return;
+        }
+        const record = await decisionService.logDecision({
+          sessionId: data.sessionId,
+          decisionType: data.decisionType,
+          decision: data.decision,
+          rationale: data.rationale,
+          confidence: data.confidence,
+          proposalId: data.proposalId,
+          templateId: data.templateId,
+          outcome: data.outcome,
+          outcomeDetail: data.outcomeDetail,
+          metadata: data.metadata,
+        });
+        res.writeHead(201, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: true, decision: record }));
+      }));
+
+      router.get("/api/decisions", asyncHandler(async (req, res) => {
+        const url = new URL(req.url ?? "", "http://localhost");
+        const q: any = {};
+        const s = url.searchParams;
+        if (s.get("sessionId")) q.sessionId = s.get("sessionId")!;
+        if (s.get("decisionType")) q.decisionType = s.get("decisionType")!;
+        if (s.get("proposalId")) q.proposalId = s.get("proposalId")!;
+        if (s.get("templateId")) q.templateId = s.get("templateId")!;
+        if (s.get("outcome")) q.outcome = s.get("outcome")!;
+        if (s.get("limit")) q.limit = Number(s.get("limit"));
+        if (s.get("offset")) q.offset = Number(s.get("offset"));
+        const records = decisionService.queryDecisions(q);
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: true, decisions: records }));
+      }));
+
+      router.get("/api/decisions/:id", asyncHandler(async (_req, res, params) => {
+        const record = decisionService.getDecision(params.id);
+        if (!record) {
+          res.writeHead(404, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: "Decision not found" }));
+          return;
+        }
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: true, decision: record }));
+      }));
+
+      router.put("/api/decisions/:id/outcome", asyncHandler(async (req, res, params) => {
+        const data = (req as any).body;
+        if (!data || !data.outcome) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: "Missing outcome" }));
+          return;
+        }
+        const updated = decisionService.updateOutcome(params.id, data.outcome, data.outcomeDetail ?? undefined);
+        if (!updated) {
+          res.writeHead(404, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: "Decision not found" }));
+          return;
+        }
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: true }));
+      }));
+
+      registerGoalRoutes(router);
+      registerSwarmRoutes(router);
     },
   });
 
@@ -606,9 +848,12 @@ function main() {
   process.on("SIGTERM", shutdownHandler("SIGTERM"));
 }
 
-try {
-  main();
-} catch (err) {
-  logger.error("bootstrap", "Fatal startup error", { error: err });
-  process.exit(1);
+const isMainModule = process.argv[1] && (process.argv[1].endsWith("index.js") || process.argv[1].endsWith("index.ts"));
+if (isMainModule) {
+  try {
+    main();
+  } catch (err) {
+    logger.error("bootstrap", "Fatal startup error", { error: err });
+    process.exit(1);
+  }
 }

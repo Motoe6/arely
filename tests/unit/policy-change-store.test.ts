@@ -5,7 +5,7 @@ import {
   getPolicyChange,
   listPolicyChanges,
   updatePolicyChangeStatus,
-} from "@opencode/engine/persistence/policy-change-store.js";
+} from "@arely/engine/persistence/policy-change-store.js";
 
 describe("policy-change-store", () => {
   beforeAll(() => initTestDb());

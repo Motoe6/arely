@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { SessionMessage } from "@opencode/engine/types.js";
+import type { SessionMessage } from "@arely/engine/types.js";
 
 const mockFetch = vi.fn();
 vi.stubGlobal("fetch", mockFetch);
@@ -24,7 +24,7 @@ function createStreamChunks(chunks: string[]): ReadableStream<Uint8Array> {
   });
 }
 
-import { OpenAICompatAdapter } from "@opencode/engine/llm/openaicompat.js";
+import { OpenAICompatAdapter } from "@arely/engine/llm/openaicompat.js";
 
 describe("OpenAICompatAdapter", () => {
   beforeEach(() => {

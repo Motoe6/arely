@@ -1,7 +1,7 @@
 import { getAgent } from "./agent-store.js";
 import { NullSSEBus } from "./null-sse.js";
 import type { SessionManager } from "../server/session-manager.js";
-import type { LLMAdapter } from "../llm/adapter.js";
+import type { LLMAdapter } from "@arely/llm-core";
 import { getConfig } from "../config/index.js";
 import { listPlansBySession, updatePlanAgentId } from "../persistence/plan-store.js";
 
@@ -28,12 +28,12 @@ export async function executeAgent(agentId: string, config: RuntimeConfig): Prom
   const sse = new NullSSEBus();
   const session = config.sessionManager.createSession(sse, config.llm, {
     permissions: {
-      websearch: cfg.OPENCODE_PERMIT_WEBSEARCH,
-      webfetch: cfg.OPENCODE_PERMIT_WEBFETCH,
+      websearch: cfg.ARELY_PERMIT_WEBSEARCH,
+      webfetch: cfg.ARELY_PERMIT_WEBFETCH,
     },
-    searchProvider: cfg.OPENCODE_WEBSEARCH_PROVIDER,
-    model: cfg.OPENCODE_MODEL,
-    toolMode: cfg.OPENCODE_TOOL_MODE,
+    searchProvider: cfg.ARELY_WEBSEARCH_PROVIDER,
+    model: cfg.ARELY_MODEL,
+    toolMode: cfg.ARELY_TOOL_MODE,
     mode: "planning",
     agentId,
   });

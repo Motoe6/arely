@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { LogNotifier } from "@opencode/engine/agents/notifiers/log-notifier.js";
-import { WebhookNotifier } from "@opencode/engine/agents/notifiers/webhook-notifier.js";
-import { CompositeNotifier, createNotifiers } from "@opencode/engine/agents/notifiers/notifier.js";
-import type { Alert } from "@opencode/engine/agents/alert-rules.js";
+import { LogNotifier } from "@arely/engine/agents/notifiers/log-notifier.js";
+import { WebhookNotifier } from "@arely/engine/agents/notifiers/webhook-notifier.js";
+import { CompositeNotifier, createNotifiers } from "@arely/engine/agents/notifiers/notifier.js";
+import type { Alert } from "@arely/engine/agents/alert-rules.js";
 
 const sampleAlert: Alert = {
   ruleId: "test_rule",
@@ -21,7 +21,7 @@ describe("LogNotifier", () => {
   });
 
   it("logs alert info", async () => {
-    const logger = await import("@opencode/engine/logger.js");
+    const logger = await import("@arely/engine/logger.js");
     const infoSpy = vi.spyOn(logger.logger, "info").mockImplementation(() => {});
     const notifier = new LogNotifier();
     await notifier.send(sampleAlert);
@@ -29,7 +29,7 @@ describe("LogNotifier", () => {
   });
 
   it("handles critical severity", async () => {
-    const logger = await import("@opencode/engine/logger.js");
+    const logger = await import("@arely/engine/logger.js");
     const infoSpy = vi.spyOn(logger.logger, "info").mockImplementation(() => {});
     const notifier = new LogNotifier();
     await notifier.send({ ...sampleAlert, severity: "critical", message: "Critical alert" });

@@ -1,0 +1,23 @@
+{
+  "name": "@arely/benchmarks",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./*": {
+      "import": "./dist/*.js",
+      "types": "./dist/*.d.ts"
+    }
+  },
+  "dependencies": {
+    "@arely/engine": "*",
+    "@arely/memory": "*",
+    "@arely/persistence": "*"
+  }
+}

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { LLMAdapter } from "@opencode/engine/llm/adapter.js";
-import type { SessionMessage } from "@opencode/engine/types.js";
+import type { LLMAdapter } from "@arely/engine/llm/adapter.js";
+import type { SessionMessage } from "@arely/engine/types.js";
 
 const { mockCreatePlan, mockPersistPlan, mockCreateSteps, mockUpdatePlanStatus, mockExecute, mockSynthesize } = vi.hoisted(() => ({
   mockCreatePlan: vi.fn(),
@@ -11,11 +11,11 @@ const { mockCreatePlan, mockPersistPlan, mockCreateSteps, mockUpdatePlanStatus, 
   mockSynthesize: vi.fn(),
 }));
 
-vi.mock("@opencode/engine/planner/planner.js", () => ({
+vi.mock("@arely/engine/planner/planner.js", () => ({
   createPlan: mockCreatePlan,
 }));
 
-vi.mock("@opencode/engine/persistence/plan-store.js", () => ({
+vi.mock("@arely/engine/persistence/plan-store.js", () => ({
   createPlan: mockPersistPlan,
   createSteps: mockCreateSteps,
   updatePlanStatus: mockUpdatePlanStatus,
@@ -26,19 +26,19 @@ vi.mock("@opencode/engine/persistence/plan-store.js", () => ({
   markStepSkipped: vi.fn(),
 }));
 
-vi.mock("@opencode/engine/planner/workflow.js", () => ({
+vi.mock("@arely/engine/planner/workflow.js", () => ({
   WorkflowExecutor: vi.fn(function () {
     return { execute: mockExecute };
   }),
 }));
 
-vi.mock("@opencode/engine/planner/synthesizer.js", () => ({
+vi.mock("@arely/engine/planner/synthesizer.js", () => ({
   Synthesizer: vi.fn(function () {
     return { synthesize: mockSynthesize };
   }),
 }));
 
-import { PlanningModeExecution } from "@opencode/engine/server/modes/planning-mode.js";
+import { PlanningModeExecution } from "@arely/engine/server/modes/planning-mode.js";
 
 const mockMessages: SessionMessage[] = [];
 const mockEmit = vi.fn();
@@ -51,6 +51,11 @@ function makeSession() {
     tools: new Map(),
     sse: { emit: mockEmit },
     messages: mockMessages,
+    pushMessage: vi.fn((role: string, content: string) => {
+      const msg: SessionMessage = { role: role as "user" | "assistant" | "system", content, timestamp: Date.now() };
+      mockMessages.push(msg);
+      return msg;
+    }),
   };
 }
 

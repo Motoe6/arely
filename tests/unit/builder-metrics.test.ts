@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeAll } from "vitest"
-import { createInMemoryDb } from "@opencode/engine/persistence/database.js"
-import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@opencode/engine/persistence/migrate.js"
-import { BuilderService } from "@opencode/engine/compiler/builder-service.js"
-import type { CompilerLLMAdapter, WorkflowIntent } from "@opencode/flow-ai-compiler"
-import { globalNodeRegistry } from "@opencode/flow-sdk"
-import type { NodeDefinition } from "@opencode/flow-sdk"
+import { createInMemoryDb } from "@arely/engine/persistence/database.js"
+import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arely/engine/persistence/migrate.js"
+import { BuilderService } from "@arely/engine/compiler/builder-service.js"
+import type { CompilerLLMAdapter, WorkflowIntent } from "@arely/flow-ai-compiler"
+import { globalNodeRegistry } from "@arely/flow-sdk"
+import type { NodeDefinition } from "@arely/flow-sdk"
 
 const EchoNode: NodeDefinition = {
   type: "echo",

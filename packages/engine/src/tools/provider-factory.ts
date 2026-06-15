@@ -7,12 +7,12 @@ function assertNever(value: never): never {
 }
 
 export function createSearchProvider(config: Config): SearchProvider {
-  switch (config.OPENCODE_WEBSEARCH_PROVIDER) {
+  switch (config.ARELY_WEBSEARCH_PROVIDER) {
     case "exa":
       return new ExaProvider();
     case "parallel":
       return new ParallelProvider();
     default:
-      return assertNever(config.OPENCODE_WEBSEARCH_PROVIDER);
+      return assertNever(config.ARELY_WEBSEARCH_PROVIDER);
   }
 }

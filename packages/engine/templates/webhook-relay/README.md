@@ -20,6 +20,6 @@ Receive a webhook and relay its payload to another HTTP endpoint.
 {
   "target_url": "https://hooks.example.com/events",
   "method": "POST",
-  "headers": { "X-Source": "opencode-webhook" }
+  "headers": { "X-Source": "arely-webhook" }
 }
 ```

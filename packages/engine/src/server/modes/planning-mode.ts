@@ -57,7 +57,7 @@ export class PlanningModeExecution implements ExecutionMode {
         error: errorMsg,
         stepCount: 0,
       });
-      session.messages.push({ role: "assistant" as const, content: errorMsg, timestamp: Date.now() });
+      session.pushMessage("assistant", errorMsg);
       return { content: errorMsg, turns: 0 };
     }
 
@@ -104,7 +104,7 @@ export class PlanningModeExecution implements ExecutionMode {
     const synthesis = await synthesizer.synthesize(input, adapted, session.llm, session.abortSignal);
 
     const response = synthesis.ok ? synthesis.response : "Workflow completed. Review the results above.";
-    session.messages.push({ role: "assistant", content: response, timestamp: Date.now() });
+    session.pushMessage("assistant", response);
 
     return { content: response, turns: 1 };
   }

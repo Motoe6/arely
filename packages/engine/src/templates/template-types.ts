@@ -1,4 +1,4 @@
-import type { Workflow } from "@opencode/flow-runtime"
+import type { Workflow } from "@arely/flow-runtime"
 
 export class TemplateNotFoundError extends Error {
   readonly code = "TEMPLATE_NOT_FOUND"
@@ -59,12 +59,20 @@ export interface InstantiateParams {
   [name: string]: unknown
 }
 
+export interface AppliedRecommendation {
+  parameter: string
+  value: string
+  confidence: number
+  evidence: string
+}
+
 export interface InstantiateResult {
   workflow: Workflow
   metadata: {
     templateId: string
     templateVersion: string
   }
+  appliedRecommendations?: AppliedRecommendation[]
 }
 
 export interface NodeRegistryLike {

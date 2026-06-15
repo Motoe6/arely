@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { createSession, getSession, updateSessionState } from "@opencode/engine/persistence/session-store.js";
-import { createMessage, getSessionMessages } from "@opencode/engine/persistence/message-store.js";
-import { createToolCall, updateToolCallStatus } from "@opencode/engine/persistence/tool-call-store.js";
-import { createPermissionApproval } from "@opencode/engine/persistence/permission-store.js";
-import { persistEvent, getSessionEvents } from "@opencode/engine/persistence/event-store.js";
+import { createSession, getSession, updateSessionState } from "@arely/engine/persistence/session-store.js";
+import { createMessage, getSessionMessages } from "@arely/engine/persistence/message-store.js";
+import { createToolCall, updateToolCallStatus } from "@arely/engine/persistence/tool-call-store.js";
+import { createPermissionApproval } from "@arely/engine/persistence/permission-store.js";
+import { persistEvent, getSessionEvents } from "@arely/engine/persistence/event-store.js";
 
 describe("Full Persistence Flow", () => {
   beforeAll(() => initTestDb());

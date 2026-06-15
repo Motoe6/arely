@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { createHttpServer } from "@opencode/engine/transport/http-server.js";
-import { SSEBus } from "@opencode/engine/server/sse.js";
-import { connect, close } from "@opencode/engine/persistence/database.js";
-import { loadConfig } from "@opencode/engine/config/index.js";
-import { createSession } from "@opencode/engine/persistence/session-store.js";
+import { createHttpServer } from "@arely/engine/transport/http-server.js";
+import { SSEBus } from "@arely/engine/server/sse.js";
+import { connect, close } from "@arely/engine/persistence/database.js";
+import { loadConfig } from "@arely/engine/config/index.js";
+import { createSession } from "@arely/engine/persistence/session-store.js";
 import http from "node:http";
-import type { SessionStartedEvent } from "@opencode/engine/types/events.js";
+import type { SessionStartedEvent } from "@arely/engine/types/events.js";
 
 function fetchUrl(url: string): Promise<{ statusCode: number; body: string }> {
   return new Promise((resolve, reject) => {
@@ -30,7 +30,7 @@ describe("HTTP Server", () => {
   const sse = new SSEBus();
 
   beforeAll(() => {
-    process.env.OPENCODE_API_KEY = "test-key";
+    process.env.ARELY_API_KEY = "test-key";
     loadConfig();
     connect(":memory:");
   });

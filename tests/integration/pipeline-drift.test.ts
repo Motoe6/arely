@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { ExecutionComparator } from "@opencode/engine/agents/drift-analyzer.js";
-import { createPipeline, createPipelineStep, createPipelineRun, updatePipelineRunStatus, getPipelineStepRuns } from "@opencode/engine/agents/pipeline-store.js";
-import { executePipeline } from "@opencode/engine/agents/pipeline.js";
-import { getDb } from "@opencode/engine/persistence/database.js";
-import { agents, pipelineStepRuns, pipelineRuns, pipelineSteps, agentPipelines } from "@opencode/engine/persistence/schema.js";
-import type { RuntimeConfig } from "@opencode/engine/agents/runtime.js";
-import { createExecutionTracer } from "@opencode/engine/agents/execution-tracer.js";
+import { ExecutionComparator } from "@arely/engine/agents/drift-analyzer.js";
+import { createPipeline, createPipelineStep, createPipelineRun, updatePipelineRunStatus, getPipelineStepRuns } from "@arely/engine/agents/pipeline-store.js";
+import { executePipeline } from "@arely/engine/agents/pipeline.js";
+import { getDb } from "@arely/engine/persistence/database.js";
+import { agents, pipelineStepRuns, pipelineRuns, pipelineSteps, agentPipelines } from "@arely/engine/persistence/schema.js";
+import type { RuntimeConfig } from "@arely/engine/agents/runtime.js";
+import { createExecutionTracer } from "@arely/engine/agents/execution-tracer.js";
 import { createHash } from "node:crypto";
 
 function sha256(v: string): string {

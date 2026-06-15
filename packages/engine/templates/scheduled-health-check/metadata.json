@@ -5,7 +5,7 @@
   "category": "monitoring",
   "tags": ["health", "monitoring", "http", "schedule", "interval"],
   "templateVersion": "1.0.0",
-  "author": "OpenCode",
+  "author": "Arely",
   "parameters": [
     {
       "name": "target_url",

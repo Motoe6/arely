@@ -5,7 +5,7 @@
   "category": "ai",
   "tags": ["llm", "ai", "prompt", "generation"],
   "templateVersion": "1.0.0",
-  "author": "OpenCode",
+  "author": "Arely",
   "parameters": [
     {
       "name": "prompt_template",

@@ -5,11 +5,11 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import http from "node:http";
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { createHttpServer } from "@opencode/engine/transport/http-server.js";
-import { SSEBus } from "@opencode/engine/server/sse.js";
-import { loadConfig } from "@opencode/engine/config/index.js";
-import { insertEvent } from "@opencode/engine/persistence/policy-audit-store.js";
-import type { PolicyRule } from "@opencode/engine/agents/policy/policy-types.js";
+import { createHttpServer } from "@arely/engine/transport/http-server.js";
+import { SSEBus } from "@arely/engine/server/sse.js";
+import { loadConfig } from "@arely/engine/config/index.js";
+import { insertEvent } from "@arely/engine/persistence/policy-audit-store.js";
+import type { PolicyRule } from "@arely/engine/agents/policy/policy-types.js";
 
 type Middleware = (req: IncomingMessage, res: ServerResponse, next: () => void) => void;
 
@@ -63,8 +63,8 @@ describe("M10.1 POST /control/analyze", () => {
     initTestDb();
     rmSync(tmpDir, { recursive: true, force: true });
     mkdirSync(tmpDir, { recursive: true });
-    process.env.OPENCODE_API_KEY = "test-key";
-    process.env.OPENCODE_POLICY_PACKS_DIR = tmpDir;
+    process.env.ARELY_API_KEY = "test-key";
+    process.env.ARELY_POLICY_PACKS_DIR = tmpDir;
     loadConfig();
 
     // Seed audit traces so recommendation logic has data to analyze

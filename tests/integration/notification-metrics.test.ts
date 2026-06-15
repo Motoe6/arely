@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, beforeEach } from "vitest";
-import { connect, getDb } from "@opencode/engine/persistence/database.js";
-import { notificationQueue, notificationEvents } from "@opencode/engine/persistence/schema.js";
-import { getNotificationMetrics } from "@opencode/engine/agents/notifiers/notification-metrics.js";
+import { connect, getDb } from "@arely/engine/persistence/database.js";
+import { notificationQueue, notificationEvents } from "@arely/engine/persistence/schema.js";
+import { getNotificationMetrics } from "@arely/engine/agents/notifiers/notification-metrics.js";
 
 function insertQueue(db: ReturnType<typeof getDb>, overrides: Partial<typeof notificationQueue.$inferInsert> & { id: string }) {
   db.insert(notificationQueue).values({

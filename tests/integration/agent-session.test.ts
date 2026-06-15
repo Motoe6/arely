@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import type { SessionMessage } from "@opencode/engine/types.js";
-import type { LLMAdapter, LLMResponse } from "@opencode/engine/llm/adapter.js";
+import type { SessionMessage } from "@arely/engine/types.js";
+import type { LLMAdapter, LLMResponse } from "@arely/engine/llm/adapter.js";
 
 const mockEmit = vi.fn();
 
-vi.mock("@opencode/engine/tools/websearch.js", async (importOriginal) => {
+vi.mock("@arely/engine/tools/websearch.js", async (importOriginal) => {
   const actual = await importOriginal();
   return {
     ...actual,
@@ -15,7 +15,7 @@ vi.mock("@opencode/engine/tools/websearch.js", async (importOriginal) => {
   };
 });
 
-vi.mock("@opencode/engine/tools/webfetch.js", async (importOriginal) => {
+vi.mock("@arely/engine/tools/webfetch.js", async (importOriginal) => {
   const actual = await importOriginal();
   return {
     ...actual,
@@ -25,13 +25,13 @@ vi.mock("@opencode/engine/tools/webfetch.js", async (importOriginal) => {
   };
 });
 
-vi.mock("@opencode/engine/config/index.js", () => ({
+vi.mock("@arely/engine/config/index.js", () => ({
   loadConfig: vi.fn(),
   getConfig: () => ({
     TOOL_TIMEOUT_MS: 5000,
     PERMISSION_TIMEOUT_MS: 5000,
-    OPENCODE_PERMIT_WEBSEARCH: "allow",
-    OPENCODE_PERMIT_WEBFETCH: "allow",
+    ARELY_PERMIT_WEBSEARCH: "allow",
+    ARELY_PERMIT_WEBFETCH: "allow",
     CIRCUIT_BREAKER_ENABLED: false,
     CIRCUIT_BREAKER_THRESHOLD: 5,
     CIRCUIT_BREAKER_RESET_MS: 30000,
@@ -42,18 +42,18 @@ vi.mock("@opencode/engine/config/index.js", () => ({
     RATE_LIMIT_ENABLED: false,
     RATE_LIMIT_DEFAULT_MAX: 30,
     RATE_LIMIT_DEFAULT_WINDOW_MS: 60000,
-    OPENCODE_MAX_ITERATIONS: 10,
-    OPENCODE_STREAMING: true,
-    OPENCODE_TOOL_MODE: "native",
+    ARELY_MAX_ITERATIONS: 10,
+    ARELY_STREAMING: true,
+    ARELY_TOOL_MODE: "native",
   }),
 }));
 
-vi.mock("@opencode/engine/persistence/approval-cache-store.js", () => ({
+vi.mock("@arely/engine/persistence/approval-cache-store.js", () => ({
   findMatchingApproval: vi.fn(),
   setApproval: vi.fn(),
 }));
 
-import { AgentSession } from "@opencode/engine/server/session.js";
+import { AgentSession } from "@arely/engine/server/session.js";
 
 function createSseMock() {
   return { emit: mockEmit };
@@ -192,7 +192,7 @@ describe("AgentSession integration", () => {
       [{ content: "Recovered from error." }],
     ]);
 
-    const websearch = await import("@opencode/engine/tools/websearch.js");
+    const websearch = await import("@arely/engine/tools/websearch.js");
     (websearch.performWebSearch as any).mockRejectedValue(new Error("Service unavailable"));
 
     const session = new AgentSession(sse, llm, {

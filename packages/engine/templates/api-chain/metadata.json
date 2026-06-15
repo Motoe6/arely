@@ -5,7 +5,7 @@
   "category": "integration",
   "tags": ["api", "chain", "http", "multi-step", "dag"],
   "templateVersion": "1.0.0",
-  "author": "OpenCode",
+  "author": "Arely",
   "parameters": [
     {
       "name": "first_url",

@@ -2,9 +2,9 @@ import { readFileSync, existsSync, readdirSync, statSync } from "node:fs"
 import { join } from "node:path"
 import { parse as parseYAML } from "yaml"
 import { ulid } from "ulid"
-import { normalizeWorkflow } from "@opencode/flow-runtime"
-import { globalNodeRegistry } from "@opencode/flow-sdk"
-import type { Workflow } from "@opencode/flow-runtime"
+import { normalizeWorkflow } from "@arely/flow-runtime"
+import { globalNodeRegistry } from "@arely/flow-sdk"
+import type { Workflow } from "@arely/flow-runtime"
 import type {
   Template,
   TemplateMetadata,
@@ -184,7 +184,7 @@ function validateMetadata(raw: Record<string, unknown>): TemplateMetadata {
   }
   const templateVersion =
     typeof raw.templateVersion === "string" ? raw.templateVersion : "1.0.0"
-  const author = typeof raw.author === "string" ? raw.author : "OpenCode"
+  const author = typeof raw.author === "string" ? raw.author : "Arely"
   const tags: string[] = Array.isArray(raw.tags) ? (raw.tags as string[]).filter((t) => typeof t === "string") : []
   const requires: string[] = Array.isArray(raw.requires) ? (raw.requires as string[]).filter((r) => typeof r === "string") : []
 
