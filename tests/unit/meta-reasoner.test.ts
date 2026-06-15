@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { createSession } from "@arely/engine/persistence/session-store.js";
-import { MetaReasoner } from "@arely/engine/llm/meta-reasoner.js";
-import { decisionService } from "@arely/engine/llm/decision-service.js";
-import { memoryService } from "@arely/engine/llm/memory-service.js";
+import { createSession } from "@arelyos/engine/persistence/session-store.js";
+import { MetaReasoner } from "@arelyos/engine/llm/meta-reasoner.js";
+import { decisionService } from "@arelyos/engine/llm/decision-service.js";
+import { memoryService } from "@arelyos/engine/llm/memory-service.js";
 
 let sessionId: string;
 

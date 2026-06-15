@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { ModelPerformanceService, TASK_TYPES } from "@arely/engine/llm/model-performance-service.js";
+import { ModelPerformanceService, TASK_TYPES } from "@arelyos/engine/llm/model-performance-service.js";
 import { initTestDb, cleanupTestDb } from "../setup.js";
 
 describe("ModelPerformanceService", () => {

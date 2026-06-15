@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { appStore } from "@arely/ui-core/stores/app-store";
-import { uiStore } from "@arely/ui-core/stores/ui-store";
-import { sessionStore } from "@arely/ui-core/stores/session-store";
+import { appStore } from "@arelyos/ui-core/stores/app-store";
+import { uiStore } from "@arelyos/ui-core/stores/ui-store";
+import { sessionStore } from "@arelyos/ui-core/stores/session-store";
 import { useEngine } from "../hooks/useEngine";
 import { Sidebar } from "../components/Sidebar";
 import { ChatWindow } from "../components/ChatWindow";

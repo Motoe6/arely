@@ -1,4 +1,4 @@
-import { queryDecisions } from "@arely/persistence";
+import { queryDecisions } from "@arelyos/persistence";
 import { memoryService } from "./memory-service.js";
 
 export interface StrategyPerformance {

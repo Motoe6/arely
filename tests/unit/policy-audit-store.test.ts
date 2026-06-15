@@ -6,7 +6,7 @@ import {
   listTraces,
   countTraces,
   prune,
-} from "@arely/engine/persistence/policy-audit-store.js";
+} from "@arelyos/engine/persistence/policy-audit-store.js";
 
 describe("Policy Audit Store", () => {
   const traceA = "trace-a";

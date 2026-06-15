@@ -12,8 +12,8 @@ import {
   deleteMilestone as storeDeleteMilestone,
   getGoal,
   updateGoal,
-} from "@arely/persistence";
-import type { GoalPlan, GoalPlanQuery, Milestone, MilestoneQuery } from "@arely/persistence";
+} from "@arelyos/persistence";
+import type { GoalPlan, GoalPlanQuery, Milestone, MilestoneQuery } from "@arelyos/persistence";
 
 export type { GoalPlan, GoalPlanStatus, GoalPlanQuery, Milestone, MilestoneStatus, MilestoneQuery };
 

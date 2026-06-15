@@ -97,7 +97,7 @@ async function startTUI(connectUrl?: string) {
 async function startServe(port: number) {
   const picocolors = await import("picocolors");
   process.env.PORT = String(port);
-  const { main } = await import("@arely/engine/index.js");
+  const { main } = await import("@arelyos/engine/index.js");
   main();
 }
 
@@ -127,18 +127,18 @@ async function doctor() {
     ["npm installed", async () => { try { await exec("npm --version"); return true; } catch { return false; } }],
     ["SQLite available", async () => {
       try {
-        const { getDb } = await import("@arely/engine/persistence/database.js");
-        const { loadConfig } = await import("@arely/engine/config/index.js");
+        const { getDb } = await import("@arelyos/engine/persistence/database.js");
+        const { loadConfig } = await import("@arelyos/engine/config/index.js");
         loadConfig();
         return getDb() !== undefined;
       } catch { return false; }
     }],
     ["Engine module loadable", async () => {
-      try { await import("@arely/engine/index.js"); return true; } catch { return false; }
+      try { await import("@arelyos/engine/index.js"); return true; } catch { return false; }
     }],
     ["Persistence layer", async () => {
       try {
-        const { queryGoals } = await import("@arely/persistence");
+        const { queryGoals } = await import("@arelyos/persistence");
         return typeof queryGoals === "function";
       } catch { return false; }
     }],
@@ -172,8 +172,8 @@ async function bench() {
 
 async function models() {
   try {
-    const { loadConfig } = await import("@arely/engine/config/index.js");
-    const { ModelRegistry } = await import("@arely/engine/models/model-registry.js");
+    const { loadConfig } = await import("@arelyos/engine/config/index.js");
+    const { ModelRegistry } = await import("@arelyos/engine/models/model-registry.js");
     loadConfig();
     const registry = new ModelRegistry();
     const modelList = registry.getAll();
@@ -205,7 +205,7 @@ async function showVersion() {
 
 async function initCmd() {
   const { intro, outro, select, text, confirm, isCancel, note, log } = await import("@clack/prompts");
-  const { loadUserConfigFile, saveUserConfigFile, getUserConfigPath } = await import("@arely/engine/config/io.js");
+  const { loadUserConfigFile, saveUserConfigFile, getUserConfigPath } = await import("@arelyos/engine/config/io.js");
   const picocolors = await import("picocolors");
   const fs = await import("node:fs");
   const path = await import("node:path");
@@ -307,7 +307,7 @@ async function initCmd() {
 }
 
 async function configCmd() {
-  const { loadUserConfigFile, getUserConfigPath } = await import("@arely/engine/config/io.js");
+  const { loadUserConfigFile, getUserConfigPath } = await import("@arelyos/engine/config/io.js");
   const picocolors = await import("picocolors");
   const fs = await import("node:fs");
 
@@ -335,7 +335,7 @@ async function configCmd() {
 
 async function loginCmd() {
   const { intro, outro, select, isCancel, note, text, log } = await import("@clack/prompts");
-  const { loadUserConfigFile, saveUserConfigFile } = await import("@arely/engine/config/io.js");
+  const { loadUserConfigFile, saveUserConfigFile } = await import("@arelyos/engine/config/io.js");
   const picocolors = await import("picocolors");
 
   intro(picocolors.default.cyan("ARELY Login"));
@@ -384,7 +384,7 @@ async function updateCmd() {
 
   let latest = current;
   try {
-    const res = await fetch("https://registry.npmjs.org/@arely/cli/latest");
+    const res = await fetch("https://registry.npmjs.org/@arelyos/cli/latest");
     if (res.ok) {
       const data = await res.json() as { version?: string };
       latest = data.version ?? current;
@@ -402,7 +402,7 @@ async function updateCmd() {
   note(`Current: ${current}\nLatest:  ${latest}`, "Update available");
 
   log.info("To update:");
-  console.log("  npm update -g @arely/cli");
+  console.log("  npm update -g @arelyos/cli");
 
   outro("Done.");
 }

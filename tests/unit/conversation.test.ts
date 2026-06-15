@@ -1,20 +1,20 @@
 import { describe, it, expect, vi, beforeAll, beforeEach, afterEach } from "vitest";
-import type { Message } from "@arely/engine/types.js";
+import type { Message } from "@arelyos/engine/types.js";
 
 const mockMessages: Message[] = [];
 let mockSequence = 0;
 
-vi.mock("@arely/engine/persistence/message-store.js", () => ({
+vi.mock("@arelyos/engine/persistence/message-store.js", () => ({
   getSessionMessages: vi.fn(() => mockMessages),
 }));
 
-import { loadConfig } from "@arely/engine/config/index.js";
+import { loadConfig } from "@arelyos/engine/config/index.js";
 import {
   loadConversation,
   injectToolResult,
   injectSystemPrompt,
   hasReachedTokenLimit,
-} from "@arely/engine/llm/conversation.js";
+} from "@arelyos/engine/llm/conversation.js";
 
 describe("conversation", () => {
   beforeAll(() => {

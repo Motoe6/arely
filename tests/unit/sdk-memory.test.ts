@@ -10,9 +10,9 @@ const mockPersistence = vi.hoisted(() => ({
   evictByCount: vi.fn().mockReturnValue(0),
 }));
 
-vi.mock("@arely/persistence", () => mockPersistence);
+vi.mock("@arelyos/persistence", () => mockPersistence);
 
-import { Memory } from "@arely/sdk";
+import { Memory } from "@arelyos/sdk";
 
 describe("Memory", () => {
   let memory: Memory;

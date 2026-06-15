@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { SwarmOrchestrator } from "@arely/engine/llm/swarm-orchestrator.js";
-import type { AgentExecutor, AgentRole } from "@arely/engine/llm/swarm-types.js";
+import { SwarmOrchestrator } from "@arelyos/engine/llm/swarm-orchestrator.js";
+import type { AgentExecutor, AgentRole } from "@arelyos/engine/llm/swarm-types.js";
 
 describe("SwarmOrchestrator", () => {
   function createMockExecutor(

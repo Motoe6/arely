@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { ParallelSwarmOrchestrator } from "@arely/engine/llm/parallel-swarm-orchestrator.js";
-import { TaskGraphBuilder } from "@arely/engine/llm/task-graph-builder.js";
-import type { AgentExecutor, AgentRole } from "@arely/engine/llm/swarm-orchestrator.js";
-import type { SwarmTask } from "@arely/engine/llm/swarm-task-types.js";
+import { ParallelSwarmOrchestrator } from "@arelyos/engine/llm/parallel-swarm-orchestrator.js";
+import { TaskGraphBuilder } from "@arelyos/engine/llm/task-graph-builder.js";
+import type { AgentExecutor, AgentRole } from "@arelyos/engine/llm/swarm-orchestrator.js";
+import type { SwarmTask } from "@arelyos/engine/llm/swarm-task-types.js";
 
 function mockExecutor(
   outputs: Record<string, string> = {},

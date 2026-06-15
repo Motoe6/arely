@@ -1,6 +1,6 @@
 import type { GoalForecast, GoalForecastContext } from "./goal-forecast-types.js";
 import type { ExecutionPrediction } from "./prediction-types.js";
-import { getGoal, getMilestone, queryGoalPlans, queryMilestones } from "@arely/persistence";
+import { getGoal, getMilestone, queryGoalPlans, queryMilestones } from "@arelyos/persistence";
 
 export class GoalUtilityScorer {
   score(ctx: GoalForecastContext): GoalForecast {

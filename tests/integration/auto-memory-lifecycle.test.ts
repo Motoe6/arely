@@ -1,19 +1,19 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest"
 import { initTestDb, cleanupTestDb } from "../setup.js"
-import { createSession } from "@arely/engine/persistence/session-store.js"
+import { createSession } from "@arelyos/engine/persistence/session-store.js"
 import {
   initEpoch,
   addEpochMessageToSession,
   setEpochSummarizer,
   setEpochThreshold,
-} from "@arely/engine/llm/context-epoch-service.js"
-import { getEpochsBySession } from "@arely/engine/persistence/context-epoch-store.js"
-import { memoryService } from "@arely/engine/llm/memory-service.js"
-import { memoryRetrievalService } from "@arely/engine/llm/memory-retrieval-service.js"
-import { decisionService } from "@arely/engine/llm/decision-service.js"
-import { extractMemories } from "@arely/engine/llm/auto-memory-extractor.js"
-import type { LLMAdapter } from "@arely/engine/llm/adapter.js"
-import type { SessionMessage } from "@arely/engine/types.js"
+} from "@arelyos/engine/llm/context-epoch-service.js"
+import { getEpochsBySession } from "@arelyos/engine/persistence/context-epoch-store.js"
+import { memoryService } from "@arelyos/engine/llm/memory-service.js"
+import { memoryRetrievalService } from "@arelyos/engine/llm/memory-retrieval-service.js"
+import { decisionService } from "@arelyos/engine/llm/decision-service.js"
+import { extractMemories } from "@arelyos/engine/llm/auto-memory-extractor.js"
+import type { LLMAdapter } from "@arelyos/engine/llm/adapter.js"
+import type { SessionMessage } from "@arelyos/engine/types.js"
 
 let sessionId: string
 

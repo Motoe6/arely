@@ -1,4 +1,4 @@
-import type { DecisionRecord } from "@arely/persistence";
+import type { DecisionRecord } from "@arelyos/persistence";
 import type { Collector, BenchmarkMetric } from "../types.js";
 
 export function createStrategyCollector(

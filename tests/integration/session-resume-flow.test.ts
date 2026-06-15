@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { GoalResumeService } from "@arely/engine/llm/goal-resume-service.js";
+import { GoalResumeService } from "@arelyos/engine/llm/goal-resume-service.js";
 import {
   createGoal,
   createGoalPlan,
@@ -7,7 +7,7 @@ import {
   queryGoals,
   queryGoalPlans,
   queryMilestones,
-} from "@arely/persistence";
+} from "@arelyos/persistence";
 import { initTestDb, cleanupTestDb } from "../setup.js";
 
 describe("Session Resume Flow", () => {

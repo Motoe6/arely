@@ -1,4 +1,4 @@
-import * as store from "@arely/persistence";
+import * as store from "@arelyos/persistence";
 import type { MemoryRecord, MemoryType } from "./memory-types.js";
 
 export interface MemoryScoredRecord extends MemoryRecord {

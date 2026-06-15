@@ -1,15 +1,15 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest"
-import { TemplateRegistry } from "@arely/engine/templates/template-registry.js"
-import { NodePackageLoader } from "@arely/engine/compiler/node-package-loader.js"
-import { globalNodeRegistry, HttpNode, LLMNode } from "@arely/flow-sdk"
-import { loadConfig } from "@arely/engine/config/index.js"
-import { connect, close, createInMemoryDb } from "@arely/engine/persistence/database.js"
-import { pushSchema } from "@arely/engine/persistence/migrate.js"
+import { TemplateRegistry } from "@arelyos/engine/templates/template-registry.js"
+import { NodePackageLoader } from "@arelyos/engine/compiler/node-package-loader.js"
+import { globalNodeRegistry, HttpNode, LLMNode } from "@arelyos/flow-sdk"
+import { loadConfig } from "@arelyos/engine/config/index.js"
+import { connect, close, createInMemoryDb } from "@arelyos/engine/persistence/database.js"
+import { pushSchema } from "@arelyos/engine/persistence/migrate.js"
 import { mkdtempSync, rmSync, writeFileSync, existsSync, mkdirSync } from "node:fs"
 import { join, dirname } from "node:path"
 import { tmpdir } from "node:os"
 import { fileURLToPath } from "node:url"
-import { listInstalledPackages } from "@arely/engine/compiler/package-store.js"
+import { listInstalledPackages } from "@arelyos/engine/compiler/package-store.js"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)

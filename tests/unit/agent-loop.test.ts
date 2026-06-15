@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { LLMAdapter, LLMResponse } from "@arely/engine/llm/adapter.js";
-import type { SessionMessage } from "@arely/engine/types.js";
-import type { Tool, ToolResult } from "@arely/engine/tools/base-tool.js";
+import type { LLMAdapter, LLMResponse } from "@arelyos/engine/llm/adapter.js";
+import type { SessionMessage } from "@arelyos/engine/types.js";
+import type { Tool, ToolResult } from "@arelyos/engine/tools/base-tool.js";
 
 const emittedEvents: any[] = [];
 
@@ -34,7 +34,7 @@ function createMockFailingTool(name: string, errorMsg = "Execution failed"): Too
   };
 }
 
-import { runAgentLoop } from "@arely/engine/server/agent-loop.js";
+import { runAgentLoop } from "@arelyos/engine/server/agent-loop.js";
 
 describe("AgentLoop", () => {
   beforeEach(() => {

@@ -1,5 +1,5 @@
-import { createModel, ProviderBridgeAdapter, registerBuiltInApiProviders } from "@arely/llm-core";
-import { connect as dbConnect, close as dbClose, createInMemoryDb, pushSchema } from "@arely/persistence";
+import { createModel, ProviderBridgeAdapter, registerBuiltInApiProviders } from "@arelyos/llm-core";
+import { connect as dbConnect, close as dbClose, createInMemoryDb, pushSchema } from "@arelyos/persistence";
 import type { DeepPartial, ArelyConfig, ArelyTool } from "./config.js";
 import { resolveConfig, getEnvConfig } from "./config.js";
 import { ChatSession, type ChatOptions } from "./chat.js";

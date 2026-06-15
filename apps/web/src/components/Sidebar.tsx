@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import { appStore } from "@arely/ui-core/stores/app-store";
-import { uiStore } from "@arely/ui-core/stores/ui-store";
-import { getAvailableModes, changeMode } from "@arely/ui-core/services/swarm-service";
-import type { AgentMode } from "@arely/ui-core/types/index";
+import { appStore } from "@arelyos/ui-core/stores/app-store";
+import { uiStore } from "@arelyos/ui-core/stores/ui-store";
+import { getAvailableModes, changeMode } from "@arelyos/ui-core/services/swarm-service";
+import type { AgentMode } from "@arelyos/ui-core/types/index";
 
 const ENGINE_URL = process.env.NEXT_PUBLIC_ENGINE_URL || "http://localhost:8081";
 

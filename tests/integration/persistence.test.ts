@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { createSession, getSession, updateSessionState } from "@arely/engine/persistence/session-store.js";
-import { createMessage, getSessionMessages } from "@arely/engine/persistence/message-store.js";
-import { createToolCall, updateToolCallStatus } from "@arely/engine/persistence/tool-call-store.js";
-import { createPermissionApproval } from "@arely/engine/persistence/permission-store.js";
-import { persistEvent, getSessionEvents } from "@arely/engine/persistence/event-store.js";
+import { createSession, getSession, updateSessionState } from "@arelyos/engine/persistence/session-store.js";
+import { createMessage, getSessionMessages } from "@arelyos/engine/persistence/message-store.js";
+import { createToolCall, updateToolCallStatus } from "@arelyos/engine/persistence/tool-call-store.js";
+import { createPermissionApproval } from "@arelyos/engine/persistence/permission-store.js";
+import { persistEvent, getSessionEvents } from "@arelyos/engine/persistence/event-store.js";
 
 describe("Full Persistence Flow", () => {
   beforeAll(() => initTestDb());

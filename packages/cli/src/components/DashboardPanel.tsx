@@ -1,8 +1,8 @@
 import React from "react";
 import { Box, Text, useInput } from "ink";
-import { uiStore } from "@arely/ui-core/stores/ui-store.js";
-import { appStore } from "@arely/ui-core/stores/app-store.js";
-import { sessionStore } from "@arely/ui-core/stores/session-store.js";
+import { uiStore } from "@arelyos/ui-core/stores/ui-store.js";
+import { appStore } from "@arelyos/ui-core/stores/app-store.js";
+import { sessionStore } from "@arelyos/ui-core/stores/session-store.js";
 import type { DashboardMetrics, EngineContext } from "../engine.js";
 
 export function DashboardPanel({ engine }: { engine?: EngineContext }) {

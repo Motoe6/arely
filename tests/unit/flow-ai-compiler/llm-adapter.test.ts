@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 import { z } from "zod"
-import { createLocalAdapter } from "@arely/flow-ai-compiler"
-import { createRemoteAdapter } from "@arely/flow-ai-compiler"
-import { createCompilerLLM } from "@arely/flow-ai-compiler"
-import { createExtractor } from "@arely/flow-ai-compiler"
+import { createLocalAdapter } from "@arelyos/flow-ai-compiler"
+import { createRemoteAdapter } from "@arelyos/flow-ai-compiler"
+import { createCompilerLLM } from "@arelyos/flow-ai-compiler"
+import { createExtractor } from "@arelyos/flow-ai-compiler"
 
 const TestSchema = z.object({ result: z.string() })
 

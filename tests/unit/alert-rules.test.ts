@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { evaluateToolRule, evaluatePipelineRule, evaluateAlertRules, DEFAULT_ALERT_RULES } from "@arely/engine/agents/alert-rules.js";
-import type { AlertRule, Alert } from "@arely/engine/agents/alert-rules.js";
-import type { ToolMetric, PipelineMetric } from "@arely/engine/agents/pipeline-metrics.js";
-import { getDb } from "@arely/engine/persistence/database.js";
-import { agentPipelines, pipelineRuns, pipelineStepRuns } from "@arely/engine/persistence/schema.js";
+import { evaluateToolRule, evaluatePipelineRule, evaluateAlertRules, DEFAULT_ALERT_RULES } from "@arelyos/engine/agents/alert-rules.js";
+import type { AlertRule, Alert } from "@arelyos/engine/agents/alert-rules.js";
+import type { ToolMetric, PipelineMetric } from "@arelyos/engine/agents/pipeline-metrics.js";
+import { getDb } from "@arelyos/engine/persistence/database.js";
+import { agentPipelines, pipelineRuns, pipelineStepRuns } from "@arelyos/engine/persistence/schema.js";
 import { ulid } from "ulid";
 
 function insertPipeline(name: string): string {

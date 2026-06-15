@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
-import { TemplateRegistry } from "@arely/engine/templates/template-registry.js"
-import { evolveWorkflow } from "@arely/engine/templates/evolution-engine.js"
-import type { Template, NodeRegistryLike } from "@arely/engine/templates/template-types.js"
-import type { CompilerLLMAdapter } from "@arely/flow-ai-compiler"
-import { createWorkflow } from "@arely/engine/persistence/workflow-store.js"
-import { globalNodeRegistry, HttpNode } from "@arely/flow-sdk"
+import { TemplateRegistry } from "@arelyos/engine/templates/template-registry.js"
+import { evolveWorkflow } from "@arelyos/engine/templates/evolution-engine.js"
+import type { Template, NodeRegistryLike } from "@arelyos/engine/templates/template-types.js"
+import type { CompilerLLMAdapter } from "@arelyos/flow-ai-compiler"
+import { createWorkflow } from "@arelyos/engine/persistence/workflow-store.js"
+import { globalNodeRegistry, HttpNode } from "@arelyos/flow-sdk"
 
-vi.mock("@arely/engine/persistence/workflow-store.js", () => ({
+vi.mock("@arelyos/engine/persistence/workflow-store.js", () => ({
   createWorkflow: vi.fn(() => ({
     id: "wf-evolution-test",
     name: "api-monitor",

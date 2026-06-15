@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { Router } from "@arely/engine/transport/router.js";
+import { Router } from "@arelyos/engine/transport/router.js";
 import { IncomingMessage, ServerResponse } from "node:http";
 import { Socket } from "node:net";
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest"
-import { TemplateMetricsService } from "@arely/engine/templates/template-metrics.js"
+import { TemplateMetricsService } from "@arelyos/engine/templates/template-metrics.js"
 
 describe("TemplateMetricsService", () => {
   it("returns empty when no metrics", () => {

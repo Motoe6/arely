@@ -14,11 +14,11 @@ const mockPlugins = vi.hoisted(() => {
   };
 });
 
-vi.mock("@arely/plugins", () => mockPlugins);
-vi.mock("@arely/persistence", () => ({}));
-vi.mock("@arely/llm-core", () => ({}));
+vi.mock("@arelyos/plugins", () => mockPlugins);
+vi.mock("@arelyos/persistence", () => ({}));
+vi.mock("@arelyos/llm-core", () => ({}));
 
-import { PluginsManager } from "@arely/sdk";
+import { PluginsManager } from "@arelyos/sdk";
 
 describe("PluginsManager", () => {
   let manager: PluginsManager;

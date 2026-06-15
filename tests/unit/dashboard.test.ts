@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { renderDashboardPage } from "@arely/engine/ui/dashboard.js";
+import { renderDashboardPage } from "@arelyos/engine/ui/dashboard.js";
 
 describe("renderDashboardPage", () => {
   it("returns a valid HTML string", () => {

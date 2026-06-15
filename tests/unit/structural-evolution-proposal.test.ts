@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
-import { StructuralEvolutionProposalService } from "@arely/engine/structural/structural-evolution-proposal-service.js"
-import { TemplateRegistry } from "@arely/engine/templates/template-registry.js"
-import type { Template } from "@arely/engine/templates/template-types.js"
+import { StructuralEvolutionProposalService } from "@arelyos/engine/structural/structural-evolution-proposal-service.js"
+import { TemplateRegistry } from "@arelyos/engine/templates/template-registry.js"
+import type { Template } from "@arelyos/engine/templates/template-types.js"
 
-vi.mock("@arely/persistence", async () => {
-  const actual = await vi.importActual("@arely/persistence")
+vi.mock("@arelyos/persistence", async () => {
+  const actual = await vi.importActual("@arelyos/persistence")
   return { ...actual, getFeedbackByTemplate: vi.fn() }
 })
 
-import { getFeedbackByTemplate } from "@arely/persistence"
+import { getFeedbackByTemplate } from "@arelyos/persistence"
 
 function makeTemplate(id: string, steps: Record<string, unknown>[], triggerType = "manual", params: Array<{ name: string; label: string; type: string }> = [], name = "Test"): Template {
   return {

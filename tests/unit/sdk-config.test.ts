@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { resolveConfig, getEnvConfig } from "@arely/sdk";
+import { resolveConfig, getEnvConfig } from "@arelyos/sdk";
 
 describe("resolveConfig", () => {
   it("returns defaults with empty input", () => {

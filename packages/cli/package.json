@@ -1,7 +1,7 @@
 {
-  "name": "@arely/cli",
+  "name": "@arelyos/cli",
   "version": "1.0.0",
-  "private": true,
+  "private": false,
   "type": "module",
   "main": "dist/bin.js",
   "bin": {
@@ -11,11 +11,11 @@
     ".": { "import": "./dist/bin.js", "types": "./dist/bin.d.ts" }
   },
   "dependencies": {
-    "@arely/engine": "*",
-    "@arely/ui-core": "*",
-    "@arely/memory": "*",
-    "@arely/persistence": "*",
-    "@arely/benchmarks": "*",
+    "@arelyos/engine": "*",
+    "@arelyos/ui-core": "*",
+    "@arelyos/memory": "*",
+    "@arelyos/persistence": "*",
+    "@arelyos/benchmarks": "*",
     "@clack/prompts": "^1.5.1",
     "ink": "^7.0.5",
     "picocolors": "^1.1.1",

@@ -1,8 +1,8 @@
-import type { LLMAdapter } from "@arely/llm-core";
+import type { LLMAdapter } from "@arelyos/llm-core";
 import type { DecisionRecord, DecisionOutcome } from "./decision-types.js";
 import type { MemoryType, MemorySource } from "./memory-types.js";
-import type { SessionMessage } from "@arely/llm-core";
-import { getDecision, queryDecisions } from "@arely/persistence";
+import type { SessionMessage } from "@arelyos/llm-core";
+import { getDecision, queryDecisions } from "@arelyos/persistence";
 import { memoryService } from "./memory-service.js";
 
 export interface OutcomeLearning {

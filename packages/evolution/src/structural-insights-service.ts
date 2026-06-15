@@ -1,5 +1,5 @@
 import type { TemplateRegistryLike } from "./types.js"
-import { getFeedbackByTemplate } from "@arely/persistence"
+import { getFeedbackByTemplate } from "@arelyos/persistence"
 import { StructuralAnalyzer } from "./structural-analyzer.js"
 import type { StructuralPattern, StructuralInsight, StructuralInsightsResult } from "./structural-pattern-types.js"
 

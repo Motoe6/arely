@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { BenchmarkRunner } from "@arely/benchmarks/runner.js";
-import type { Collector, BenchmarkSuite } from "@arely/benchmarks/types.js";
+import { BenchmarkRunner } from "@arelyos/benchmarks/runner.js";
+import type { Collector, BenchmarkSuite } from "@arelyos/benchmarks/types.js";
 
 function dummyCollector(name: string, metrics = 1): Collector {
   const items = Array.from({ length: metrics }, (_, i) => ({

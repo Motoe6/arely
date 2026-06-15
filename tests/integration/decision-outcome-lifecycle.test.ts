@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest"
 import { initTestDb, cleanupTestDb } from "../setup.js"
-import { createSession } from "@arely/engine/persistence/session-store.js"
-import { decisionService, setOutcomeUpdatedCallback } from "@arely/engine/llm/decision-service.js"
-import { DecisionOutcomeLearner } from "@arely/engine/llm/decision-outcome-learner.js"
-import { memoryService } from "@arely/engine/llm/memory-service.js"
-import { memoryRetrievalService } from "@arely/engine/llm/memory-retrieval-service.js"
-import type { LLMAdapter } from "@arely/engine/llm/adapter.js"
-import type { SessionMessage } from "@arely/engine/types.js"
+import { createSession } from "@arelyos/engine/persistence/session-store.js"
+import { decisionService, setOutcomeUpdatedCallback } from "@arelyos/engine/llm/decision-service.js"
+import { DecisionOutcomeLearner } from "@arelyos/engine/llm/decision-outcome-learner.js"
+import { memoryService } from "@arelyos/engine/llm/memory-service.js"
+import { memoryRetrievalService } from "@arelyos/engine/llm/memory-retrieval-service.js"
+import type { LLMAdapter } from "@arelyos/engine/llm/adapter.js"
+import type { SessionMessage } from "@arelyos/engine/types.js"
 
 function mockLLM(response: string): LLMAdapter {
   return {

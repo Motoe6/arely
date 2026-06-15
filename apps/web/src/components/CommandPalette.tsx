@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { uiStore } from "@arely/ui-core/stores/ui-store";
+import { uiStore } from "@arelyos/ui-core/stores/ui-store";
 
 const COMMANDS = [
   { id: "new", label: "New Session", key: "" },

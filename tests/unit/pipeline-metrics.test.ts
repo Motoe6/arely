@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
 import { ulid } from "ulid";
-import { getDb } from "@arely/engine/persistence/database.js";
-import { agentPipelines, pipelineRuns, pipelineStepRuns } from "@arely/engine/persistence/schema.js";
-import { getOverviewMetrics, getToolMetrics, getPipelineMetrics, getErrorMetrics } from "@arely/engine/agents/pipeline-metrics.js";
+import { getDb } from "@arelyos/engine/persistence/database.js";
+import { agentPipelines, pipelineRuns, pipelineStepRuns } from "@arelyos/engine/persistence/schema.js";
+import { getOverviewMetrics, getToolMetrics, getPipelineMetrics, getErrorMetrics } from "@arelyos/engine/agents/pipeline-metrics.js";
 
 function insertPipeline(name: string): string {
   const id = ulid();

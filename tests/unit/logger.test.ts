@@ -7,7 +7,7 @@ beforeEach(() => {
 describe("Logger", () => {
   it("should write JSON output to console.log for info", async () => {
     const spy = vi.spyOn(console, "log").mockImplementation(() => {});
-    const { logger: testLogger } = await import("@arely/engine/logger.js");
+    const { logger: testLogger } = await import("@arelyos/engine/logger.js");
     testLogger.info("test-mod", "hello world");
     expect(spy).toHaveBeenCalledTimes(1);
     const call = spy.mock.calls[0][0];
@@ -21,7 +21,7 @@ describe("Logger", () => {
 
   it("should include correlationId in output when provided", async () => {
     const spy = vi.spyOn(console, "log").mockImplementation(() => {});
-    const { logger: testLogger } = await import("@arely/engine/logger.js");
+    const { logger: testLogger } = await import("@arelyos/engine/logger.js");
     testLogger.info("test", "msg", { correlationId: "abc-123" });
     const parsed = JSON.parse(spy.mock.calls[0][0]);
     expect(parsed.correlationId).toBe("abc-123");
@@ -30,7 +30,7 @@ describe("Logger", () => {
 
   it("should serialize Error objects in structured format", async () => {
     const spy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const { logger: testLogger } = await import("@arely/engine/logger.js");
+    const { logger: testLogger } = await import("@arelyos/engine/logger.js");
     const err = new Error("boom");
     testLogger.error("test", "error happened", { error: err });
     const parsed = JSON.parse(spy.mock.calls[0][0]);
@@ -42,7 +42,7 @@ describe("Logger", () => {
 
   it("should serialize non-Error errors", async () => {
     const spy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const { logger: testLogger } = await import("@arely/engine/logger.js");
+    const { logger: testLogger } = await import("@arelyos/engine/logger.js");
     testLogger.error("test", "string error", { error: "something broke" });
     const parsed = JSON.parse(spy.mock.calls[0][0]);
     expect(parsed.error.message).toBe("something broke");
@@ -51,7 +51,7 @@ describe("Logger", () => {
 
   it("should create child logger that merges extra fields", async () => {
     const spy = vi.spyOn(console, "log").mockImplementation(() => {});
-    const { logger: testLogger } = await import("@arely/engine/logger.js");
+    const { logger: testLogger } = await import("@arelyos/engine/logger.js");
     const child = testLogger.child({ sessionId: "sess-1" });
     child.info("child-mod", "child message");
     const parsed = JSON.parse(spy.mock.calls[0][0]);
@@ -62,7 +62,7 @@ describe("Logger", () => {
 
   it("should support structured object-first signature", async () => {
     const spy = vi.spyOn(console, "log").mockImplementation(() => {});
-    const { logger: testLogger } = await import("@arely/engine/logger.js");
+    const { logger: testLogger } = await import("@arelyos/engine/logger.js");
     testLogger.info({ module: "struct", message: "obj call", event: "test_event" });
     const parsed = JSON.parse(spy.mock.calls[0][0]);
     expect(parsed.module).toBe("test_event");
@@ -73,7 +73,7 @@ describe("Logger", () => {
 
   it("should write warn/error to console.error", async () => {
     const spy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const { logger: testLogger } = await import("@arely/engine/logger.js");
+    const { logger: testLogger } = await import("@arelyos/engine/logger.js");
     testLogger.warn("test", "warning");
     testLogger.error("test", "error");
     expect(spy).toHaveBeenCalledTimes(2);

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { createStrategyCollector } from "@arely/benchmarks/collectors/strategy.js";
-import type { DecisionRecord } from "@arely/persistence";
+import { createStrategyCollector } from "@arelyos/benchmarks/collectors/strategy.js";
+import type { DecisionRecord } from "@arelyos/persistence";
 
 function makeDecision(overrides: Partial<DecisionRecord> & { strategy: string; outcome: "success" | "failure" }): DecisionRecord {
   return {

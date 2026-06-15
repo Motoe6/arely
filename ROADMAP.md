@@ -90,7 +90,7 @@
 
 - All v0.1.0–0.3.0 features stable
 - Public documentation
-- npm publish (`@arely/cli`, `@arely/engine`, `@arely/sdk`)
+- npm publish (`@arelyos/cli`, `@arelyos/engine`, `@arelyos/sdk`)
 - GitHub Release with pre-built binaries
 - CI/CD pipeline
 - Contribution guidelines

@@ -1,1 +1,1 @@
-export type { ContextEpoch, EpochMessage, BuildContextOptions } from "@arely/persistence"
+export type { ContextEpoch, EpochMessage, BuildContextOptions } from "@arelyos/persistence"

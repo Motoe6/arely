@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { extractMemories, extractEpochSummary } from "@arely/engine/llm/auto-memory-extractor.js";
-import type { LLMAdapter } from "@arely/engine/llm/adapter.js";
-import type { SessionMessage } from "@arely/engine/types.js";
+import { extractMemories, extractEpochSummary } from "@arelyos/engine/llm/auto-memory-extractor.js";
+import type { LLMAdapter } from "@arelyos/engine/llm/adapter.js";
+import type { SessionMessage } from "@arelyos/engine/types.js";
 
 function mockLLM(response: string): LLMAdapter {
   return {

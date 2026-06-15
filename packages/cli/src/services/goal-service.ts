@@ -1,8 +1,8 @@
-import type { StoredGoal } from "@arely/ui-core/types/index.js";
+import type { StoredGoal } from "@arelyos/ui-core/types/index.js";
 
 export async function getGoals(): Promise<StoredGoal[]> {
   try {
-    const { goalService } = await import("@arely/engine/llm/goal-service.js");
+    const { goalService } = await import("@arelyos/engine/llm/goal-service.js");
     const goals = goalService.getActiveGoals();
     return goals.map((g: { id: string; title: string; progressPct: number; status: string }) => ({
       id: g.id,

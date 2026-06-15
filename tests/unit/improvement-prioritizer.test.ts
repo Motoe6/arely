@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { ImprovementPrioritizer } from "@arely/engine/llm/improvement-prioritizer.js";
-import { GoalUtilityScorer } from "@arely/engine/llm/goal-utility-scorer.js";
-import { createGoal, createGoalPlan, createMilestone, getMilestone } from "@arely/persistence";
-import type { ImprovementGenerationResult, GeneratedImprovement } from "@arely/engine/llm/improvement-generator-types.js";
+import { ImprovementPrioritizer } from "@arelyos/engine/llm/improvement-prioritizer.js";
+import { GoalUtilityScorer } from "@arelyos/engine/llm/goal-utility-scorer.js";
+import { createGoal, createGoalPlan, createMilestone, getMilestone } from "@arelyos/persistence";
+import type { ImprovementGenerationResult, GeneratedImprovement } from "@arelyos/engine/llm/improvement-generator-types.js";
 import { initTestDb, cleanupTestDb } from "../setup.js";
 
 describe("ImprovementPrioritizer", () => {

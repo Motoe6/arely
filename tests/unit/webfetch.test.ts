@@ -2,11 +2,11 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 let mockFetch: any;
 
-vi.mock("@arely/engine/config/index.js", () => ({
+vi.mock("@arelyos/engine/config/index.js", () => ({
   getConfig: () => ({}),
 }));
 
-import { performWebFetch } from "@arely/engine/tools/webfetch.js";
+import { performWebFetch } from "@arelyos/engine/tools/webfetch.js";
 
 beforeEach(() => {
   vi.clearAllMocks();

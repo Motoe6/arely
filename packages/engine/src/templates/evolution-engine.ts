@@ -1,6 +1,6 @@
 import { z } from "zod"
-import type { CompilerLLMAdapter } from "@arely/flow-ai-compiler"
-import type { Workflow } from "@arely/flow-runtime"
+import type { CompilerLLMAdapter } from "@arelyos/flow-ai-compiler"
+import type { Workflow } from "@arelyos/flow-runtime"
 import type { TemplateRegistry } from "./template-registry.js"
 import type { NodeRegistryLike } from "./template-types.js"
 import { TemplateRecommender } from "./template-recommender.js"

@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Text } from "ink";
 import { ToolCallCard } from "./ToolCall.js";
 import { PermissionPrompt } from "./PermissionPrompt.js";
-import { sessionStore } from "@arely/ui-core/stores/session-store.js";
+import { sessionStore } from "@arelyos/ui-core/stores/session-store.js";
 
 type ToolPart = { id: string; toolName: string; status: string; args: Record<string, unknown>; result?: string; error?: string; startTime?: number; endTime?: number };
 

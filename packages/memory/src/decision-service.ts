@@ -1,5 +1,5 @@
 import { ulid } from "ulid";
-import { createDecision, queryDecisions, getDecision, updateOutcome, getCurrentEpoch, searchMemories } from "@arely/persistence";
+import { createDecision, queryDecisions, getDecision, updateOutcome, getCurrentEpoch, searchMemories } from "@arelyos/persistence";
 import type { DecisionRecord, DecisionOutcome, DecisionQuery } from "./decision-types.js";
 
 export type OutcomeUpdatedCallback = (decisionId: string) => void | Promise<void>;

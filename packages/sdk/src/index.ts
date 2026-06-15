@@ -8,7 +8,7 @@ export type { ArelyConfig, ArelyTool, DeepPartial } from "./config.js";
 export type { ChatOptions } from "./chat.js";
 export type { AgentOptions } from "./agent.js";
 
-// Re-export key types from @arely/plugins for convenience
+// Re-export key types from @arelyos/plugins for convenience
 export type {
   ThinkingStrategy as ArelyThinkingStrategy,
   StrategyInput as ArelyStrategyInput,
@@ -21,7 +21,7 @@ export type {
   CredentialVault as ArelyCredentialVault,
   VaultEntry as ArelyVaultEntry,
   ExpressionContext as ArelyExpressionContext,
-} from "@arely/plugins";
+} from "@arelyos/plugins";
 
 export {
   OneShotStrategy,
@@ -32,4 +32,4 @@ export {
   defineCommand as defineArelyCommand,
   getCommand as getArelyCommand,
   buildFunctionSpecs as buildArelyFunctionSpecs,
-} from "@arely/plugins";
+} from "@arelyos/plugins";

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest"
-import { encrypt, decrypt, hasEncryptionKey, resetKey } from "@arely/engine/compiler/secrets-crypto.js"
+import { encrypt, decrypt, hasEncryptionKey, resetKey } from "@arelyos/engine/compiler/secrets-crypto.js"
 
 describe("SecretCrypto", () => {
   beforeEach(() => {

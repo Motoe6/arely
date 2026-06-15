@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll } from "vitest"
-import { createInMemoryDb } from "@arely/engine/persistence/database.js"
-import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arely/engine/persistence/migrate.js"
-import { resetKey } from "@arely/engine/compiler/secrets-crypto.js"
+import { createInMemoryDb } from "@arelyos/engine/persistence/database.js"
+import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arelyos/engine/persistence/migrate.js"
+import { resetKey } from "@arelyos/engine/compiler/secrets-crypto.js"
 import {
   createSecret,
   getSecret,
@@ -10,7 +10,7 @@ import {
   deleteSecret,
   getSecretByName,
   loadSecretsMap,
-} from "@arely/engine/compiler/secrets-store.js"
+} from "@arelyos/engine/compiler/secrets-store.js"
 
 describe("Secrets Store", () => {
   let db: ReturnType<typeof createInMemoryDb>

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { sessionStore } from "@arely/ui-core/stores/session-store";
+import { sessionStore } from "@arelyos/ui-core/stores/session-store";
 import { ToolCallCard } from "./ToolCallCard";
 
 export function ChatWindow() {

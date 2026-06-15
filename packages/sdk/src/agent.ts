@@ -1,5 +1,5 @@
-import type { LLMAdapter, SessionMessage as LlmSessionMessage } from "@arely/llm-core";
-import { runAgentLoop, type Tool, type ToolContext, type ToolResult, type AgentLoopOptions, type AgentLoopResult } from "@arely/agent-core";
+import type { LLMAdapter, SessionMessage as LlmSessionMessage } from "@arelyos/llm-core";
+import { runAgentLoop, type Tool, type ToolContext, type ToolResult, type AgentLoopOptions, type AgentLoopResult } from "@arelyos/agent-core";
 import type { ArelyTool } from "./config.js";
 import { ulid } from "ulid";
 

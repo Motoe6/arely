@@ -1,9 +1,9 @@
-import type { ModelDefinition } from "@arely/ui-core/types/index.js";
-import { appStore } from "@arely/ui-core/stores/app-store.js";
+import type { ModelDefinition } from "@arelyos/ui-core/types/index.js";
+import { appStore } from "@arelyos/ui-core/stores/app-store.js";
 
 export async function listModels(): Promise<ModelDefinition[]> {
   try {
-    const { modelPerformanceService } = await import("@arely/engine/llm/model-performance-service.js");
+    const { modelPerformanceService } = await import("@arelyos/engine/llm/model-performance-service.js");
     const snapshots = (modelPerformanceService as unknown as { getSnapshots: () => { provider: string; model: string }[] }).getSnapshots();
     const seen = new Set<string>();
     const models: ModelDefinition[] = [];

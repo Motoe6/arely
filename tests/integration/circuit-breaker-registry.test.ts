@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { PipelineToolExecutor, PipelineToolError } from "@arely/engine/agents/pipeline-tool-executor.js";
-import { PipelineCircuitBreakerRegistry } from "@arely/engine/agents/circuit-breaker-registry.js";
+import { PipelineToolExecutor, PipelineToolError } from "@arelyos/engine/agents/pipeline-tool-executor.js";
+import { PipelineCircuitBreakerRegistry } from "@arelyos/engine/agents/circuit-breaker-registry.js";
 
 describe("Pipeline Circuit Breaker Integration", () => {
   beforeEach(() => {

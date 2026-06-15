@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { SlackNotifier } from "@arely/engine/agents/notifiers/slack-notifier.js";
-import type { Alert } from "@arely/engine/agents/alert-rules.js";
+import { SlackNotifier } from "@arelyos/engine/agents/notifiers/slack-notifier.js";
+import type { Alert } from "@arelyos/engine/agents/alert-rules.js";
 
 const sampleAlert: Alert = {
   ruleId: "test_rule",

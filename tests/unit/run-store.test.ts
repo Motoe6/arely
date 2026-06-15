@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeAll } from "vitest"
 import { eq } from "drizzle-orm"
-import { createInMemoryDb } from "@arely/engine/persistence/database.js"
-import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arely/engine/persistence/migrate.js"
-import { workflows } from "@arely/engine/persistence/schema.js"
+import { createInMemoryDb } from "@arelyos/engine/persistence/database.js"
+import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arelyos/engine/persistence/migrate.js"
+import { workflows } from "@arelyos/engine/persistence/schema.js"
 import {
   createRun,
   getRun,
@@ -12,7 +12,7 @@ import {
   completeStepRun,
   getRunSteps,
   getRunWithSteps,
-} from "@arely/engine/persistence/run-store.js"
+} from "@arelyos/engine/persistence/run-store.js"
 
 describe("Workflow Run Store", () => {
   let db: ReturnType<typeof createInMemoryDb>

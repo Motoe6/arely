@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { ImprovementEvaluator } from "@arely/engine/llm/improvement-evaluator.js";
-import type { SelfAssessment, Finding } from "@arely/engine/llm/self-assessment-types.js";
+import { ImprovementEvaluator } from "@arelyos/engine/llm/improvement-evaluator.js";
+import type { SelfAssessment, Finding } from "@arelyos/engine/llm/self-assessment-types.js";
 
 describe("ImprovementEvaluator", () => {
   const evaluator = new ImprovementEvaluator();

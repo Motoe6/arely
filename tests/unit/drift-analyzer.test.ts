@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { ExecutionComparator } from "@arely/engine/agents/drift-analyzer.js";
-import type { DriftKind } from "@arely/engine/agents/drift-analyzer.js";
-import { createPipeline, createPipelineRun, updatePipelineRunStatus } from "@arely/engine/agents/pipeline-store.js";
-import { getDb } from "@arely/engine/persistence/database.js";
-import { agents, pipelineStepRuns, pipelineRuns, pipelineSteps, agentPipelines } from "@arely/engine/persistence/schema.js";
+import { ExecutionComparator } from "@arelyos/engine/agents/drift-analyzer.js";
+import type { DriftKind } from "@arelyos/engine/agents/drift-analyzer.js";
+import { createPipeline, createPipelineRun, updatePipelineRunStatus } from "@arelyos/engine/agents/pipeline-store.js";
+import { getDb } from "@arelyos/engine/persistence/database.js";
+import { agents, pipelineStepRuns, pipelineRuns, pipelineSteps, agentPipelines } from "@arelyos/engine/persistence/schema.js";
 
 function insertStepRun(data: {
   runId: string;

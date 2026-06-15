@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { ExecutionForecaster } from "@arely/engine/llm/execution-forecaster.js";
+import { ExecutionForecaster } from "@arelyos/engine/llm/execution-forecaster.js";
 import { initTestDb, cleanupTestDb } from "../setup.js";
 
 describe("ExecutionForecaster", () => {

@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeAll } from "vitest"
-import { createInMemoryDb } from "@arely/engine/persistence/database.js"
-import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arely/engine/persistence/migrate.js"
+import { createInMemoryDb } from "@arelyos/engine/persistence/database.js"
+import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arelyos/engine/persistence/migrate.js"
 import {
   createFeedback,
   getFeedbackByWorkflow,
   getTemplateMetrics,
-} from "@arely/engine/persistence/feedback-store.js"
-import { TemplateMetricsService } from "@arely/engine/templates/template-metrics.js"
+} from "@arelyos/engine/persistence/feedback-store.js"
+import { TemplateMetricsService } from "@arelyos/engine/templates/template-metrics.js"
 
 describe("Feedback Integration", () => {
   let db: ReturnType<typeof createInMemoryDb>

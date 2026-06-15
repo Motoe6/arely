@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@arely/ui-core"],
+  transpilePackages: ["@arelyos/ui-core"],
   eslint: { ignoreDuringBuilds: true },
 };
 

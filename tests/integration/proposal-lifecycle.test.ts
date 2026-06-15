@@ -1,13 +1,13 @@
 import { describe, it, expect, beforeAll } from "vitest"
-import { createInMemoryDb } from "@arely/engine/persistence/database.js"
-import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arely/engine/persistence/migrate.js"
+import { createInMemoryDb } from "@arelyos/engine/persistence/database.js"
+import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arelyos/engine/persistence/migrate.js"
 import {
   createProposal,
   listProposals,
   getProposal,
   updateProposalStatus,
-} from "@arely/engine/persistence/proposal-store.js"
-import type { ProposalRecord } from "@arely/engine/persistence/proposal-store.js"
+} from "@arelyos/engine/persistence/proposal-store.js"
+import type { ProposalRecord } from "@arelyos/engine/persistence/proposal-store.js"
 
 describe("Proposal Lifecycle Integration", () => {
   let db: ReturnType<typeof createInMemoryDb>

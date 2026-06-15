@@ -1,5 +1,5 @@
-import type { StoredSession } from "@arely/ui-core/types/index.js";
-import { sessionStore } from "@arely/ui-core/stores/session-store.js";
+import type { StoredSession } from "@arelyos/ui-core/types/index.js";
+import { sessionStore } from "@arelyos/ui-core/stores/session-store.js";
 
 export interface SessionEngine {
   run(query: string): Promise<void>;

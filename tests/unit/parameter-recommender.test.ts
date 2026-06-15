@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest"
-import { ParameterRecommenderService } from "@arely/engine/templates/parameter-recommender.js"
-import { ParameterEffectivenessService } from "@arely/engine/templates/parameter-effectiveness.js"
+import { ParameterRecommenderService } from "@arelyos/engine/templates/parameter-recommender.js"
+import { ParameterEffectivenessService } from "@arelyos/engine/templates/parameter-effectiveness.js"
 
 function mockInsights(overrides: Partial<{
   templateId: string

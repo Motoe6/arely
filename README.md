@@ -3,7 +3,7 @@
 **A modular Agent Operating System (AgentOS)** for long-lived goals, predictive planning, self-improvement, and cooperative agent swarms.
 
 ```bash
-npm install -g @arely/cli
+npm install -g @arelyos/cli
 arely
 ```
 
@@ -29,7 +29,7 @@ arely
 ### Interfaces
 
 - **TUI** — Terminal UI via Ink v7 + React 19 (HeaderBar, Sidebar, Streaming, Tool Cards, Command Palette, Goals, Dashboard, Swarm Viz)
-- **Web** — Next.js 15 / React 19 / CSS dark theme (Chat, Dashboard, Goals, Swarms, SSE, shared stores via `@arely/ui-core`)
+- **Web** — Next.js 15 / React 19 / CSS dark theme (Chat, Dashboard, Goals, Swarms, SSE, shared stores via `@arelyos/ui-core`)
 - **CLI** — `arely serve`, `arely web`, `arely doctor`, `arely bench`, `arely models`, `arely version`
 
 ### Resilience
@@ -53,7 +53,7 @@ arely
 
 ```bash
 # Install globally
-npm install -g @arely/cli
+npm install -g @arelyos/cli
 
 # Start the engine server
 arely serve
@@ -88,7 +88,7 @@ npm run build:web
 ## Architecture
 
 ```
-@arely/platform (monorepo)
+@arelyos/platform (monorepo)
 ├── packages/
 │   ├── engine/         # Core engine — LLM, tools, persistence, server
 │   ├── cli/            # TUI (Ink) + CLI dispatcher

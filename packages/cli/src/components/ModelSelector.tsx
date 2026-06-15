@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Text, useInput } from "ink";
-import { uiStore } from "@arely/ui-core/stores/ui-store.js";
-import { appStore } from "@arely/ui-core/stores/app-store.js";
+import { uiStore } from "@arelyos/ui-core/stores/ui-store.js";
+import { appStore } from "@arelyos/ui-core/stores/app-store.js";
 import { listModels, changeModel } from "../services/model-service.js";
 
 export function ModelSelector() {

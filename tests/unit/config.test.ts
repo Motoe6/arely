@@ -9,7 +9,7 @@ describe("Config", () => {
     vi.stubEnv("ARELY_API_KEY", "sk-test-key");
     vi.stubEnv("ARELY_MODEL", "gpt-4o");
 
-    const { loadConfig } = await import("@arely/engine/config/index.js");
+    const { loadConfig } = await import("@arelyos/engine/config/index.js");
     const config = loadConfig();
 
     expect(config).toBeDefined();
@@ -25,7 +25,7 @@ describe("Config", () => {
   it("should use defaults for optional values", async () => {
     vi.stubEnv("ARELY_API_KEY", "sk-test-key");
 
-    const { loadConfig } = await import("@arely/engine/config/index.js");
+    const { loadConfig } = await import("@arelyos/engine/config/index.js");
     const config = loadConfig();
 
     expect(config.DB_PATH).toBe("./data/arely.db");
@@ -40,7 +40,7 @@ describe("Config", () => {
     vi.stubEnv("ARELY_API_KEY", "sk-test-key");
     vi.stubEnv("PORT", "3000");
 
-    const { loadConfig } = await import("@arely/engine/config/index.js");
+    const { loadConfig } = await import("@arelyos/engine/config/index.js");
     const config = loadConfig();
 
     expect(config.PORT).toBe(3000);
@@ -50,7 +50,7 @@ describe("Config", () => {
   });
 
   it("should load with defaults when no env vars set", async () => {
-    const { loadConfig } = await import("@arely/engine/config/index.js");
+    const { loadConfig } = await import("@arelyos/engine/config/index.js");
     const config = loadConfig();
 
     expect(config.ARELY_API_KEY).toBeUndefined();
@@ -69,7 +69,7 @@ describe("Config", () => {
     const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => undefined as never);
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
-    await import("@arely/engine/config/index.js").then((m) => m.loadConfig());
+    await import("@arelyos/engine/config/index.js").then((m) => m.loadConfig());
 
     expect(exitSpy).toHaveBeenCalledWith(1);
     expect(consoleSpy).toHaveBeenCalled();
@@ -83,7 +83,7 @@ describe("Config", () => {
     vi.stubEnv("ARELY_API_KEY", "sk-test-key");
     vi.stubEnv("ARELY_MODEL", "gpt-4o");
 
-    const { loadConfig, getConfig } = await import("@arely/engine/config/index.js");
+    const { loadConfig, getConfig } = await import("@arelyos/engine/config/index.js");
     const config1 = loadConfig();
     const config2 = loadConfig();
     const config3 = getConfig();
@@ -101,7 +101,7 @@ describe("getConfig", () => {
   });
 
   it("should throw when config not loaded", async () => {
-    const { getConfig } = await import("@arely/engine/config/index.js");
+    const { getConfig } = await import("@arelyos/engine/config/index.js");
     expect(() => getConfig()).toThrow("Config not loaded");
   });
 });

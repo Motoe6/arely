@@ -2,24 +2,24 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest"
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs"
 import { join } from "node:path"
 import { tmpdir } from "node:os"
-import type { NodeDefinition } from "@arely/flow-sdk"
-import { globalNodeRegistry } from "@arely/flow-sdk"
-import { BuilderService } from "@arely/engine/compiler/builder-service.js"
-import { createInMemoryDb } from "@arely/engine/persistence/database.js"
-import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arely/engine/persistence/migrate.js"
-import { createWorkflow, createWorkflowVersion, getWorkflowWithCurrentVersion } from "@arely/engine/persistence/workflow-store.js"
-import { createRun, createStepRun, completeStepRun, completeRun } from "@arely/engine/persistence/run-store.js"
-import { resetKey } from "@arely/engine/compiler/secrets-crypto.js"
-import type { CompilerLLMAdapter, WorkflowIntent } from "@arely/flow-ai-compiler"
-import { createSchedule, listSchedules, getSchedule, deleteSchedule, getDueSchedules } from "@arely/engine/compiler/scheduler-store.js"
-import { createSecret, getSecret, listSecrets, updateSecret, deleteSecret, loadSecretsMap } from "@arely/engine/compiler/secrets-store.js"
-import { replayRun, replayFromStep } from "@arely/engine/compiler/replay-service.js"
-import { NodePackageLoader } from "@arely/engine/compiler/node-package-loader.js"
+import type { NodeDefinition } from "@arelyos/flow-sdk"
+import { globalNodeRegistry } from "@arelyos/flow-sdk"
+import { BuilderService } from "@arelyos/engine/compiler/builder-service.js"
+import { createInMemoryDb } from "@arelyos/engine/persistence/database.js"
+import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arelyos/engine/persistence/migrate.js"
+import { createWorkflow, createWorkflowVersion, getWorkflowWithCurrentVersion } from "@arelyos/engine/persistence/workflow-store.js"
+import { createRun, createStepRun, completeStepRun, completeRun } from "@arelyos/engine/persistence/run-store.js"
+import { resetKey } from "@arelyos/engine/compiler/secrets-crypto.js"
+import type { CompilerLLMAdapter, WorkflowIntent } from "@arelyos/flow-ai-compiler"
+import { createSchedule, listSchedules, getSchedule, deleteSchedule, getDueSchedules } from "@arelyos/engine/compiler/scheduler-store.js"
+import { createSecret, getSecret, listSecrets, updateSecret, deleteSecret, loadSecretsMap } from "@arelyos/engine/compiler/secrets-store.js"
+import { replayRun, replayFromStep } from "@arelyos/engine/compiler/replay-service.js"
+import { NodePackageLoader } from "@arelyos/engine/compiler/node-package-loader.js"
 import {
   listInstalledNodes,
   getInstalledNode,
   getInstalledNodeByType,
-} from "@arely/engine/compiler/node-marketplace-store.js"
+} from "@arelyos/engine/compiler/node-marketplace-store.js"
 
 const EchoNode: NodeDefinition = {
   type: "echo",

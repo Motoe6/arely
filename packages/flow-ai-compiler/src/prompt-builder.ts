@@ -1,4 +1,4 @@
-import { globalNodeRegistry } from "@arely/flow-sdk"
+import { globalNodeRegistry } from "@arelyos/flow-sdk"
 import { FEW_SHOT_EXAMPLES } from "./examples.js"
 
 export interface PromptOptions {

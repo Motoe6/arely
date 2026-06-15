@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { GoalResumeService } from "@arely/engine/llm/goal-resume-service.js";
-import type { ResumeContext } from "@arely/engine/llm/goal-resume-service.js";
+import { GoalResumeService } from "@arelyos/engine/llm/goal-resume-service.js";
+import type { ResumeContext } from "@arelyos/engine/llm/goal-resume-service.js";
 import {
   createGoal,
   createGoalPlan,
   createMilestone,
   updateGoal,
-} from "@arely/persistence";
+} from "@arelyos/persistence";
 import { initTestDb, cleanupTestDb } from "../setup.js";
 
 describe("GoalResumeService", () => {

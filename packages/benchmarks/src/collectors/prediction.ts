@@ -1,4 +1,4 @@
-import type { PredictionCalibrator } from "@arely/engine/llm/prediction-calibrator.js";
+import type { PredictionCalibrator } from "@arelyos/engine/llm/prediction-calibrator.js";
 import type { Collector, BenchmarkMetric } from "../types.js";
 
 export function createPredictionCollector(

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { agentMemorySet, agentMemoryGet, agentMemoryList, agentMemoryDelete, agentMemoryClear } from "@arely/engine/tools/memory.js";
+import { agentMemorySet, agentMemoryGet, agentMemoryList, agentMemoryDelete, agentMemoryClear } from "@arelyos/engine/tools/memory.js";
 
 describe("Agent Memory Integration", () => {
   beforeAll(() => initTestDb());

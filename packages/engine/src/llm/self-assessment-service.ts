@@ -1,4 +1,4 @@
-import { queryDecisions } from "@arely/persistence";
+import { queryDecisions } from "@arelyos/persistence";
 import { PredictionCalibrator, predictionCalibrator as defaultCalibrator } from "./prediction-calibrator.js";
 import { ModelPerformanceService, modelPerformanceService as defaultModelService } from "./model-performance-service.js";
 import { GoalService, goalService as defaultGoalService } from "./goal-service.js";

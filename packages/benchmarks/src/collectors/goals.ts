@@ -1,5 +1,5 @@
-import type { Goal } from "@arely/persistence";
-import type { GoalPlan } from "@arely/persistence";
+import type { Goal } from "@arelyos/persistence";
+import type { GoalPlan } from "@arelyos/persistence";
 import type { Collector, BenchmarkMetric } from "../types.js";
 
 export function createGoalsCollector(

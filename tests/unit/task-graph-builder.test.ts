@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { TaskGraphBuilder, computePhases } from "@arely/engine/llm/task-graph-builder.js";
-import type { SwarmTask } from "@arely/engine/llm/swarm-task-types.js";
+import { TaskGraphBuilder, computePhases } from "@arelyos/engine/llm/task-graph-builder.js";
+import type { SwarmTask } from "@arelyos/engine/llm/swarm-task-types.js";
 
 describe("computePhases", () => {
   it("should return empty phases for no tasks", () => {

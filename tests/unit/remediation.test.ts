@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { generateRemediations } from "@arely/engine/agents/remediation.js";
-import type { ReliabilityInsight } from "@arely/engine/agents/pipeline-insights.js";
-import type { Alert } from "@arely/engine/agents/alert-rules.js";
+import { generateRemediations } from "@arelyos/engine/agents/remediation.js";
+import type { ReliabilityInsight } from "@arelyos/engine/agents/pipeline-insights.js";
+import type { Alert } from "@arelyos/engine/agents/alert-rules.js";
 
 const baseInsight = (overrides: Partial<ReliabilityInsight> = {}): ReliabilityInsight => ({
   id: "test::tool::t1::warning",

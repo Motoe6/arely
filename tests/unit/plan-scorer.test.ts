@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { PlanScorer } from "@arely/engine/llm/plan-scorer.js";
-import type { ExecutionPrediction } from "@arely/engine/llm/prediction-types.js";
+import { PlanScorer } from "@arelyos/engine/llm/plan-scorer.js";
+import type { ExecutionPrediction } from "@arelyos/engine/llm/prediction-types.js";
 
 describe("PlanScorer", () => {
   const scorer = new PlanScorer();

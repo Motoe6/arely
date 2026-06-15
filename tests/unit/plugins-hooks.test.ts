@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { PluginRegistry, definePlugin, type ArelyPluginHooks } from "@arely/plugins";
+import { PluginRegistry, definePlugin, type ArelyPluginHooks } from "@arelyos/plugins";
 
 describe("Plugin Hooks", () => {
   it("collects hooks from multiple enabled plugins", async () => {

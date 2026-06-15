@@ -1,1 +1,1 @@
-export * from "@arely/evolution"
+export * from "@arelyos/evolution"

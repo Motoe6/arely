@@ -1,4 +1,4 @@
-import { getDb, modelPerformance } from "@arely/persistence";
+import { getDb, modelPerformance } from "@arelyos/persistence";
 import { eq, and, desc } from "drizzle-orm";
 import { ulid } from "ulid";
 import { decisionService } from "./decision-service.js";

@@ -3,12 +3,12 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 const mockConfig = vi.fn();
 let mockFetch: any;
 
-vi.mock("@arely/engine/config/index.js", () => ({
+vi.mock("@arelyos/engine/config/index.js", () => ({
   getConfig: () => mockConfig(),
 }));
 
-import { ExaProvider, ParallelProvider, performWebSearch } from "@arely/engine/tools/websearch.js";
-import type { SearchProvider, SearchResultItem } from "@arely/engine/tools/base-tool.js";
+import { ExaProvider, ParallelProvider, performWebSearch } from "@arelyos/engine/tools/websearch.js";
+import type { SearchProvider, SearchResultItem } from "@arelyos/engine/tools/base-tool.js";
 
 beforeEach(() => {
   vi.clearAllMocks();

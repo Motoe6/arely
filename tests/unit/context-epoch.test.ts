@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest"
 import { initTestDb, cleanupTestDb } from "../setup.js"
-import { createSession } from "@arely/engine/persistence/session-store.js"
+import { createSession } from "@arelyos/engine/persistence/session-store.js"
 import {
   createEpoch,
   getEpoch,
@@ -11,7 +11,7 @@ import {
   getEpochMessages,
   getRecentMessages,
   getEpochMessageCount as getMessageCount,
-} from "@arely/engine/persistence/context-epoch-store.js"
+} from "@arelyos/engine/persistence/context-epoch-store.js"
 import {
   initEpoch,
   addEpochMessageToSession,
@@ -22,7 +22,7 @@ import {
   setEpochThreshold,
   setEpochSummarizer,
   type EpochSummarizer,
-} from "@arely/engine/llm/context-epoch-service.js"
+} from "@arelyos/engine/llm/context-epoch-service.js"
 
 let sessionId: string
 

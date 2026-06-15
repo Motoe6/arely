@@ -1,4 +1,4 @@
-import { MemoryService } from "@arely/memory";
+import { MemoryService } from "@arelyos/memory";
 
 export class Memory {
   private service: MemoryService;

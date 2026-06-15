@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { ChatSession } from "@arely/sdk";
+import { ChatSession } from "@arelyos/sdk";
 
 const makeMockLlm = (responses: string[]) => ({
   complete: vi.fn().mockImplementation(async function* () {

@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeAll, vi } from "vitest"
-import { createInMemoryDb } from "@arely/engine/persistence/database.js"
-import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arely/engine/persistence/migrate.js"
-import { createSchedule } from "@arely/engine/compiler/scheduler-store.js"
-import { WorkflowScheduler } from "@arely/engine/compiler/workflow-scheduler.js"
+import { createInMemoryDb } from "@arelyos/engine/persistence/database.js"
+import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arelyos/engine/persistence/migrate.js"
+import { createSchedule } from "@arelyos/engine/compiler/scheduler-store.js"
+import { WorkflowScheduler } from "@arelyos/engine/compiler/workflow-scheduler.js"
 
 describe("WorkflowScheduler", () => {
   let db: ReturnType<typeof createInMemoryDb>

@@ -1,4 +1,4 @@
-import type { LLMAdapter } from "@arely/llm-core";
+import type { LLMAdapter } from "@arelyos/llm-core";
 import type { StepExecutionResult } from "../types.js";
 
 export type SynthesizerResult =

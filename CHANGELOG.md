@@ -95,7 +95,7 @@
   - `arely bench` — run benchmarks
   - `arely models` — list available models
   - `arely version` — print version
-- **Shared stores** (`@arely/ui-core`): app-store, session-store, ui-store — single source of truth for Ink and React DOM
+- **Shared stores** (`@arelyos/ui-core`): app-store, session-store, ui-store — single source of truth for Ink and React DOM
 
 ### Infrastructure
 

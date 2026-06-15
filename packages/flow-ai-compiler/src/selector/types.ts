@@ -1,4 +1,4 @@
-import type { NodeDefinition } from "@arely/flow-sdk"
+import type { NodeDefinition } from "@arelyos/flow-sdk"
 
 export type MatchStrategy = "exact" | "intent_pattern" | "keyword" | "category_fallback" | "generic_fallback"
 

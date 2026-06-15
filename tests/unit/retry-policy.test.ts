@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { computeDelay } from "@arely/engine/agents/retry-policy.js";
-import type { RetryStrategy } from "@arely/engine/agents/execution-contract.js";
+import { computeDelay } from "@arelyos/engine/agents/retry-policy.js";
+import type { RetryStrategy } from "@arelyos/engine/agents/execution-contract.js";
 
 describe("computeDelay", () => {
   describe("fixed", () => {

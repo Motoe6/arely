@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { PlanOutputSchema, validateBusinessRules, normalizePlanOutput } from "@arely/engine/planner/plan-schema.js";
-import type { Tool } from "@arely/engine/tools/base-tool.js";
+import { PlanOutputSchema, validateBusinessRules, normalizePlanOutput } from "@arelyos/engine/planner/plan-schema.js";
+import type { Tool } from "@arelyos/engine/tools/base-tool.js";
 
 const mockTools = new Map<string, Tool>([
   ["websearch", { name: "websearch", description: "Search", async execute() { return { content: "" }; } }],

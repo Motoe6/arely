@@ -1,7 +1,7 @@
 {
-  "name": "@arely/sdk",
+  "name": "@arelyos/sdk",
   "version": "0.1.0",
-  "private": true,
+  
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
@@ -9,11 +9,11 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@arely/llm-core": "*",
-    "@arely/agent-core": "*",
-    "@arely/memory": "*",
-    "@arely/persistence": "*",
-    "@arely/plugins": "*",
+    "@arelyos/llm-core": "*",
+    "@arelyos/agent-core": "*",
+    "@arelyos/memory": "*",
+    "@arelyos/persistence": "*",
+    "@arelyos/plugins": "*",
     "ulid": "^3.0.2",
     "zod": "^4.4.3"
   },

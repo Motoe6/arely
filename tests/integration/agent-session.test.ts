@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import type { SessionMessage } from "@arely/engine/types.js";
-import type { LLMAdapter, LLMResponse } from "@arely/engine/llm/adapter.js";
+import type { SessionMessage } from "@arelyos/engine/types.js";
+import type { LLMAdapter, LLMResponse } from "@arelyos/engine/llm/adapter.js";
 
 const mockEmit = vi.fn();
 
-vi.mock("@arely/engine/tools/websearch.js", async (importOriginal) => {
+vi.mock("@arelyos/engine/tools/websearch.js", async (importOriginal) => {
   const actual = await importOriginal();
   return {
     ...actual,
@@ -15,7 +15,7 @@ vi.mock("@arely/engine/tools/websearch.js", async (importOriginal) => {
   };
 });
 
-vi.mock("@arely/engine/tools/webfetch.js", async (importOriginal) => {
+vi.mock("@arelyos/engine/tools/webfetch.js", async (importOriginal) => {
   const actual = await importOriginal();
   return {
     ...actual,
@@ -25,7 +25,7 @@ vi.mock("@arely/engine/tools/webfetch.js", async (importOriginal) => {
   };
 });
 
-vi.mock("@arely/engine/config/index.js", () => ({
+vi.mock("@arelyos/engine/config/index.js", () => ({
   loadConfig: vi.fn(),
   getConfig: () => ({
     TOOL_TIMEOUT_MS: 5000,
@@ -48,12 +48,12 @@ vi.mock("@arely/engine/config/index.js", () => ({
   }),
 }));
 
-vi.mock("@arely/engine/persistence/approval-cache-store.js", () => ({
+vi.mock("@arelyos/engine/persistence/approval-cache-store.js", () => ({
   findMatchingApproval: vi.fn(),
   setApproval: vi.fn(),
 }));
 
-import { AgentSession } from "@arely/engine/server/session.js";
+import { AgentSession } from "@arelyos/engine/server/session.js";
 
 function createSseMock() {
   return { emit: mockEmit };
@@ -192,7 +192,7 @@ describe("AgentSession integration", () => {
       [{ content: "Recovered from error." }],
     ]);
 
-    const websearch = await import("@arely/engine/tools/websearch.js");
+    const websearch = await import("@arelyos/engine/tools/websearch.js");
     (websearch.performWebSearch as any).mockRejectedValue(new Error("Service unavailable"));
 
     const session = new AgentSession(sse, llm, {

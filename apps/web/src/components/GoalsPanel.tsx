@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { uiStore } from "@arely/ui-core/stores/ui-store";
+import { uiStore } from "@arelyos/ui-core/stores/ui-store";
 
 const ENGINE_URL = process.env.NEXT_PUBLIC_ENGINE_URL || "http://localhost:8081";
 

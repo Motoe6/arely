@@ -1,1 +1,1 @@
-export * from "@arely/agent-core";
+export * from "@arelyos/agent-core";

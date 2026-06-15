@@ -2,7 +2,7 @@ import { eq, desc, sql } from "drizzle-orm"
 import { ulid } from "ulid"
 import { getDb } from "./database.js"
 import { workflows, workflowVersions } from "./schema.js"
-import type { Workflow } from "@arely/flow-runtime"
+import type { Workflow } from "@arelyos/flow-runtime"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type DbClient = any

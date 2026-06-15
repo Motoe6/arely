@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { createGoalsCollector } from "@arely/benchmarks/collectors/goals.js";
-import type { Goal, GoalPlan } from "@arely/persistence";
+import { createGoalsCollector } from "@arelyos/benchmarks/collectors/goals.js";
+import type { Goal, GoalPlan } from "@arelyos/persistence";
 
 function makeGoal(overrides: Partial<Goal> & { status: Goal["status"] }): Goal {
   return {

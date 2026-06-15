@@ -1,13 +1,13 @@
 import { describe, it, expect, beforeAll } from "vitest"
-import { createInMemoryDb } from "@arely/engine/persistence/database.js"
-import { CREATE_TABLES, MIGRATIONS, CREATE_INDEXES } from "@arely/engine/persistence/migrate.js"
+import { createInMemoryDb } from "@arelyos/engine/persistence/database.js"
+import { CREATE_TABLES, MIGRATIONS, CREATE_INDEXES } from "@arelyos/engine/persistence/migrate.js"
 import {
   createAuditRecord,
   getAuditByTemplate,
   getAuditByProposal,
   listAudit,
-} from "@arely/engine/persistence/evolution-audit-store.js"
-import type { EvidenceSnapshot } from "@arely/engine/evolution/evolution-types.js"
+} from "@arelyos/engine/persistence/evolution-audit-store.js"
+import type { EvidenceSnapshot } from "@arelyos/engine/evolution/evolution-types.js"
 
 describe("EvolutionAuditStore", () => {
   let db: ReturnType<typeof createInMemoryDb>

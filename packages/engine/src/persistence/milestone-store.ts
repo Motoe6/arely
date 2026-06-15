@@ -1,1 +1,1 @@
-export * from "@arely/persistence";
+export * from "@arelyos/persistence";

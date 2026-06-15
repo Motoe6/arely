@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { ReliableNotificationService, type NotificationServiceConfig } from "@arely/engine/agents/notifiers/notification-service.js";
-import type { AlertNotifier } from "@arely/engine/agents/notifiers/notifier-types.js";
-import type { NotificationStore, NotificationRecord } from "@arely/engine/agents/notifiers/notification-store.js";
-import type { Alert } from "@arely/engine/agents/alert-rules.js";
+import { ReliableNotificationService, type NotificationServiceConfig } from "@arelyos/engine/agents/notifiers/notification-service.js";
+import type { AlertNotifier } from "@arelyos/engine/agents/notifiers/notifier-types.js";
+import type { NotificationStore, NotificationRecord } from "@arelyos/engine/agents/notifiers/notification-store.js";
+import type { Alert } from "@arelyos/engine/agents/alert-rules.js";
 
 const sampleAlert: Alert = {
   ruleId: "test_rule",

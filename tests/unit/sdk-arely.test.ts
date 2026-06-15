@@ -17,10 +17,10 @@ const mockPersistence = vi.hoisted(() => ({
   pushSchema: vi.fn(),
 }));
 
-vi.mock("@arely/persistence", () => mockPersistence);
-vi.mock("@arely/llm-core", () => mockLlmCore);
+vi.mock("@arelyos/persistence", () => mockPersistence);
+vi.mock("@arelyos/llm-core", () => mockLlmCore);
 
-import { Arely } from "@arely/sdk";
+import { Arely } from "@arelyos/sdk";
 
 describe("Arely", () => {
   beforeEach(() => {

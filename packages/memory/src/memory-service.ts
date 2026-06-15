@@ -1,6 +1,6 @@
 import { ulid } from "ulid";
 import type { MemoryRecord, MemoryType, MemorySearchQuery, MemorySource } from "./memory-types.js";
-import * as store from "@arely/persistence";
+import * as store from "@arelyos/persistence";
 
 export class MemoryService {
   async setMemory(

@@ -1,20 +1,20 @@
 import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { AgentScheduler } from "@arely/engine/agents/scheduler.js";
-import { createPipeline, createPipelineStep, getPipelineRuns } from "@arely/engine/agents/pipeline-store.js";
+import { AgentScheduler } from "@arelyos/engine/agents/scheduler.js";
+import { createPipeline, createPipelineStep, getPipelineRuns } from "@arelyos/engine/agents/pipeline-store.js";
 
-vi.mock("@arely/engine/agents/runtime.js", () => ({
+vi.mock("@arelyos/engine/agents/runtime.js", () => ({
   executeAgent: vi.fn().mockResolvedValue({ ok: true }),
 }));
 
-vi.mock("@arely/engine/agents/pipeline.js", () => ({
+vi.mock("@arelyos/engine/agents/pipeline.js", () => ({
   executePipeline: vi.fn().mockResolvedValue({ ok: true, runId: "mock-run", stepResults: [] }),
 }));
 
-import { executePipeline } from "@arely/engine/agents/pipeline.js";
+import { executePipeline } from "@arelyos/engine/agents/pipeline.js";
 import { ulid } from "ulid";
-import { getDb } from "@arely/engine/persistence/database.js";
-import { agents, agentPipelines, pipelineSteps, pipelineRuns } from "@arely/engine/persistence/schema.js";
+import { getDb } from "@arelyos/engine/persistence/database.js";
+import { agents, agentPipelines, pipelineSteps, pipelineRuns } from "@arelyos/engine/persistence/schema.js";
 
 const mockConfig = {
   sessionManager: {} as any,

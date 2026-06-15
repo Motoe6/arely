@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { SwarmTaskExecutor, getSystemPrompt } from "@arely/engine/llm/swarm-executor.js";
-import { SharedSwarmMemory } from "@arely/engine/llm/shared-swarm-memory.js";
-import type { AgentExecutor, AgentRole } from "@arely/engine/llm/swarm-orchestrator.js";
-import type { SwarmTask } from "@arely/engine/llm/swarm-task-types.js";
+import { SwarmTaskExecutor, getSystemPrompt } from "@arelyos/engine/llm/swarm-executor.js";
+import { SharedSwarmMemory } from "@arelyos/engine/llm/shared-swarm-memory.js";
+import type { AgentExecutor, AgentRole } from "@arelyos/engine/llm/swarm-orchestrator.js";
+import type { SwarmTask } from "@arelyos/engine/llm/swarm-task-types.js";
 
 describe("getSystemPrompt", () => {
   it("should return prompts for all roles", () => {

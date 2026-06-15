@@ -5,11 +5,11 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import http from "node:http";
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { createHttpServer } from "@arely/engine/transport/http-server.js";
-import { SSEBus } from "@arely/engine/server/sse.js";
-import { loadConfig } from "@arely/engine/config/index.js";
-import { insertEvent } from "@arely/engine/persistence/policy-audit-store.js";
-import type { PolicyRule } from "@arely/engine/agents/policy/policy-types.js";
+import { createHttpServer } from "@arelyos/engine/transport/http-server.js";
+import { SSEBus } from "@arelyos/engine/server/sse.js";
+import { loadConfig } from "@arelyos/engine/config/index.js";
+import { insertEvent } from "@arelyos/engine/persistence/policy-audit-store.js";
+import type { PolicyRule } from "@arelyos/engine/agents/policy/policy-types.js";
 
 type Middleware = (req: IncomingMessage, res: ServerResponse, next: () => void) => void;
 

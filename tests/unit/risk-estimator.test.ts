@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { RiskEstimator } from "@arely/engine/llm/risk-estimator.js";
-import type { ExecutionPrediction } from "@arely/engine/llm/prediction-types.js";
+import { RiskEstimator } from "@arelyos/engine/llm/risk-estimator.js";
+import type { ExecutionPrediction } from "@arelyos/engine/llm/prediction-types.js";
 
 describe("RiskEstimator", () => {
   const estimator = new RiskEstimator();

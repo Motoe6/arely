@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest"
-import { EvolutionProposalService } from "@arely/engine/evolution/evolution-proposal-service.js"
+import { EvolutionProposalService } from "@arelyos/engine/evolution/evolution-proposal-service.js"
 
 function mockRecommendations(overrides: Partial<{
   templateId: string

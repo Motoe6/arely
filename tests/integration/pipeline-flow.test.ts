@@ -1,19 +1,19 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
 import { ulid } from "ulid";
-import { createPipeline, createPipelineStep, getPipelineSteps, getPipelineRuns, getPipelineRun } from "@arely/engine/agents/pipeline-store.js";
-import { agentMemorySet, agentMemoryGet, agentMemoryClear } from "@arely/engine/tools/memory.js";
+import { createPipeline, createPipelineStep, getPipelineSteps, getPipelineRuns, getPipelineRun } from "@arelyos/engine/agents/pipeline-store.js";
+import { agentMemorySet, agentMemoryGet, agentMemoryClear } from "@arelyos/engine/tools/memory.js";
 
-vi.mock("@arely/engine/agents/runtime.js", () => ({
+vi.mock("@arelyos/engine/agents/runtime.js", () => ({
   executeAgent: vi.fn(),
 }));
 
-import { executeAgent } from "@arely/engine/agents/runtime.js";
-import { executePipeline } from "@arely/engine/agents/pipeline.js";
+import { executeAgent } from "@arelyos/engine/agents/runtime.js";
+import { executePipeline } from "@arelyos/engine/agents/pipeline.js";
 
 // Insert agents directly via drizzle
-import { getDb } from "@arely/engine/persistence/database.js";
-import { agents } from "@arely/engine/persistence/schema.js";
+import { getDb } from "@arelyos/engine/persistence/database.js";
+import { agents } from "@arelyos/engine/persistence/schema.js";
 
 const mockConfig = {
   sessionManager: {} as any,

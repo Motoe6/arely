@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeAll, vi } from "vitest"
-import { createInMemoryDb } from "@arely/engine/persistence/database.js"
-import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arely/engine/persistence/migrate.js"
-import { createWorkflow, createWorkflowVersion, getWorkflowWithCurrentVersion } from "@arely/engine/persistence/workflow-store.js"
-import { createRun, createStepRun, completeStepRun, completeRun, getRunWithSteps } from "@arely/engine/persistence/run-store.js"
-import { globalNodeRegistry } from "@arely/flow-sdk"
+import { createInMemoryDb } from "@arelyos/engine/persistence/database.js"
+import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arelyos/engine/persistence/migrate.js"
+import { createWorkflow, createWorkflowVersion, getWorkflowWithCurrentVersion } from "@arelyos/engine/persistence/workflow-store.js"
+import { createRun, createStepRun, completeStepRun, completeRun, getRunWithSteps } from "@arelyos/engine/persistence/run-store.js"
+import { globalNodeRegistry } from "@arelyos/flow-sdk"
 
 // Register a simple mock node
-import type { NodeDefinition } from "@arely/flow-sdk"
+import type { NodeDefinition } from "@arelyos/flow-sdk"
 
 describe("Replay Service", () => {
   let db: ReturnType<typeof createInMemoryDb>
@@ -66,7 +66,7 @@ describe("Replay Service", () => {
     completeRun(originalRun.id, "completed", undefined, db.db)
 
     // Import and call replayRun
-    const { replayRun } = await import("@arely/engine/compiler/replay-service.js")
+    const { replayRun } = await import("@arelyos/engine/compiler/replay-service.js")
     const result = await replayRun(originalRun.id, undefined, db.db)
 
     expect(result.success).toBe(true)
@@ -81,7 +81,7 @@ describe("Replay Service", () => {
   })
 
   it("returns not found for non-existent run", async () => {
-    const { replayRun } = await import("@arely/engine/compiler/replay-service.js")
+    const { replayRun } = await import("@arelyos/engine/compiler/replay-service.js")
     const result = await replayRun("nonexistent-run", undefined, db.db)
     expect(result.success).toBe(false)
     expect(result.error).toContain("not found")
@@ -98,7 +98,7 @@ describe("Replay Service", () => {
     completeStepRun(s3.id, "completed", JSON.stringify({ echoed: "third" }), undefined, db.db)
     completeRun(originalRun.id, "completed", undefined, db.db)
 
-    const { replayFromStep } = await import("@arely/engine/compiler/replay-service.js")
+    const { replayFromStep } = await import("@arelyos/engine/compiler/replay-service.js")
     const result = await replayFromStep(originalRun.id, "step3", { triggerInput: {} }, db.db)
 
     expect(result.success).toBe(true)

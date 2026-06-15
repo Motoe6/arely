@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach } from "vitest"
-import { TemplateRegistry } from "@arely/engine/templates/template-registry.js"
-import { StructuralEvolutionService, StructuralEvolutionError } from "@arely/engine/structural/structural-evolution-service.js"
-import { createProposal, updateProposalStatus, getProposal } from "@arely/engine/persistence/proposal-store.js"
-import { createInMemoryDb } from "@arely/engine/persistence/database.js"
-import { CREATE_TABLES, MIGRATIONS, CREATE_INDEXES } from "@arely/engine/persistence/migrate.js"
+import { TemplateRegistry } from "@arelyos/engine/templates/template-registry.js"
+import { StructuralEvolutionService, StructuralEvolutionError } from "@arelyos/engine/structural/structural-evolution-service.js"
+import { createProposal, updateProposalStatus, getProposal } from "@arelyos/engine/persistence/proposal-store.js"
+import { createInMemoryDb } from "@arelyos/engine/persistence/database.js"
+import { CREATE_TABLES, MIGRATIONS, CREATE_INDEXES } from "@arelyos/engine/persistence/migrate.js"
 
 function makeDb() {
   const db = createInMemoryDb()

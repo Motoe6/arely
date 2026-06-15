@@ -2,7 +2,7 @@ import { ulid } from "ulid";
 import type { ExecutionMode, ExecutionResult } from "../execution-mode.js";
 import type { AgentSession } from "../session.js";
 import type { SessionMessage } from "../../types.js";
-import type { LLMAdapter } from "@arely/llm-core";
+import type { LLMAdapter } from "@arelyos/llm-core";
 import type { AgentExecutor } from "../../llm/swarm-orchestrator.js";
 import { ParallelSwarmOrchestrator } from "../../llm/parallel-swarm-orchestrator.js";
 import { registerSwarmExecution } from "../../routes/swarm-routes.js";

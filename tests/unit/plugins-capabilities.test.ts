@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { PluginRegistry, definePlugin } from "@arely/plugins";
+import { PluginRegistry, definePlugin } from "@arelyos/plugins";
 
 describe("Plugin Capabilities", () => {
   it("plugin registers a tool via setup context", async () => {

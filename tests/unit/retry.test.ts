@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { withRetry } from "@arely/engine/tools/retry.js";
-import { TimeoutError, CancelledError } from "@arely/engine/tools/errors.js";
+import { withRetry } from "@arelyos/engine/tools/retry.js";
+import { TimeoutError, CancelledError } from "@arelyos/engine/tools/errors.js";
 
 function makeOpts(overrides?: Partial<{ maxAttempts: number; baseDelayMs: number; maxDelayMs: number; enabled: boolean }>) {
   return { maxAttempts: 3, baseDelayMs: 10, maxDelayMs: 1000, enabled: true, ...overrides };

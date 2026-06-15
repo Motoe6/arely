@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { LLMAdapter } from "@arely/engine/llm/adapter.js";
-import type { Tool } from "@arely/engine/tools/base-tool.js";
+import type { LLMAdapter } from "@arelyos/engine/llm/adapter.js";
+import type { Tool } from "@arelyos/engine/tools/base-tool.js";
 
-vi.mock("@arely/engine/config/index.js", () => ({
+vi.mock("@arelyos/engine/config/index.js", () => ({
   getConfig: () => ({ PLAN_MAX_STEPS: 10, PLANNING_ENABLED: true }),
 }));
 
-import { createPlan } from "@arely/engine/planner/planner.js";
+import { createPlan } from "@arelyos/engine/planner/planner.js";
 
 const mockTools = new Map<string, Tool>([
   ["websearch", { name: "websearch", description: "Search", async execute() { return { content: "" }; } }],

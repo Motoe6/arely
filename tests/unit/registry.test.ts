@@ -8,24 +8,24 @@ const mockGetConfig = vi.fn();
 const mockPerformWebSearch = vi.fn();
 const mockPerformWebFetch = vi.fn();
 
-vi.mock("@arely/engine/config/index.js", () => ({
+vi.mock("@arelyos/engine/config/index.js", () => ({
   getConfig: () => mockGetConfig(),
 }));
 
-vi.mock("@arely/engine/persistence/tool-call-store.js", () => ({
+vi.mock("@arelyos/engine/persistence/tool-call-store.js", () => ({
   createToolCall: (...args: unknown[]) => mockCreateToolCall(...args),
   updateToolCallStatus: (...args: unknown[]) => mockUpdateToolCallStatus(...args),
 }));
 
-vi.mock("@arely/engine/tools/websearch.js", () => ({
+vi.mock("@arelyos/engine/tools/websearch.js", () => ({
   performWebSearch: (...args: unknown[]) => mockPerformWebSearch(...args),
 }));
 
-vi.mock("@arely/engine/tools/webfetch.js", () => ({
+vi.mock("@arelyos/engine/tools/webfetch.js", () => ({
   performWebFetch: (...args: unknown[]) => mockPerformWebFetch(...args),
 }));
 
-import { createToolRegistry, TimeoutError, CancelledError } from "@arely/engine/tools/registry.js";
+import { createToolRegistry, TimeoutError, CancelledError } from "@arelyos/engine/tools/registry.js";
 
 function createSseMock() {
   return { emit: mockEmit };

@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeAll } from "vitest"
-import { createInMemoryDb } from "@arely/engine/persistence/database.js"
-import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arely/engine/persistence/migrate.js"
-import { createFeedback } from "@arely/engine/persistence/feedback-store.js"
-import { ParameterRecommenderService } from "@arely/engine/templates/parameter-recommender.js"
+import { createInMemoryDb } from "@arelyos/engine/persistence/database.js"
+import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arelyos/engine/persistence/migrate.js"
+import { createFeedback } from "@arelyos/engine/persistence/feedback-store.js"
+import { ParameterRecommenderService } from "@arelyos/engine/templates/parameter-recommender.js"
 
 describe("Parameter Recommendations Integration", () => {
   let db: ReturnType<typeof createInMemoryDb>

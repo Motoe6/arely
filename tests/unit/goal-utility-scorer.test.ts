@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { GoalUtilityScorer } from "@arely/engine/llm/goal-utility-scorer.js";
-import type { ExecutionPrediction } from "@arely/engine/llm/prediction-types.js";
+import { GoalUtilityScorer } from "@arelyos/engine/llm/goal-utility-scorer.js";
+import type { ExecutionPrediction } from "@arelyos/engine/llm/prediction-types.js";
 import {
   createGoal,
   createGoalPlan,
   createMilestone,
-} from "@arely/persistence";
+} from "@arelyos/persistence";
 import { initTestDb, cleanupTestDb } from "../setup.js";
 
 describe("GoalUtilityScorer", () => {

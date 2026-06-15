@@ -1,1 +1,1 @@
-export * from "@arely/memory";
+export * from "@arelyos/memory";

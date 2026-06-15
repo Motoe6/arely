@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { sessionStore } from "@arely/ui-core/stores/session-store";
-import { appStore } from "@arely/ui-core/stores/app-store";
+import { sessionStore } from "@arelyos/ui-core/stores/session-store";
+import { appStore } from "@arelyos/ui-core/stores/app-store";
 import { useSSE } from "./useSSE";
 
 const ENGINE_URL = process.env.NEXT_PUBLIC_ENGINE_URL || "http://localhost:8081";

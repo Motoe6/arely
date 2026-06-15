@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { ExecutionForecaster } from "@arely/engine/llm/execution-forecaster.js";
-import { ExecutionGate } from "@arely/engine/llm/execution-gate.js";
-import { GoalUtilityScorer } from "@arely/engine/llm/goal-utility-scorer.js";
+import { ExecutionForecaster } from "@arelyos/engine/llm/execution-forecaster.js";
+import { ExecutionGate } from "@arelyos/engine/llm/execution-gate.js";
+import { GoalUtilityScorer } from "@arelyos/engine/llm/goal-utility-scorer.js";
 import {
   createGoal,
   createGoalPlan,
   createMilestone,
-} from "@arely/persistence";
+} from "@arelyos/persistence";
 import { initTestDb, cleanupTestDb } from "../setup.js";
 
 describe("Goal Forecast Flow", () => {

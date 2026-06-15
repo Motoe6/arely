@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
 import http from "node:http";
-import { createHttpServer } from "@arely/engine/transport/http-server.js";
-import { SSEBus } from "@arely/engine/server/sse.js";
-import { loadConfig } from "@arely/engine/config/index.js";
+import { createHttpServer } from "@arelyos/engine/transport/http-server.js";
+import { SSEBus } from "@arelyos/engine/server/sse.js";
+import { loadConfig } from "@arelyos/engine/config/index.js";
 
 const sse = new SSEBus();
 

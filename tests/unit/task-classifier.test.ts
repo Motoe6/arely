@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { TaskClassifier } from "@arely/engine/llm/task-classifier.js";
+import { TaskClassifier } from "@arelyos/engine/llm/task-classifier.js";
 
 describe("TaskClassifier", () => {
   const classifier = new TaskClassifier();

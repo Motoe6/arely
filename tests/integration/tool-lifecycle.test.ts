@@ -1,18 +1,18 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { createSession } from "@arely/engine/persistence/session-store.js";
-import { getSessionToolCalls } from "@arely/engine/persistence/tool-call-store.js";
+import { createSession } from "@arelyos/engine/persistence/session-store.js";
+import { getSessionToolCalls } from "@arelyos/engine/persistence/tool-call-store.js";
 
 const mockEmit = vi.fn();
 let testSessionId = "";
 
-vi.mock("@arely/engine/tools/websearch.js", () => ({
+vi.mock("@arelyos/engine/tools/websearch.js", () => ({
   performWebSearch: vi.fn().mockResolvedValue([
     { title: "Test Result", url: "https://example.com", content: "Test content" },
   ]),
 }));
 
-vi.mock("@arely/engine/tools/webfetch.js", () => ({
+vi.mock("@arelyos/engine/tools/webfetch.js", () => ({
   performWebFetch: vi.fn().mockResolvedValue({
     url: "https://example.com",
     title: "Example",
@@ -20,7 +20,7 @@ vi.mock("@arely/engine/tools/webfetch.js", () => ({
   }),
 }));
 
-vi.mock("@arely/engine/config/index.js", () => ({
+vi.mock("@arelyos/engine/config/index.js", () => ({
   getConfig: () => ({
     TOOL_TIMEOUT_MS: 5000,
     PERMISSION_TIMEOUT_MS: 5000,
@@ -39,13 +39,13 @@ vi.mock("@arely/engine/config/index.js", () => ({
   }),
 }));
 
-vi.mock("@arely/engine/persistence/approval-cache-store.js", () => ({
+vi.mock("@arelyos/engine/persistence/approval-cache-store.js", () => ({
   findMatchingApproval: vi.fn(),
   setApproval: vi.fn(),
 }));
 
-import { createToolRegistry } from "@arely/engine/tools/registry.js";
-import { PermissionGate } from "@arely/engine/permissions/gate.js";
+import { createToolRegistry } from "@arelyos/engine/tools/registry.js";
+import { PermissionGate } from "@arelyos/engine/permissions/gate.js";
 
 function createSseMock() {
   return { emit: mockEmit };
@@ -103,7 +103,7 @@ describe("Tool lifecycle integration", () => {
   });
 
   it("records failed status on execution error", async () => {
-    const websearch = await import("@arely/engine/tools/websearch.js");
+    const websearch = await import("@arelyos/engine/tools/websearch.js");
     (websearch.performWebSearch as any).mockRejectedValue(new Error("Network failure"));
 
     const sse = createSseMock() as any;

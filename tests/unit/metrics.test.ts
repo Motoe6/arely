@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
 
 describe("Metrics", () => {
-  let metrics: import("@arely/engine/metrics.js").MetricsInstance;
+  let metrics: import("@arelyos/engine/metrics.js").MetricsInstance;
 
   beforeEach(async () => {
     vi.resetModules();
-    const mod = await import("@arely/engine/metrics.js");
+    const mod = await import("@arelyos/engine/metrics.js");
     metrics = mod.metrics;
   });
 

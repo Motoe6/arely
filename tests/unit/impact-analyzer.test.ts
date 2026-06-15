@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { ImpactAnalyzer, type ImpactReport } from "@arely/engine/agents/policy/impact-analyzer.js";
-import { SimulationEngine, type AuditStorePort } from "@arely/engine/agents/simulation/simulation-engine.js";
-import type { PolicyPackStore } from "@arely/engine/agents/policy/policy-pack.js";
-import type { PolicyRule } from "@arely/engine/agents/policy/policy-types.js";
-import type { PolicyRecommendation, RecommendationType } from "@arely/engine/agents/policy/policy-recommender.js";
-import type { PolicyAuditEvent } from "@arely/engine/persistence/policy-audit-store.js";
+import { ImpactAnalyzer, type ImpactReport } from "@arelyos/engine/agents/policy/impact-analyzer.js";
+import { SimulationEngine, type AuditStorePort } from "@arelyos/engine/agents/simulation/simulation-engine.js";
+import type { PolicyPackStore } from "@arelyos/engine/agents/policy/policy-pack.js";
+import type { PolicyRule } from "@arelyos/engine/agents/policy/policy-types.js";
+import type { PolicyRecommendation, RecommendationType } from "@arelyos/engine/agents/policy/policy-recommender.js";
+import type { PolicyAuditEvent } from "@arelyos/engine/persistence/policy-audit-store.js";
 
 function makeRule(id: string, overrides: Partial<PolicyRule> = {}): PolicyRule {
   return {

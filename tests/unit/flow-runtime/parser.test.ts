@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
-import { parseWorkflow } from "@arely/flow-runtime"
-import { CompilationError } from "@arely/flow-runtime"
+import { parseWorkflow } from "@arelyos/flow-runtime"
+import { CompilationError } from "@arelyos/flow-runtime"
 
 const validJSON = `{
   "id": "wf-1",

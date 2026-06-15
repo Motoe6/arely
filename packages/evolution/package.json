@@ -1,7 +1,7 @@
 {
-  "name": "@arely/evolution",
+  "name": "@arelyos/evolution",
   "version": "0.1.0",
-  "private": true,
+  
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
@@ -20,7 +20,7 @@
     "./types": "./src/types.ts"
   },
   "dependencies": {
-    "@arely/persistence": "*",
+    "@arelyos/persistence": "*",
     "ulid": "^3.0.2"
   },
   "devDependencies": {

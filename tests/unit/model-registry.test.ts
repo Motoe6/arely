@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ModelRegistry, DEFAULT_MODELS } from "@arely/engine/models/model-registry.js";
+import { ModelRegistry, DEFAULT_MODELS } from "@arelyos/engine/models/model-registry.js";
 
 describe("ModelRegistry", () => {
   it("loads default models when no config provided", () => {

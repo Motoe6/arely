@@ -1,9 +1,9 @@
 import os from "node:os";
-import { loadConfig, getConfig } from "@arely/engine/config/index.js";
-import { connect } from "@arely/engine/persistence/database.js";
-import { pushSchema } from "@arely/engine/persistence/migrate.js";
-import { setSessionEngine } from "@arely/ui-core/services/session-service.js";
-import { appStore } from "@arely/ui-core/stores/app-store.js";
+import { loadConfig, getConfig } from "@arelyos/engine/config/index.js";
+import { connect } from "@arelyos/engine/persistence/database.js";
+import { pushSchema } from "@arelyos/engine/persistence/migrate.js";
+import { setSessionEngine } from "@arelyos/ui-core/services/session-service.js";
+import { appStore } from "@arelyos/ui-core/stores/app-store.js";
 
 interface SessionSummary {
   id: string;
@@ -24,8 +24,8 @@ export interface DashboardMetrics {
 
 export interface EngineContext {
   mode: "in-process" | "client";
-  sse?: import("@arely/engine/server/sse.js").SSEBus;
-  sessionManager?: import("@arely/engine/server/session-manager.js").SessionManager;
+  sse?: import("@arelyos/engine/server/sse.js").SSEBus;
+  sessionManager?: import("@arelyos/engine/server/session-manager.js").SessionManager;
   apiBase?: string;
   getSessions: () => SessionSummary[];
   getMetrics?: () => Promise<DashboardMetrics>;
@@ -41,10 +41,10 @@ export async function bootEngine(): Promise<EngineContext> {
   connect(cfg("DB_PATH") || "./data/arely.db");
   pushSchema();
 
-  const { SSEBus } = await import("@arely/engine/server/sse.js");
-  const { SessionManager } = await import("@arely/engine/server/session-manager.js");
-  const { ModelRegistry } = await import("@arely/engine/models/model-registry.js");
-  const { ModelAwareAdapter } = await import("@arely/engine/models/model-adapter.js");
+  const { SSEBus } = await import("@arelyos/engine/server/sse.js");
+  const { SessionManager } = await import("@arelyos/engine/server/session-manager.js");
+  const { ModelRegistry } = await import("@arelyos/engine/models/model-registry.js");
+  const { ModelAwareAdapter } = await import("@arelyos/engine/models/model-adapter.js");
 
   const sse = new SSEBus();
   const modelRegistry = new ModelRegistry(cfg("ARELY_MODELS"), cfg("ARELY_MODEL"));
@@ -93,8 +93,8 @@ export async function bootEngine(): Promise<EngineContext> {
     getSessions: () => Array.from((sm as unknown as { sessions: Map<string, { id: string; messages: { role: string; content: string }[] }> }).sessions?.values() ?? []),
     getMetrics: async () => {
       try {
-        const { goalService } = await import("@arely/engine/llm/goal-service.js");
-        const { modelPerformanceService } = await import("@arely/engine/llm/model-performance-service.js");
+        const { goalService } = await import("@arelyos/engine/llm/goal-service.js");
+        const { modelPerformanceService } = await import("@arelyos/engine/llm/model-performance-service.js");
         const convergence = modelPerformanceService.getConvergence();
         const snapshots = modelPerformanceService.getSnapshots();
         const goals = goalService.getActiveGoals();

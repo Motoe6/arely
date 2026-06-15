@@ -10,10 +10,10 @@ const mockLlmCore = vi.hoisted(() => ({
   registerBuiltInApiProviders: vi.fn(),
 }));
 
-vi.mock("@arely/llm-core", () => mockLlmCore);
+vi.mock("@arelyos/llm-core", () => mockLlmCore);
 
-import { AgentSession } from "@arely/sdk";
-import type { ArelyTool } from "@arely/sdk";
+import { AgentSession } from "@arelyos/sdk";
+import type { ArelyTool } from "@arelyos/sdk";
 
 describe("AgentSession", () => {
   it("runs agent loop and returns content", async () => {

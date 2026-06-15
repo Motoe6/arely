@@ -1,4 +1,4 @@
-import type { Workflow, WorkflowStep, TriggerDef } from "@arely/flow-runtime"
+import type { Workflow, WorkflowStep, TriggerDef } from "@arelyos/flow-runtime"
 
 export interface LLMWorkflowOutput {
   workflow: Workflow

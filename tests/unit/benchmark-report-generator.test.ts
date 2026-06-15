@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { ReportGenerator } from "@arely/benchmarks/report-generator.js";
-import type { BenchmarkSuite } from "@arely/benchmarks/types.js";
+import { ReportGenerator } from "@arelyos/benchmarks/report-generator.js";
+import type { BenchmarkSuite } from "@arelyos/benchmarks/types.js";
 
 describe("ReportGenerator", () => {
   const generator = new ReportGenerator();

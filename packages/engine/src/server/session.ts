@@ -2,7 +2,7 @@ import { ulid } from "ulid";
 /* eslint-disable @typescript-eslint/no-deprecated */
 import type { SessionState, SessionMessage, ToolCallPart } from "../types.js";
 import type { SSEBus } from "./sse.js";
-import type { LLMAdapter } from "@arely/llm-core";
+import type { LLMAdapter } from "@arelyos/llm-core";
 import { createToolRegistry, type Tool } from "../tools/registry.js";
 import { PermissionGate } from "../permissions/gate.js";
 import { createSearchProvider } from "../tools/provider-factory.js";

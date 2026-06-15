@@ -1,5 +1,5 @@
 import { ulid } from "ulid";
-import type { LLMAdapter } from "@arely/llm-core";
+import type { LLMAdapter } from "@arelyos/llm-core";
 import type { SessionMessage } from "../types.js";
 import type { PlanRecord, PlanStepRecord } from "../types.js";
 import type { Tool } from "../tools/base-tool.js";

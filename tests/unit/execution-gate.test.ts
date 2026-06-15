@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { ExecutionGate } from "@arely/engine/llm/execution-gate.js";
-import type { ExecutionPrediction } from "@arely/engine/llm/prediction-types.js";
+import { ExecutionGate } from "@arelyos/engine/llm/execution-gate.js";
+import type { ExecutionPrediction } from "@arelyos/engine/llm/prediction-types.js";
 
 describe("ExecutionGate", () => {
   function makePrediction(overrides: Partial<ExecutionPrediction>): ExecutionPrediction {

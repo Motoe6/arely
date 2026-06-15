@@ -1,17 +1,17 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { createPipeline, createPipelineStep, getPipelineStepRuns } from "@arely/engine/agents/pipeline-store.js";
-import { executePipeline } from "@arely/engine/agents/pipeline.js";
-import { createExecutionTracer } from "@arely/engine/agents/execution-tracer.js";
-import { getDb } from "@arely/engine/persistence/database.js";
-import { pipelineStepRuns, pipelineRuns, pipelineSteps, agentPipelines, agents } from "@arely/engine/persistence/schema.js";
-import { TimeoutError } from "@arely/engine/tools/errors.js";
+import { createPipeline, createPipelineStep, getPipelineStepRuns } from "@arelyos/engine/agents/pipeline-store.js";
+import { executePipeline } from "@arelyos/engine/agents/pipeline.js";
+import { createExecutionTracer } from "@arelyos/engine/agents/execution-tracer.js";
+import { getDb } from "@arelyos/engine/persistence/database.js";
+import { pipelineStepRuns, pipelineRuns, pipelineSteps, agentPipelines, agents } from "@arelyos/engine/persistence/schema.js";
+import { TimeoutError } from "@arelyos/engine/tools/errors.js";
 
-vi.mock("@arely/engine/agents/runtime.js", () => ({
+vi.mock("@arelyos/engine/agents/runtime.js", () => ({
   executeAgent: vi.fn(),
 }));
 
-import { executeAgent } from "@arely/engine/agents/runtime.js";
+import { executeAgent } from "@arelyos/engine/agents/runtime.js";
 
 const mockConfig = {
   sessionManager: {} as any,

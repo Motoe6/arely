@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { createSwarmCollector } from "@arely/benchmarks/collectors/swarm.js";
-import type { ParallelSwarmResult } from "@arely/engine/llm/swarm-task-types.js";
+import { createSwarmCollector } from "@arelyos/benchmarks/collectors/swarm.js";
+import type { ParallelSwarmResult } from "@arelyos/engine/llm/swarm-task-types.js";
 
 function makeResult(overrides: Partial<ParallelSwarmResult> & { tasksCount?: number; contributionsCount?: number }): ParallelSwarmResult {
   const tasks = Array.from({ length: overrides.tasksCount ?? 2 }, (_, i) => ({

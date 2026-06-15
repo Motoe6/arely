@@ -1,7 +1,7 @@
 {
-  "name": "@arely/flow-ai-compiler",
+  "name": "@arelyos/flow-ai-compiler",
   "version": "0.1.0",
-  "private": true,
+  
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,8 +10,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@arely/flow-runtime": "*",
-    "@arely/flow-sdk": "*",
+    "@arelyos/flow-runtime": "*",
+    "@arelyos/flow-sdk": "*",
     "zod": "^4.4.3"
   }
 }

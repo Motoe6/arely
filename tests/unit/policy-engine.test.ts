@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { PolicyEngine } from "@arely/engine/agents/policy/policy-engine.js";
-import type { PolicyRule, PolicyEvaluationInput } from "@arely/engine/agents/policy/policy-types.js";
+import { PolicyEngine } from "@arelyos/engine/agents/policy/policy-engine.js";
+import type { PolicyRule, PolicyEvaluationInput } from "@arelyos/engine/agents/policy/policy-types.js";
 
 function makeInput(overrides?: Partial<PolicyEvaluationInput>): PolicyEvaluationInput {
   return {

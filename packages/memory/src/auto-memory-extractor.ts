@@ -1,6 +1,6 @@
-import type { LLMAdapter } from "@arely/llm-core";
+import type { LLMAdapter } from "@arelyos/llm-core";
 import type { MemoryType, MemorySource } from "./memory-types.js";
-import type { SessionMessage } from "@arely/llm-core";
+import type { SessionMessage } from "@arelyos/llm-core";
 
 export interface ExtractedMemory {
   type: MemoryType;

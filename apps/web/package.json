@@ -1,5 +1,5 @@
 {
-  "name": "@arely/web",
+  "name": "@arelyos/web",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@arely/ui-core": "*",
+    "@arelyos/ui-core": "*",
     "next": "^15.0.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

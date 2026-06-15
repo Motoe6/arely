@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { getDb } from "@arely/engine/persistence/database.js";
-import { agents } from "@arely/engine/persistence/schema.js";
+import { getDb } from "@arelyos/engine/persistence/database.js";
+import { agents } from "@arelyos/engine/persistence/schema.js";
 import {
   createPipeline,
   getPipeline,
@@ -14,7 +14,7 @@ import {
   updatePipelineRunStatus,
   getPipelineRun,
   getPipelineRuns,
-} from "@arely/engine/agents/pipeline-store.js";
+} from "@arelyos/engine/agents/pipeline-store.js";
 
 function createTestAgent(id: string): void {
   const now = new Date().toISOString();

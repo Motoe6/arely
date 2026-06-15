@@ -2,9 +2,9 @@ import { readFileSync, existsSync, readdirSync, statSync } from "node:fs"
 import { join } from "node:path"
 import { parse as parseYAML } from "yaml"
 import { ulid } from "ulid"
-import { normalizeWorkflow } from "@arely/flow-runtime"
-import { globalNodeRegistry } from "@arely/flow-sdk"
-import type { Workflow } from "@arely/flow-runtime"
+import { normalizeWorkflow } from "@arelyos/flow-runtime"
+import { globalNodeRegistry } from "@arelyos/flow-sdk"
+import type { Workflow } from "@arelyos/flow-runtime"
 import type {
   Template,
   TemplateMetadata,

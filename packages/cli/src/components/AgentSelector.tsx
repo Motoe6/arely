@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Text } from "ink";
-import { appStore } from "@arely/ui-core/stores/app-store.js";
-import { getAvailableModes, changeMode } from "@arely/ui-core/services/swarm-service.js";
+import { appStore } from "@arelyos/ui-core/stores/app-store.js";
+import { getAvailableModes, changeMode } from "@arelyos/ui-core/services/swarm-service.js";
 
 export function AgentSelector() {
   const modes = getAvailableModes();

@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { SelfAssessmentService } from "@arely/engine/llm/self-assessment-service.js";
-import { PredictionCalibrator } from "@arely/engine/llm/prediction-calibrator.js";
-import { createDecision, createGoal, createSession } from "@arely/persistence";
-import { modelPerformanceService } from "@arely/engine/llm/model-performance-service.js";
+import { SelfAssessmentService } from "@arelyos/engine/llm/self-assessment-service.js";
+import { PredictionCalibrator } from "@arelyos/engine/llm/prediction-calibrator.js";
+import { createDecision, createGoal, createSession } from "@arelyos/persistence";
+import { modelPerformanceService } from "@arelyos/engine/llm/model-performance-service.js";
 import { initTestDb, cleanupTestDb } from "../setup.js";
 
 describe("SelfAssessmentService", () => {

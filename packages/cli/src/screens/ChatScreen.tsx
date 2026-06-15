@@ -8,12 +8,12 @@ import { GoalsPanel } from "../components/GoalsPanel.js";
 import { DashboardPanel } from "../components/DashboardPanel.js";
 import { CommandPalette } from "../components/CommandPalette.js";
 import { StatusBar } from "../components/StatusBar.js";
-import { uiStore } from "@arely/ui-core/stores/ui-store.js";
-import { appStore } from "@arely/ui-core/stores/app-store.js";
-import { getAvailableModes, changeMode } from "@arely/ui-core/services/swarm-service.js";
-import { sessionStore } from "@arely/ui-core/stores/session-store.js";
-import { sendMessage, cancelSession } from "@arely/ui-core/services/session-service.js";
-import type { AgentMode } from "@arely/ui-core/types/index.js";
+import { uiStore } from "@arelyos/ui-core/stores/ui-store.js";
+import { appStore } from "@arelyos/ui-core/stores/app-store.js";
+import { getAvailableModes, changeMode } from "@arelyos/ui-core/services/swarm-service.js";
+import { sessionStore } from "@arelyos/ui-core/stores/session-store.js";
+import { sendMessage, cancelSession } from "@arelyos/ui-core/services/session-service.js";
+import type { AgentMode } from "@arelyos/ui-core/types/index.js";
 import type { EngineContext } from "../engine.js";
 
 export function ChatScreen({ engine }: { engine?: EngineContext }) {

@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
-import { StructuralInsightsService } from "@arely/engine/structural/structural-insights-service.js"
-import { TemplateRegistry } from "@arely/engine/templates/template-registry.js"
-import type { Template } from "@arely/engine/templates/template-types.js"
+import { StructuralInsightsService } from "@arelyos/engine/structural/structural-insights-service.js"
+import { TemplateRegistry } from "@arelyos/engine/templates/template-registry.js"
+import type { Template } from "@arelyos/engine/templates/template-types.js"
 
-vi.mock("@arely/persistence", async () => {
-  const actual = await vi.importActual("@arely/persistence")
+vi.mock("@arelyos/persistence", async () => {
+  const actual = await vi.importActual("@arelyos/persistence")
   return { ...actual, getFeedbackByTemplate: vi.fn() }
 })
 
-import { getFeedbackByTemplate } from "@arely/persistence"
+import { getFeedbackByTemplate } from "@arelyos/persistence"
 
 function makeTemplate(id: string, overrides: Partial<Template> = {}): Template {
   return {

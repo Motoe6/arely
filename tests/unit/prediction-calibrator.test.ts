@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { PredictionCalibrator } from "@arely/engine/llm/prediction-calibrator.js";
-import type { ExecutionPrediction } from "@arely/engine/llm/prediction-types.js";
+import { PredictionCalibrator } from "@arelyos/engine/llm/prediction-calibrator.js";
+import type { ExecutionPrediction } from "@arelyos/engine/llm/prediction-types.js";
 
 describe("PredictionCalibrator", () => {
   let calibrator: PredictionCalibrator;

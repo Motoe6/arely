@@ -5,24 +5,24 @@ const mockConfig = vi.fn();
 const emittedEvents: string[] = [];
 const requestIdsByType: Record<string, string> = {};
 
-vi.mock("@arely/engine/config/index.js", () => ({
+vi.mock("@arelyos/engine/config/index.js", () => ({
   getConfig: () => mockConfig(),
 }));
 
-vi.mock("@arely/engine/persistence/permission-store.js", () => ({
+vi.mock("@arelyos/engine/persistence/permission-store.js", () => ({
   createPermissionApproval: vi.fn(),
 }));
 
-vi.mock("@arely/engine/persistence/audit-store.js", () => ({
+vi.mock("@arelyos/engine/persistence/audit-store.js", () => ({
   createAuditLog: vi.fn(),
 }));
 
-vi.mock("@arely/engine/persistence/approval-cache-store.js", () => ({
+vi.mock("@arelyos/engine/persistence/approval-cache-store.js", () => ({
   findMatchingApproval: vi.fn().mockReturnValue(undefined),
   setApproval: vi.fn(),
 }));
 
-import { PermissionGate } from "@arely/engine/permissions/gate.js";
+import { PermissionGate } from "@arelyos/engine/permissions/gate.js";
 
 function createSseMock() {
   return {
@@ -78,7 +78,7 @@ describe("PermissionGate", () => {
 
   describe("mode=ask with cache hit", () => {
     it("returns true when cache matches", async () => {
-      const approvalCache = await import("@arely/engine/persistence/approval-cache-store.js");
+      const approvalCache = await import("@arelyos/engine/persistence/approval-cache-store.js");
       (approvalCache.findMatchingApproval as any).mockReturnValue({
         id: "cache-1",
         granted: true,

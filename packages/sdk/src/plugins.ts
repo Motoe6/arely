@@ -8,7 +8,7 @@ import {
   type CommandDefinition,
   type ThinkingStrategy,
   type AgentComponent,
-} from "@arely/plugins";
+} from "@arelyos/plugins";
 
 export class PluginsManager {
   private registry = new PluginRegistry();

@@ -1,1 +1,1 @@
-export type { DecisionOutcome, MemorySnapshotEntry, DecisionRecord, DecisionQuery } from "@arely/persistence"
+export type { DecisionOutcome, MemorySnapshotEntry, DecisionRecord, DecisionQuery } from "@arelyos/persistence"

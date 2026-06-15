@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest"
-import { NodeRegistry, LLMNode, HttpNode } from "@arely/flow-sdk"
-import { selectNodes, scoreStep, pickBest, deriveMetadata, registerCustomKeywords, NodeSelectionError } from "@arely/flow-ai-compiler"
+import { NodeRegistry, LLMNode, HttpNode } from "@arelyos/flow-sdk"
+import { selectNodes, scoreStep, pickBest, deriveMetadata, registerCustomKeywords, NodeSelectionError } from "@arelyos/flow-ai-compiler"
 
 function makeStep(overrides: Partial<Parameters<typeof scoreStep>[0]> = {}): Parameters<typeof scoreStep>[0] {
   return {

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
-import { Synthesizer } from "@arely/engine/planner/synthesizer.js";
-import type { LLMAdapter } from "@arely/engine/llm/adapter.js";
-import type { StepExecutionResult } from "@arely/engine/types.js";
+import { Synthesizer } from "@arelyos/engine/planner/synthesizer.js";
+import type { LLMAdapter } from "@arelyos/engine/llm/adapter.js";
+import type { StepExecutionResult } from "@arelyos/engine/types.js";
 
 function makeLLM(...responses: string[]): LLMAdapter {
   let i = 0;

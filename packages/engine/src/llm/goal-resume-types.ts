@@ -1,4 +1,4 @@
-import type { Goal as PersistedGoal, GoalPlan as PersistedGoalPlan, Milestone as PersistedMilestone } from "@arely/persistence";
+import type { Goal as PersistedGoal, GoalPlan as PersistedGoalPlan, Milestone as PersistedMilestone } from "@arelyos/persistence";
 
 export type ResumeGoal = PersistedGoal;
 export type ResumeGoalPlan = PersistedGoalPlan;

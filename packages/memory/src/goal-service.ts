@@ -6,8 +6,8 @@ import {
   queryGoals as storeQueryGoals,
   countGoals as storeCountGoals,
   deleteGoal as storeDeleteGoal,
-} from "@arely/persistence";
-import type { Goal, GoalStatus, GoalQuery } from "@arely/persistence";
+} from "@arelyos/persistence";
+import type { Goal, GoalStatus, GoalQuery } from "@arelyos/persistence";
 
 export type { Goal, GoalStatus, GoalQuery };
 

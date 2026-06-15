@@ -1,8 +1,8 @@
 import React from "react";
 import { Box, Text, useInput } from "ink";
-import { uiStore } from "@arely/ui-core/stores/ui-store.js";
+import { uiStore } from "@arelyos/ui-core/stores/ui-store.js";
 import { getGoals } from "../services/goal-service.js";
-import type { StoredGoal } from "@arely/ui-core/types/index.js";
+import type { StoredGoal } from "@arelyos/ui-core/types/index.js";
 
 interface GoalDetail {
   goal: StoredGoal;
@@ -28,7 +28,7 @@ export function GoalsPanel() {
     if (!selected) { setDetails(null); return; }
     (async () => {
       try {
-        const { goalResumeService } = await import("@arely/engine/llm/goal-resume-service.js");
+        const { goalResumeService } = await import("@arelyos/engine/llm/goal-resume-service.js");
         const ctx = goalResumeService.buildResumeContext("", 10);
         const goal = goals.find((g) => g.id === selected);
         if (!goal) return;

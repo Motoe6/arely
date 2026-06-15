@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Text } from "ink";
-import { sessionStore } from "@arely/ui-core/stores/session-store.js";
+import { sessionStore } from "@arelyos/ui-core/stores/session-store.js";
 
 export function Prompt({
   onSubmit,

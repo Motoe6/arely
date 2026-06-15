@@ -1,5 +1,5 @@
-import { createProposal, getProposal, listProposals, updateProposalStatus } from "@arely/persistence"
-import type { ProposalRecord, ProposalStatus } from "@arely/persistence"
+import { createProposal, getProposal, listProposals, updateProposalStatus } from "@arelyos/persistence"
+import type { ProposalRecord, ProposalStatus } from "@arelyos/persistence"
 import type { StructuralEvolutionProposal } from "./structural-evolution-types.js"
 
 type DbClient = any

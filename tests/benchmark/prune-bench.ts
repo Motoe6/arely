@@ -3,9 +3,9 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import Database from "better-sqlite3";
 import { ulid } from "ulid";
-import { pushSchema } from "@arely/engine/persistence/migrate.js";
-import { connect, close } from "@arely/engine/persistence/database.js";
-import { prune, countTraces } from "@arely/engine/persistence/policy-audit-store.js";
+import { pushSchema } from "@arelyos/engine/persistence/migrate.js";
+import { connect, close } from "@arelyos/engine/persistence/database.js";
+import { prune, countTraces } from "@arelyos/engine/persistence/policy-audit-store.js";
 
 function fmtMs(ms: number): string {
   if (ms >= 1000) return `${(ms / 1000).toFixed(2)}s`;

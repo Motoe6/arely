@@ -1,4 +1,4 @@
-import type { Goal, GoalPlan, Milestone } from "@arely/persistence";
+import type { Goal, GoalPlan, Milestone } from "@arelyos/persistence";
 
 export interface GeneratedImprovement {
   recommendationLabel: string

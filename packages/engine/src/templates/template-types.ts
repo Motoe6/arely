@@ -1,4 +1,4 @@
-import type { Workflow } from "@arely/flow-runtime"
+import type { Workflow } from "@arelyos/flow-runtime"
 
 export class TemplateNotFoundError extends Error {
   readonly code = "TEMPLATE_NOT_FOUND"

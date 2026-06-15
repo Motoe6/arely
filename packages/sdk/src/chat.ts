@@ -1,4 +1,4 @@
-import type { LLMAdapter, SessionMessage } from "@arely/llm-core";
+import type { LLMAdapter, SessionMessage } from "@arelyos/llm-core";
 
 export interface ChatOptions {
   system?: string;

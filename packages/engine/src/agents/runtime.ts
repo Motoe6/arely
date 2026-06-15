@@ -1,7 +1,7 @@
 import { getAgent } from "./agent-store.js";
 import { NullSSEBus } from "./null-sse.js";
 import type { SessionManager } from "../server/session-manager.js";
-import type { LLMAdapter } from "@arely/llm-core";
+import type { LLMAdapter } from "@arelyos/llm-core";
 import { getConfig } from "../config/index.js";
 import { listPlansBySession, updatePlanAgentId } from "../persistence/plan-store.js";
 

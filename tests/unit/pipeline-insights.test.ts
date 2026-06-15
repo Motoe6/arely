@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
 import { ulid } from "ulid";
-import { getDb } from "@arely/engine/persistence/database.js";
-import { agentPipelines, pipelineRuns, pipelineStepRuns } from "@arely/engine/persistence/schema.js";
-import type { ReliabilityInsight } from "@arely/engine/agents/pipeline-insights.js";
+import { getDb } from "@arelyos/engine/persistence/database.js";
+import { agentPipelines, pipelineRuns, pipelineStepRuns } from "@arelyos/engine/persistence/schema.js";
+import type { ReliabilityInsight } from "@arelyos/engine/agents/pipeline-insights.js";
 
 function insertPipeline(name: string): string {
   const id = ulid();
@@ -25,8 +25,8 @@ function insertStep(runId: string, overrides: Record<string, unknown> = {}): str
 }
 
 // Import after mocks
-import { getAllInsights, analyzeToolMetrics, analyzePipelineMetrics } from "@arely/engine/agents/pipeline-insights.js";
-import type { ToolMetric, PipelineMetric } from "@arely/engine/agents/pipeline-metrics.js";
+import { getAllInsights, analyzeToolMetrics, analyzePipelineMetrics } from "@arelyos/engine/agents/pipeline-insights.js";
+import type { ToolMetric, PipelineMetric } from "@arelyos/engine/agents/pipeline-metrics.js";
 
 describe("Pipeline Insights", () => {
   beforeAll(() => initTestDb());

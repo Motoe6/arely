@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { ImprovementGoalGenerator } from "@arely/engine/llm/improvement-goal-generator.js";
-import { getGoal, queryGoalPlans, queryMilestones } from "@arely/persistence";
-import type { SelfAssessment } from "@arely/engine/llm/self-assessment-types.js";
+import { ImprovementGoalGenerator } from "@arelyos/engine/llm/improvement-goal-generator.js";
+import { getGoal, queryGoalPlans, queryMilestones } from "@arelyos/persistence";
+import type { SelfAssessment } from "@arelyos/engine/llm/self-assessment-types.js";
 import { initTestDb, cleanupTestDb } from "../setup.js";
 
 describe("ImprovementGoalGenerator", () => {

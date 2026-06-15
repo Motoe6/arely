@@ -5,7 +5,7 @@ import {
   getPolicyChange,
   listPolicyChanges,
   updatePolicyChangeStatus,
-} from "@arely/engine/persistence/policy-change-store.js";
+} from "@arelyos/engine/persistence/policy-change-store.js";
 
 describe("policy-change-store", () => {
   beforeAll(() => initTestDb());

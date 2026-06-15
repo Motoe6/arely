@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
-import { StructuralAnalyzer } from "@arely/engine/structural/structural-analyzer.js"
-import type { Template } from "@arely/engine/templates/template-types.js"
+import { StructuralAnalyzer } from "@arelyos/engine/structural/structural-analyzer.js"
+import type { Template } from "@arelyos/engine/templates/template-types.js"
 
 function makeTemplate(overrides: Partial<Template> = {}): Template {
   return {

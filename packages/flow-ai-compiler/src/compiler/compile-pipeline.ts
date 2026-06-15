@@ -1,5 +1,5 @@
-import type { Workflow } from "@arely/flow-runtime"
-import type { NodeRegistry } from "@arely/flow-sdk"
+import type { Workflow } from "@arelyos/flow-runtime"
+import type { NodeRegistry } from "@arelyos/flow-sdk"
 import type { CompilerLLMAdapter } from "../llm/adapter.js"
 import { createExtractor, IntentExtractionError } from "../intent/intent-extractor.js"
 import { validateIntent, enforceConstraints, IntentValidationError } from "../intent/intent-validator.js"

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest"
-import { HttpNode, LLMNode } from "@arely/flow-sdk"
-import type { WorkflowIntent, ResolvedStep } from "@arely/flow-ai-compiler"
-import { buildDag, DagBuildError } from "@arely/flow-ai-compiler"
+import { HttpNode, LLMNode } from "@arelyos/flow-sdk"
+import type { WorkflowIntent, ResolvedStep } from "@arelyos/flow-ai-compiler"
+import { buildDag, DagBuildError } from "@arelyos/flow-ai-compiler"
 
 function makeResolvedStep(overrides: Partial<ResolvedStep> = {}): ResolvedStep {
   return {

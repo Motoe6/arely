@@ -1,4 +1,4 @@
-import type { LLMAdapter, LLMResponse } from "@arely/llm-core";
+import type { LLMAdapter, LLMResponse } from "@arelyos/llm-core";
 import type { SessionMessage } from "../types.js";
 import { OpenAICompatAdapter } from "../llm/openaicompat.js";
 import { ModelRegistry, type ModelDefinition } from "./model-registry.js";

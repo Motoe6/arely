@@ -1,6 +1,6 @@
-import type { SSEBus } from "@arely/engine/server/sse.js";
-import { sessionStore } from "@arely/ui-core/stores/session-store.js";
-import type { SessionState } from "@arely/ui-core/stores/session-store.js";
+import type { SSEBus } from "@arelyos/engine/server/sse.js";
+import { sessionStore } from "@arelyos/ui-core/stores/session-store.js";
+import type { SessionState } from "@arelyos/ui-core/stores/session-store.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyEvent = { type: string; [key: string]: any };

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { createSession } from "@arely/engine/persistence/session-store.js";
+import { createSession } from "@arelyos/engine/persistence/session-store.js";
 
 describe("Strategy Selection Lifecycle", () => {
   beforeEach(() => {

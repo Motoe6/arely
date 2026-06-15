@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { uiStore } from "@arely/ui-core/stores/ui-store";
+import { uiStore } from "@arelyos/ui-core/stores/ui-store";
 import { SwarmTimeline } from "./SwarmTimeline";
 import { SwarmGraph, SwarmGraphASCII } from "./SwarmGraph";
 import { SwarmMemory } from "./SwarmMemory";

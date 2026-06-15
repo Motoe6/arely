@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest"
-import { TemplateRegistry } from "@arely/engine/templates/template-registry.js"
-import { TemplateRecommender } from "@arely/engine/templates/template-recommender.js"
-import type { Template } from "@arely/engine/templates/template-types.js"
+import { TemplateRegistry } from "@arelyos/engine/templates/template-registry.js"
+import { TemplateRecommender } from "@arelyos/engine/templates/template-recommender.js"
+import type { Template } from "@arelyos/engine/templates/template-types.js"
 
 function makeTemplate(
   overrides: Partial<Template["metadata"]> & { id: string },

@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
-import { TemplateEvolutionService, TemplateEvolutionError } from "@arely/engine/evolution/template-evolution-service.js"
-import { TemplateRegistry } from "@arely/engine/templates/template-registry.js"
-import type { Template } from "@arely/engine/templates/template-types.js"
+import { TemplateEvolutionService, TemplateEvolutionError } from "@arelyos/engine/evolution/template-evolution-service.js"
+import { TemplateRegistry } from "@arelyos/engine/templates/template-registry.js"
+import type { Template } from "@arelyos/engine/templates/template-types.js"
 
-vi.mock("@arely/persistence", async () => {
-  const actual = await vi.importActual("@arely/persistence")
+vi.mock("@arelyos/persistence", async () => {
+  const actual = await vi.importActual("@arelyos/persistence")
   return {
     ...actual,
     getProposal: vi.fn(),
@@ -14,7 +14,7 @@ vi.mock("@arely/persistence", async () => {
   }
 })
 
-import { getProposal, updateProposalStatus, createTemplateVersion, createAuditRecord } from "@arely/persistence"
+import { getProposal, updateProposalStatus, createTemplateVersion, createAuditRecord } from "@arelyos/persistence"
 
 function makeTemplate(overrides: Partial<Template> = {}): Template {
   return {

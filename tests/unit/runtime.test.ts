@@ -4,16 +4,16 @@ const mockGetAgent = vi.hoisted(() => vi.fn());
 const mockListPlansBySession = vi.hoisted(() => vi.fn());
 const mockUpdatePlanAgentId = vi.hoisted(() => vi.fn());
 
-vi.mock("@arely/engine/agents/agent-store.js", () => ({
+vi.mock("@arelyos/engine/agents/agent-store.js", () => ({
   getAgent: mockGetAgent,
 }));
 
-vi.mock("@arely/engine/persistence/plan-store.js", () => ({
+vi.mock("@arelyos/engine/persistence/plan-store.js", () => ({
   listPlansBySession: mockListPlansBySession,
   updatePlanAgentId: mockUpdatePlanAgentId,
 }));
 
-vi.mock("@arely/engine/config/index.js", () => ({
+vi.mock("@arelyos/engine/config/index.js", () => ({
   getConfig: () => ({
     ARELY_PERMIT_WEBSEARCH: "allow",
     ARELY_PERMIT_WEBFETCH: "allow",
@@ -24,7 +24,7 @@ vi.mock("@arely/engine/config/index.js", () => ({
   }),
 }));
 
-import { executeAgent } from "@arely/engine/agents/runtime.js";
+import { executeAgent } from "@arelyos/engine/agents/runtime.js";
 
 function makeSessionManager(session: { id: string; run: ReturnType<typeof vi.fn> }) {
   return { createSession: vi.fn().mockReturnValue(session) } as never;

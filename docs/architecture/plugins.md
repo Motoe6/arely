@@ -272,8 +272,8 @@ runAgentLoop(opts)
 
 ```typescript
 // my-plugin/index.ts
-import { registerApiProvider } from "@arely/llm/core";
-import type { PluginManifest } from "@arely/plugins";
+import { registerApiProvider } from "@arelyos/llm/core";
+import type { PluginManifest } from "@arelyos/plugins";
 
 export const manifest: PluginManifest = {
   id: "my-plugin",

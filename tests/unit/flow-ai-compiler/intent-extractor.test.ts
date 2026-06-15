@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 import { z } from "zod"
-import { createExtractor, validateIntent, enforceConstraints, IntentValidationError, WorkflowIntentSchema } from "@arely/flow-ai-compiler"
-import type { WorkflowIntent } from "@arely/flow-ai-compiler"
-import type { CompilerLLMAdapter } from "@arely/flow-ai-compiler"
+import { createExtractor, validateIntent, enforceConstraints, IntentValidationError, WorkflowIntentSchema } from "@arelyos/flow-ai-compiler"
+import type { WorkflowIntent } from "@arelyos/flow-ai-compiler"
+import type { CompilerLLMAdapter } from "@arelyos/flow-ai-compiler"
 
 const VALID_INTENT: WorkflowIntent = {
   goal: "send welcome email on user signup",

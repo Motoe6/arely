@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { PredictionCalibrator } from "@arely/engine/llm/prediction-calibrator.js";
-import { createPredictionCollector } from "@arely/benchmarks/collectors/prediction.js";
+import { PredictionCalibrator } from "@arelyos/engine/llm/prediction-calibrator.js";
+import { createPredictionCollector } from "@arelyos/benchmarks/collectors/prediction.js";
 
 describe("PredictionCollector", () => {
   it("returns empty suite when calibrator has no records", () => {

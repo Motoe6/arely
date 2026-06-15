@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "node:http"
 import { ulid } from "ulid"
-import type { CompilerLLMAdapter } from "@arely/flow-ai-compiler"
+import type { CompilerLLMAdapter } from "@arelyos/flow-ai-compiler"
 import type { Router } from "../transport/router.js"
 import type { SSEBus } from "../server/sse.js"
 import type { TemplateRegistry } from "../templates/template-registry.js"

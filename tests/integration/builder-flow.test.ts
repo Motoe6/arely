@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeAll } from "vitest"
-import type { CompilerLLMAdapter, WorkflowIntent } from "@arely/flow-ai-compiler"
-import type { NodeDefinition } from "@arely/flow-sdk"
-import { globalNodeRegistry } from "@arely/flow-sdk"
-import { BuilderService } from "@arely/engine/compiler/builder-service.js"
-import { createInMemoryDb } from "@arely/engine/persistence/database.js"
-import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arely/engine/persistence/migrate.js"
-import { getRunWithSteps, listRuns } from "@arely/engine/persistence/run-store.js"
+import type { CompilerLLMAdapter, WorkflowIntent } from "@arelyos/flow-ai-compiler"
+import type { NodeDefinition } from "@arelyos/flow-sdk"
+import { globalNodeRegistry } from "@arelyos/flow-sdk"
+import { BuilderService } from "@arelyos/engine/compiler/builder-service.js"
+import { createInMemoryDb } from "@arelyos/engine/persistence/database.js"
+import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arelyos/engine/persistence/migrate.js"
+import { getRunWithSteps, listRuns } from "@arelyos/engine/persistence/run-store.js"
 
 const EchoNode: NodeDefinition = {
   type: "echo",

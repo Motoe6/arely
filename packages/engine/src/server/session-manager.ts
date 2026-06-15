@@ -1,5 +1,5 @@
 import type { SSEBus } from "./sse.js";
-import type { LLMAdapter } from "@arely/llm-core";
+import type { LLMAdapter } from "@arelyos/llm-core";
 import type { ToolCallMode } from "../types.js";
 import { AgentSession } from "./session.js";
 

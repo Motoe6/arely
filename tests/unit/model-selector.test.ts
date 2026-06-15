@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { ModelSelector } from "@arely/engine/llm/model-selector.js";
-import { ModelPerformanceService } from "@arely/engine/llm/model-performance-service.js";
-import { TaskClassifier } from "@arely/engine/llm/task-classifier.js";
+import { ModelSelector } from "@arelyos/engine/llm/model-selector.js";
+import { ModelPerformanceService } from "@arelyos/engine/llm/model-performance-service.js";
+import { TaskClassifier } from "@arelyos/engine/llm/task-classifier.js";
 import { initTestDb, cleanupTestDb } from "../setup.js";
 
 describe("ModelSelector", () => {

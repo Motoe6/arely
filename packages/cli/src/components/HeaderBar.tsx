@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Text } from "ink";
-import { appStore } from "@arely/ui-core/stores/app-store.js";
-import { sessionStore } from "@arely/ui-core/stores/session-store.js";
+import { appStore } from "@arelyos/ui-core/stores/app-store.js";
+import { sessionStore } from "@arelyos/ui-core/stores/session-store.js";
 
 export function HeaderBar() {
   const [, forceUpdate] = React.useState(0);

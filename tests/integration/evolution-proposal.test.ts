@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeAll } from "vitest"
-import { createInMemoryDb } from "@arely/engine/persistence/database.js"
-import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arely/engine/persistence/migrate.js"
-import { createFeedback } from "@arely/engine/persistence/feedback-store.js"
-import { EvolutionProposalService } from "@arely/engine/evolution/evolution-proposal-service.js"
-import { ParameterRecommenderService } from "@arely/engine/templates/parameter-recommender.js"
-import { ParameterEffectivenessService } from "@arely/engine/templates/parameter-effectiveness.js"
+import { createInMemoryDb } from "@arelyos/engine/persistence/database.js"
+import { CREATE_TABLES, CREATE_INDEXES, MIGRATIONS } from "@arelyos/engine/persistence/migrate.js"
+import { createFeedback } from "@arelyos/engine/persistence/feedback-store.js"
+import { EvolutionProposalService } from "@arelyos/engine/evolution/evolution-proposal-service.js"
+import { ParameterRecommenderService } from "@arelyos/engine/templates/parameter-recommender.js"
+import { ParameterEffectivenessService } from "@arelyos/engine/templates/parameter-effectiveness.js"
 
 describe("Evolution Proposals Integration", () => {
   let db: ReturnType<typeof createInMemoryDb>

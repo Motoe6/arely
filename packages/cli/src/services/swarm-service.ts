@@ -1,5 +1,5 @@
-import type { AgentMode } from "@arely/ui-core/types/index.js";
-import { appStore } from "@arely/ui-core/stores/app-store.js";
+import type { AgentMode } from "@arelyos/ui-core/types/index.js";
+import { appStore } from "@arelyos/ui-core/stores/app-store.js";
 
 export function getAvailableModes(): { id: AgentMode; label: string }[] {
   return [

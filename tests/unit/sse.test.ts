@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { EventEmitter } from "node:events";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { SSEBus } from "@arely/engine/server/sse.js";
-import { loadConfig } from "@arely/engine/config/index.js";
-import { createSession } from "@arely/engine/persistence/session-store.js";
-import type { SessionStartedEvent, ToolCallStartedEvent } from "@arely/engine/types/events.js";
+import { SSEBus } from "@arelyos/engine/server/sse.js";
+import { loadConfig } from "@arelyos/engine/config/index.js";
+import { createSession } from "@arelyos/engine/persistence/session-store.js";
+import type { SessionStartedEvent, ToolCallStartedEvent } from "@arelyos/engine/types/events.js";
 
 function createMockRes() {
   const emitter = new EventEmitter();

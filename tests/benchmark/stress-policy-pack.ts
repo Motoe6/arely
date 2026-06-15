@@ -1,8 +1,8 @@
 import { mkdirSync, rmSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { FileSystemPolicyPackStore } from "@arely/engine/agents/policy/policy-pack.js";
-import type { PolicyRule } from "@arely/engine/agents/policy/policy-types.js";
+import { FileSystemPolicyPackStore } from "@arelyos/engine/agents/policy/policy-pack.js";
+import type { PolicyRule } from "@arelyos/engine/agents/policy/policy-types.js";
 
 function makeRule(id: string, overrides: Partial<PolicyRule> = {}): PolicyRule {
   return {

@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Text, useInput } from "ink";
-import { uiStore } from "@arely/ui-core/stores/ui-store.js";
+import { uiStore } from "@arelyos/ui-core/stores/ui-store.js";
 
 interface Command {
   id: string;

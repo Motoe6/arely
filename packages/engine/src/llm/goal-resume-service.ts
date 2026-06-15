@@ -1,6 +1,6 @@
 import type { ExecutionPrediction } from "./prediction-types.js";
-import { queryGoals, queryGoalPlans, queryMilestones } from "@arely/persistence";
-import type { InjectedMemoryMessage } from "@arely/memory";
+import { queryGoals, queryGoalPlans, queryMilestones } from "@arelyos/persistence";
+import type { InjectedMemoryMessage } from "@arelyos/memory";
 import { GoalUtilityScorer } from "./goal-utility-scorer.js";
 import type { ResumeContext, PrioritizedMilestone } from "./goal-resume-types.js";
 

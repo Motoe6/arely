@@ -1,4 +1,4 @@
-import type { ParallelSwarmResult, AgentContribution } from "@arely/engine/llm/swarm-task-types.js";
+import type { ParallelSwarmResult, AgentContribution } from "@arelyos/engine/llm/swarm-task-types.js";
 import type { Collector, BenchmarkMetric } from "../types.js";
 
 export function createSwarmCollector(

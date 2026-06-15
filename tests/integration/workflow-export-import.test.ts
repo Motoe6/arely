@@ -1,16 +1,16 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest"
-import { globalNodeRegistry, HttpNode, LLMNode } from "@arely/flow-sdk"
-import type { CompilerLLMAdapter, WorkflowIntent } from "@arely/flow-ai-compiler"
-import type { NodeDefinition } from "@arely/flow-sdk"
-import { BuilderService } from "@arely/engine/compiler/builder-service.js"
-import { createHttpServer } from "@arely/engine/transport/http-server.js"
-import { registerBuilderRoutes } from "@arely/engine/compiler/builder-routes.js"
-import { SSEBus } from "@arely/engine/server/sse.js"
-import { loadConfig } from "@arely/engine/config/index.js"
-import { connect, close } from "@arely/engine/persistence/database.js"
-import { pushSchema } from "@arely/engine/persistence/migrate.js"
-import { bodyParser } from "@arely/engine/transport/middleware.js"
-import { getWorkflowWithCurrentVersion } from "@arely/engine/persistence/workflow-store.js"
+import { globalNodeRegistry, HttpNode, LLMNode } from "@arelyos/flow-sdk"
+import type { CompilerLLMAdapter, WorkflowIntent } from "@arelyos/flow-ai-compiler"
+import type { NodeDefinition } from "@arelyos/flow-sdk"
+import { BuilderService } from "@arelyos/engine/compiler/builder-service.js"
+import { createHttpServer } from "@arelyos/engine/transport/http-server.js"
+import { registerBuilderRoutes } from "@arelyos/engine/compiler/builder-routes.js"
+import { SSEBus } from "@arelyos/engine/server/sse.js"
+import { loadConfig } from "@arelyos/engine/config/index.js"
+import { connect, close } from "@arelyos/engine/persistence/database.js"
+import { pushSchema } from "@arelyos/engine/persistence/migrate.js"
+import { bodyParser } from "@arelyos/engine/transport/middleware.js"
+import { getWorkflowWithCurrentVersion } from "@arelyos/engine/persistence/workflow-store.js"
 import http from "node:http"
 
 const EchoNode: NodeDefinition = {
@@ -78,9 +78,9 @@ function postJson(url: string, data: unknown): Promise<{ statusCode: number; bod
   })
 }
 
-import { createWorkflow as cwf, createWorkflowVersion as cwfv } from "@arely/engine/persistence/workflow-store.js"
-import { createSession } from "@arely/engine/persistence/session-store.js"
-import { normalizeWorkflow } from "@arely/flow-runtime"
+import { createWorkflow as cwf, createWorkflowVersion as cwfv } from "@arelyos/engine/persistence/workflow-store.js"
+import { createSession } from "@arelyos/engine/persistence/session-store.js"
+import { normalizeWorkflow } from "@arelyos/flow-runtime"
 import { ulid } from "ulid"
 
 describe("Workflow Export / Import", () => {

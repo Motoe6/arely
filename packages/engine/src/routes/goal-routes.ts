@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { ulid } from "ulid";
 import type { Router } from "../transport/router.js";
-import { queryGoals, queryGoalPlans, queryMilestones, getGoal, updateGoal, createGoal, createGoalPlan, createMilestone } from "@arely/persistence";
+import { queryGoals, queryGoalPlans, queryMilestones, getGoal, updateGoal, createGoal, createGoalPlan, createMilestone } from "@arelyos/persistence";
 import { goalUtilityScorer } from "../llm/goal-utility-scorer.js";
 
 export function registerGoalRoutes(router: Router): void {

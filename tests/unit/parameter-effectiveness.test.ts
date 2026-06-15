@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest"
-import { ParameterEffectivenessService } from "@arely/engine/templates/parameter-effectiveness.js"
+import { ParameterEffectivenessService } from "@arelyos/engine/templates/parameter-effectiveness.js"
 
 function mockFeedback(overrides: Partial<{
   templateId: string
@@ -19,11 +19,11 @@ function mockFeedback(overrides: Partial<{
   }))
 }
 
-vi.mock("@arely/engine/persistence/feedback-store.js", () => ({
+vi.mock("@arelyos/engine/persistence/feedback-store.js", () => ({
   getFeedbackByTemplate: vi.fn(),
 }))
 
-import { getFeedbackByTemplate } from "@arely/engine/persistence/feedback-store.js"
+import { getFeedbackByTemplate } from "@arelyos/engine/persistence/feedback-store.js"
 
 describe("ParameterEffectivenessService", () => {
   it("returns empty when no feedback with parameters", () => {

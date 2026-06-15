@@ -1,4 +1,4 @@
-import { queryDecisions, searchMemories } from "@arely/persistence";
+import { queryDecisions, searchMemories } from "@arelyos/persistence";
 import { memoryService } from "./memory-service.js";
 
 export interface DecisionStats {

@@ -1,6 +1,6 @@
 import type { PlanningContext, ExecutionPrediction } from "./prediction-types.js";
 import type { GoalForecast, GoalForecastContext } from "./goal-forecast-types.js";
-import { queryDecisions } from "@arely/persistence";
+import { queryDecisions } from "@arelyos/persistence";
 import { GoalUtilityScorer } from "./goal-utility-scorer.js";
 
 const COMPLEXITY_PENALTY: Record<string, number> = {

@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { createHttpServer } from "@arely/engine/transport/http-server.js";
-import { SSEBus } from "@arely/engine/server/sse.js";
-import { connect, close } from "@arely/engine/persistence/database.js";
-import { loadConfig } from "@arely/engine/config/index.js";
-import { createSession } from "@arely/engine/persistence/session-store.js";
+import { createHttpServer } from "@arelyos/engine/transport/http-server.js";
+import { SSEBus } from "@arelyos/engine/server/sse.js";
+import { connect, close } from "@arelyos/engine/persistence/database.js";
+import { loadConfig } from "@arelyos/engine/config/index.js";
+import { createSession } from "@arelyos/engine/persistence/session-store.js";
 import http from "node:http";
-import type { SessionStartedEvent } from "@arely/engine/types/events.js";
+import type { SessionStartedEvent } from "@arelyos/engine/types/events.js";
 
 function fetchUrl(url: string): Promise<{ statusCode: number; body: string }> {
   return new Promise((resolve, reject) => {

@@ -7,7 +7,7 @@ import {
   getEpochMessages,
   updateEpoch,
   getEpochMessageCount as getMessageCount,
-} from "@arely/persistence"
+} from "@arelyos/persistence"
 import type { ContextEpoch, EpochMessage } from "./epoch-types.js"
 import { memoryRetrievalService } from "./memory-retrieval-service.js"
 

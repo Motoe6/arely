@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { createSearchProvider } from "@arely/engine/tools/provider-factory.js";
-import { ExaProvider, ParallelProvider } from "@arely/engine/tools/websearch.js";
+import { createSearchProvider } from "@arelyos/engine/tools/provider-factory.js";
+import { ExaProvider, ParallelProvider } from "@arelyos/engine/tools/websearch.js";
 
 describe("createSearchProvider", () => {
   it("returns ExaProvider for exa config", () => {

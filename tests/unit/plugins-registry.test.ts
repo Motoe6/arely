@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { PluginRegistry, definePlugin } from "@arely/plugins";
+import { PluginRegistry, definePlugin } from "@arelyos/plugins";
 
 describe("PluginRegistry", () => {
   it("registers and enables a plugin", async () => {

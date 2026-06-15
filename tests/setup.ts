@@ -1,7 +1,7 @@
 import Database from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
-import * as schema from "@arely/persistence";
-import { pushSchema, connect, close } from "@arely/persistence";
+import * as schema from "@arelyos/persistence";
+import { pushSchema, connect, close } from "@arelyos/persistence";
 
 let testDbPath: string | null = null;
 

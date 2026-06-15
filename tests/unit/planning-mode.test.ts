@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { LLMAdapter } from "@arely/engine/llm/adapter.js";
-import type { SessionMessage } from "@arely/engine/types.js";
+import type { LLMAdapter } from "@arelyos/engine/llm/adapter.js";
+import type { SessionMessage } from "@arelyos/engine/types.js";
 
 const { mockCreatePlan, mockPersistPlan, mockCreateSteps, mockUpdatePlanStatus, mockExecute, mockSynthesize } = vi.hoisted(() => ({
   mockCreatePlan: vi.fn(),
@@ -11,11 +11,11 @@ const { mockCreatePlan, mockPersistPlan, mockCreateSteps, mockUpdatePlanStatus, 
   mockSynthesize: vi.fn(),
 }));
 
-vi.mock("@arely/engine/planner/planner.js", () => ({
+vi.mock("@arelyos/engine/planner/planner.js", () => ({
   createPlan: mockCreatePlan,
 }));
 
-vi.mock("@arely/engine/persistence/plan-store.js", () => ({
+vi.mock("@arelyos/engine/persistence/plan-store.js", () => ({
   createPlan: mockPersistPlan,
   createSteps: mockCreateSteps,
   updatePlanStatus: mockUpdatePlanStatus,
@@ -26,19 +26,19 @@ vi.mock("@arely/engine/persistence/plan-store.js", () => ({
   markStepSkipped: vi.fn(),
 }));
 
-vi.mock("@arely/engine/planner/workflow.js", () => ({
+vi.mock("@arelyos/engine/planner/workflow.js", () => ({
   WorkflowExecutor: vi.fn(function () {
     return { execute: mockExecute };
   }),
 }));
 
-vi.mock("@arely/engine/planner/synthesizer.js", () => ({
+vi.mock("@arelyos/engine/planner/synthesizer.js", () => ({
   Synthesizer: vi.fn(function () {
     return { synthesize: mockSynthesize };
   }),
 }));
 
-import { PlanningModeExecution } from "@arely/engine/server/modes/planning-mode.js";
+import { PlanningModeExecution } from "@arelyos/engine/server/modes/planning-mode.js";
 
 const mockMessages: SessionMessage[] = [];
 const mockEmit = vi.fn();

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { SharedSwarmMemory } from "@arely/engine/llm/shared-swarm-memory.js";
+import { SharedSwarmMemory } from "@arelyos/engine/llm/shared-swarm-memory.js";
 
 describe("SharedSwarmMemory", () => {
   it("should start empty", () => {

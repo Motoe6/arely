@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import { initTestDb, cleanupTestDb } from "../setup.js";
-import { ExecutionComparator } from "@arely/engine/agents/drift-analyzer.js";
-import { createPipeline, createPipelineStep, createPipelineRun, updatePipelineRunStatus, getPipelineStepRuns } from "@arely/engine/agents/pipeline-store.js";
-import { executePipeline } from "@arely/engine/agents/pipeline.js";
-import { getDb } from "@arely/engine/persistence/database.js";
-import { agents, pipelineStepRuns, pipelineRuns, pipelineSteps, agentPipelines } from "@arely/engine/persistence/schema.js";
-import type { RuntimeConfig } from "@arely/engine/agents/runtime.js";
-import { createExecutionTracer } from "@arely/engine/agents/execution-tracer.js";
+import { ExecutionComparator } from "@arelyos/engine/agents/drift-analyzer.js";
+import { createPipeline, createPipelineStep, createPipelineRun, updatePipelineRunStatus, getPipelineStepRuns } from "@arelyos/engine/agents/pipeline-store.js";
+import { executePipeline } from "@arelyos/engine/agents/pipeline.js";
+import { getDb } from "@arelyos/engine/persistence/database.js";
+import { agents, pipelineStepRuns, pipelineRuns, pipelineSteps, agentPipelines } from "@arelyos/engine/persistence/schema.js";
+import type { RuntimeConfig } from "@arelyos/engine/agents/runtime.js";
+import { createExecutionTracer } from "@arelyos/engine/agents/execution-tracer.js";
 import { createHash } from "node:crypto";
 
 function sha256(v: string): string {

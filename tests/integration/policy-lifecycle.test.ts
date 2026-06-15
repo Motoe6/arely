@@ -3,12 +3,12 @@ import { initTestDb, cleanupTestDb } from "../setup.js";
 import { mkdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { insertEvent, getTrace, listTraces, countTraces } from "@arely/engine/persistence/policy-audit-store.js";
-import { SimulationEngine } from "@arely/engine/agents/simulation/simulation-engine.js";
-import { FileSystemPolicyPackStore } from "@arely/engine/agents/policy/policy-pack.js";
-import { PolicyRecommender, type RecommenderAuditPort } from "@arely/engine/agents/policy/policy-recommender.js";
-import { ImpactAnalyzer } from "@arely/engine/agents/policy/impact-analyzer.js";
-import type { PolicyRule } from "@arely/engine/agents/policy/policy-types.js";
+import { insertEvent, getTrace, listTraces, countTraces } from "@arelyos/engine/persistence/policy-audit-store.js";
+import { SimulationEngine } from "@arelyos/engine/agents/simulation/simulation-engine.js";
+import { FileSystemPolicyPackStore } from "@arelyos/engine/agents/policy/policy-pack.js";
+import { PolicyRecommender, type RecommenderAuditPort } from "@arelyos/engine/agents/policy/policy-recommender.js";
+import { ImpactAnalyzer } from "@arelyos/engine/agents/policy/impact-analyzer.js";
+import type { PolicyRule } from "@arelyos/engine/agents/policy/policy-types.js";
 
 const tmpDir = join(tmpdir(), "policy-lifecycle-test");
 

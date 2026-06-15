@@ -1,9 +1,9 @@
 import { ulid } from "ulid"
 import type { TemplateRegistryLike, Template, TemplateParameter } from "./types.js"
-import { getProposal, updateProposalStatus } from "@arely/persistence"
-import { createTemplateVersion } from "@arely/persistence"
-import { createAuditRecord } from "@arely/persistence"
-import type { ProposalRecord } from "@arely/persistence"
+import { getProposal, updateProposalStatus } from "@arelyos/persistence"
+import { createTemplateVersion } from "@arelyos/persistence"
+import { createAuditRecord } from "@arelyos/persistence"
+import type { ProposalRecord } from "@arelyos/persistence"
 
 type DbClient = any
 

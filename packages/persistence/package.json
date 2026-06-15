@@ -1,5 +1,5 @@
 {
-  "name": "@arely/persistence",
+  "name": "@arelyos/persistence",
   "version": "0.1.0",
   "type": "module",
   "main": "dist/index.js",

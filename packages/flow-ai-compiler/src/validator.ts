@@ -1,6 +1,6 @@
-import { globalNodeRegistry } from "@arely/flow-sdk"
-import { validateDAG } from "@arely/flow-runtime"
-import type { Workflow } from "@arely/flow-runtime"
+import { globalNodeRegistry } from "@arelyos/flow-sdk"
+import { validateDAG } from "@arelyos/flow-runtime"
+import type { Workflow } from "@arelyos/flow-runtime"
 import { AICompilerError } from "./schema.js"
 
 export interface ValidationResult {

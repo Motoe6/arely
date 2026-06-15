@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { PlanRecord, PlanStepRecord } from "@arely/engine/types.js";
-import type { Tool } from "@arely/engine/tools/base-tool.js";
-import type { AgentEvent } from "@arely/engine/types/events.js";
+import type { PlanRecord, PlanStepRecord } from "@arelyos/engine/types.js";
+import type { Tool } from "@arelyos/engine/tools/base-tool.js";
+import type { AgentEvent } from "@arelyos/engine/types/events.js";
 
-vi.mock("@arely/engine/config/index.js", () => ({
+vi.mock("@arelyos/engine/config/index.js", () => ({
   getConfig: () => ({ PLAN_PARALLELISM: 3 }),
 }));
 
-import { WorkflowExecutor, buildGraph, computeLevels, safeParseDepends } from "@arely/engine/planner/workflow.js";
+import { WorkflowExecutor, buildGraph, computeLevels, safeParseDepends } from "@arelyos/engine/planner/workflow.js";
 
 function makeStep(id: string, overrides: Partial<PlanStepRecord> = {}): PlanStepRecord {
   return {

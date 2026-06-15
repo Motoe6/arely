@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { ModelRegistry } from "@arely/engine/models/model-registry.js";
-import { ModelAwareAdapter } from "@arely/engine/models/model-adapter.js";
-import { ModelMetrics } from "@arely/engine/models/model-metrics.js";
+import { ModelRegistry } from "@arelyos/engine/models/model-registry.js";
+import { ModelAwareAdapter } from "@arelyos/engine/models/model-adapter.js";
+import { ModelMetrics } from "@arelyos/engine/models/model-metrics.js";
 
-vi.mock("@arely/engine/config/index.js", () => ({
+vi.mock("@arelyos/engine/config/index.js", () => ({
   loadConfig: vi.fn(),
   getConfig: () => ({
     ARELY_API_KEY: "sk-test",

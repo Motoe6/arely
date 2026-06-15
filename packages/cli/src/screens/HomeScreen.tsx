@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Text, useInput } from "ink";
-import { appStore } from "@arely/ui-core/stores/app-store.js";
+import { appStore } from "@arelyos/ui-core/stores/app-store.js";
 import type { EngineContext } from "../engine.js";
 
 export function HomeScreen({ onStart, engine }: { onStart: () => void; engine?: EngineContext }) {

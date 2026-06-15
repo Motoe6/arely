@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { RedditProvider, formatRedditPosts } from "@arely/engine/tools/reddit.js";
+import { RedditProvider, formatRedditPosts } from "@arelyos/engine/tools/reddit.js";
 
 const mockHotResponse = {
   data: {

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
-import { validateDAG } from "@arely/flow-runtime"
-import type { Workflow } from "@arely/flow-runtime"
+import { validateDAG } from "@arelyos/flow-runtime"
+import type { Workflow } from "@arelyos/flow-runtime"
 
 function makeWorkflow(overrides?: Partial<Workflow>): Workflow {
   return {

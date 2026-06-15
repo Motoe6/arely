@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Text } from "ink";
-import { appStore } from "@arely/ui-core/stores/app-store.js";
+import { appStore } from "@arelyos/ui-core/stores/app-store.js";
 
 export function Header() {
   const [, forceUpdate] = React.useState(0);

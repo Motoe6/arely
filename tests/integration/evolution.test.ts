@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 import { initTestDb, cleanupTestDb } from "../setup.js"
-import { TemplateRegistry } from "@arely/engine/templates/template-registry.js"
-import { evolveWorkflow } from "@arely/engine/templates/evolution-engine.js"
-import { getWorkflowWithCurrentVersion } from "@arely/engine/persistence/workflow-store.js"
-import type { Template, NodeRegistryLike } from "@arely/engine/templates/template-types.js"
-import type { CompilerLLMAdapter } from "@arely/flow-ai-compiler"
-import { globalNodeRegistry, HttpNode } from "@arely/flow-sdk"
+import { TemplateRegistry } from "@arelyos/engine/templates/template-registry.js"
+import { evolveWorkflow } from "@arelyos/engine/templates/evolution-engine.js"
+import { getWorkflowWithCurrentVersion } from "@arelyos/engine/persistence/workflow-store.js"
+import type { Template, NodeRegistryLike } from "@arelyos/engine/templates/template-types.js"
+import type { CompilerLLMAdapter } from "@arelyos/flow-ai-compiler"
+import { globalNodeRegistry, HttpNode } from "@arelyos/flow-sdk"
 
 function makeTemplate(overrides: Partial<Template["metadata"]> & { id: string }): Template {
   return {
