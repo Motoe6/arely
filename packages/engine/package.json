@@ -21,6 +21,7 @@
     "@arelyos/persistence": "*",
     "@arelyos/memory": "*",
     "@arelyos/agent-core": "*",
+    "@arelyos/distributed": "*",
     "@arelyos/evolution": "*",
     "@arelyos/flow-ai-compiler": "*",
     "@arelyos/flow-runtime": "*",

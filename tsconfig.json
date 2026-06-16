@@ -43,7 +43,9 @@
       "@arelyos/ui-core": ["./packages/ui-core/src"],
       "@arelyos/ui-core/*": ["./packages/ui-core/src/*"],
       "@arelyos/cli": ["./packages/cli/src"],
-      "@arelyos/cli/*": ["./packages/cli/src/*"]
+      "@arelyos/cli/*": ["./packages/cli/src/*"],
+      "@arelyos/distributed": ["./packages/distributed/src"],
+      "@arelyos/distributed/*": ["./packages/distributed/src/*"]
     }
   },
   "include": [],
@@ -61,7 +63,8 @@
     { "path": "packages/flow-ai-compiler" },
     { "path": "packages/benchmarks" },
     { "path": "packages/ui-core" },
-    { "path": "packages/cli" }
+    { "path": "packages/cli" },
+    { "path": "packages/distributed" }
   ],
   "exclude": ["node_modules", "dist", "packages/*/dist"]
 }
