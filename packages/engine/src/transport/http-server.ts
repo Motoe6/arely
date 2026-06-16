@@ -120,14 +120,34 @@ export function createHttpServer(opts: HttpServerOptions): ReturnType<typeof cre
   router.get("/traces", (_req: IncomingMessage, res: ServerResponse) => {
     const url = new URL(_req.url ?? "/", `http://${_req.headers.host ?? "localhost"}`);
     const traceId = url.searchParams.get("traceId");
+    const sessionFilter = url.searchParams.get("sessionId");
+    const providerFilter = url.searchParams.get("provider");
+    const roleFilter = url.searchParams.get("role");
+    const statusFilter = url.searchParams.get("status") as "ok" | "error" | undefined;
+    const limit = Math.min(Number(url.searchParams.get("limit") ?? "20"), 100);
+
     if (traceId) {
       const trace = tracer.getTrace(traceId);
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(trace));
-    } else {
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ traceIds: tracer.getAllTraceIds() }));
+      return;
     }
+
+    if (sessionFilter || providerFilter || roleFilter || statusFilter) {
+      const traces = tracer.queryTraces({
+        sessionId: sessionFilter ?? undefined,
+        provider: providerFilter ?? undefined,
+        role: roleFilter ?? undefined,
+        status: statusFilter,
+        limit,
+      });
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ traces, count: traces.length }));
+      return;
+    }
+
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ traceIds: tracer.getAllTraceIds(), count: tracer.getAllTraceIds().length }));
   });
 
   router.get("/audit", (_req: IncomingMessage, res: ServerResponse) => {

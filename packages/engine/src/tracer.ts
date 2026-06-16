@@ -25,6 +25,19 @@ export interface Tracer {
   endSpan(span: Span, tags?: Record<string, unknown>, error?: string): void;
   getTrace(traceId: string): TraceResult;
   getAllTraceIds(): string[];
+  queryTraces(query: TraceQuery): TraceResult[];
+  getRecentTraces(limit?: number): TraceResult[];
+}
+
+export interface TraceQuery {
+  sessionId?: string;
+  swarmId?: string;
+  role?: string;
+  provider?: string;
+  since?: number;
+  until?: number;
+  status?: SpanStatus;
+  limit?: number;
 }
 
 export class SpanStore {
@@ -49,6 +62,27 @@ export class SpanStore {
       ids.add(span.traceId);
     }
     return [...ids];
+  }
+
+  getAllSpans(): Span[] {
+    return [...this.spans.values()].sort((a, b) => a.startTime - b.startTime);
+  }
+
+  query(query: TraceQuery): Span[] {
+    const all = this.getAllSpans();
+    return all.filter((s) => {
+      if (query.sessionId) {
+        const tags = s.tags ?? {};
+        if (tags.sessionId !== query.sessionId && !s.traceId.includes(query.sessionId)) return false;
+      }
+      if (query.swarmId && !s.traceId.includes(query.swarmId) && (s.tags?.swarmId !== query.swarmId)) return false;
+      if (query.role && s.tags?.role !== query.role) return false;
+      if (query.provider && s.tags?.provider !== query.provider) return false;
+      if (query.since && s.startTime < query.since) return false;
+      if (query.until && s.startTime > query.until) return false;
+      if (query.status && s.status !== query.status) return false;
+      return true;
+    }).slice(0, query.limit ?? 100);
   }
 
   clear(): void {
@@ -86,6 +120,25 @@ export function createTracer(store?: SpanStore): Tracer {
 
     getAllTraceIds(): string[] {
       return spanStore.getAllTraceIds();
+    },
+
+    queryTraces(query: TraceQuery): TraceResult[] {
+      const spans = spanStore.query(query);
+      const byTrace = new Map<string, Span[]>();
+      for (const s of spans) {
+        const list = byTrace.get(s.traceId);
+        if (list) list.push(s);
+        else byTrace.set(s.traceId, [s]);
+      }
+      return [...byTrace.entries()].map(([traceId, spanList]) => ({
+        traceId,
+        spans: spanList.sort((a, b) => a.startTime - b.startTime),
+      }));
+    },
+
+    getRecentTraces(limit = 20): TraceResult[] {
+      const ids = spanStore.getAllTraceIds().slice(-limit);
+      return ids.map((id) => ({ traceId: id, spans: spanStore.getByTraceId(id) }));
     },
   };
 }

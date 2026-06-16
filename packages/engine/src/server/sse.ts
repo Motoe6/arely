@@ -96,6 +96,14 @@ export class SSEBus {
     });
   }
 
+  getActiveConnectionCount(): number {
+    let count = 0;
+    for (const clients of this.sessionClients.values()) {
+      count += clients.size;
+    }
+    return count;
+  }
+
   getSequence(sessionId: string): number {
     return this.sessionSequences.get(sessionId) ?? getLatestSequence(sessionId);
   }

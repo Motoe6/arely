@@ -43,6 +43,10 @@ export class SessionManager {
     }
   }
 
+  getActiveSessionCount(): number {
+    return this.sessions.size;
+  }
+
   removeSession(id: string): boolean {
     return this.sessions.delete(id);
   }

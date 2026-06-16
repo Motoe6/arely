@@ -4,6 +4,7 @@ import type { PermissionGate } from "../permissions/gate.js";
 import type { SearchProvider, ToolContext, ToolResult } from "./base-tool.js";
 import type { Tool } from "./base-tool.js";
 import { performWebSearch } from "./websearch.js";
+import { metrics } from "../metrics.js";
 
 export type { Tool };
 import { performWebFetch } from "./webfetch.js";
@@ -165,6 +166,7 @@ export function createToolRegistry(opts: RegistryOptions): Map<string, Tool> {
         };
         opts.sse.emit(opts.sessionId, cancelledEvent);
       } else {
+        metrics.increment("tool_failures_total", { tool: toolName, error: String(err).slice(0, 80) });
         updateToolCallStatus(toolCallId, "failed", { error: String(err) });
         const failedEvent: ToolCallFailedEvent = {
           id: ulid(),

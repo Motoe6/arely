@@ -255,6 +255,12 @@ export function main() {
     });
   }
 
+  // Periodic gauge updates for observability
+  const metricsInterval = setInterval(() => {
+    metrics.setGauge("sse_connections_active", {}, sse.getActiveConnectionCount());
+    metrics.setGauge("session_count", {}, sessionManager.getActiveSessionCount());
+  }, 5000);
+
   const authExclude = ["/health", "/ready", "/metrics", "/deps", "/api/sse"];
   const logExclude = ["/health", "/metrics"];
   const bodyExclude = ["/health", "/ready", "/metrics", "/deps", "/api/sse", "/api/sse/replay"];
@@ -835,6 +841,7 @@ export function main() {
 
       server.close();
       scheduler?.stop();
+      clearInterval(metricsInterval);
       if (queueInterval) clearInterval(queueInterval);
 
       startDrain({

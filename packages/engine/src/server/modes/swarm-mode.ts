@@ -9,6 +9,7 @@ import type { SwarmAgentRole } from "../../llm/swarm-task-types.js";
 import { ParallelSwarmOrchestrator } from "../../llm/parallel-swarm-orchestrator.js";
 import { registerSwarmExecution } from "../../routes/swarm-routes.js";
 import { metrics } from "../../metrics.js";
+import { tracer } from "../../tracer.js";
 import { selectRoles, loadProviderSummary, getProviderCategoryStats, runLearningCycle, recordPerformance, loadLearnedWeights, getWeightsForCategory } from "@arelyos/agent-core/swarm/index.js";
 import type { RoleAssignment, TaskCategory, RolePerformanceRecord, LearnedWeights } from "@arelyos/agent-core/swarm/index.js";
 
@@ -42,10 +43,16 @@ export class SwarmModeExecution implements ExecutionMode {
       return { content: "Swarm cancelled", turns: 0 };
     }
 
+    const traceId = `swarm-${ulid()}`;
+    const rootSpan = tracer.startSpan(traceId, "swarm.run", undefined);
+
     // T15.4 Learning cycle — adjust weights from historical outcomes
+    const learningSpan = tracer.startSpan(traceId, "swarm.learning", rootSpan.spanId);
     const learnedWeights = runLearningCycle();
+    tracer.endSpan(learningSpan, { category: this.category ?? "coding" });
 
     // Dynamic role selection with learned weights
+    const selectSpan = tracer.startSpan(traceId, "swarm.select", rootSpan.spanId);
     let assignments: RoleAssignment[] = [];
     try {
       const summary = loadProviderSummary();
@@ -60,6 +67,7 @@ export class SwarmModeExecution implements ExecutionMode {
     } catch {
       // No benchmark data available; run with defaults
     }
+    tracer.endSpan(selectSpan, { roles: assignments.length, category: this.category ?? "coding" });
 
     const roleMap = new Map<string, RoleAssignment>();
     for (const a of assignments) {
@@ -135,12 +143,69 @@ export class SwarmModeExecution implements ExecutionMode {
     metrics.increment("swarm_executions_total");
     for (const a of assignments) {
       metrics.increment("provider_requests_total", { provider: a.provider, role: a.role, model: a.model });
+      metrics.increment("role_assignments_total", { role: a.role, provider: a.provider });
     }
 
     try {
+      const executeSpan = tracer.startSpan(traceId, "swarm.execute", rootSpan.spanId);
+
+      // Create per-role execution spans
+      const roleSpans = new Map<string, ReturnType<typeof tracer.startSpan>>();
+      for (const a of assignments) {
+        const roleSpan = tracer.startSpan(traceId, `role.${a.role}`, executeSpan.spanId);
+        roleSpans.set(a.role, roleSpan);
+      }
+
       const result = await orchestrator.run(input);
       const elapsedMs = Date.now() - startMs;
+
+      // End all role spans
+      let roleSuccesses = 0;
+      for (const a of assignments) {
+        const roleSpan = roleSpans.get(a.role);
+        if (roleSpan) {
+          const output = result.outputs[a.role] ?? "";
+          const roleSuccess = !!output;
+          if (roleSuccess) roleSuccesses++;
+          tracer.endSpan(roleSpan, {
+            role: a.role,
+            provider: a.provider,
+            model: a.model,
+            sessionId: session.id,
+            swarmId,
+            success: roleSuccess,
+            latencyMs: elapsedMs,
+          });
+        }
+      }
+
+      tracer.endSpan(executeSpan, {
+        success: true,
+        latencyMs: elapsedMs,
+        roles: assignments.length,
+        successfulRoles: roleSuccesses,
+      });
+
       metrics.observeDuration("swarm_latency_ms", { category: this.category ?? "coding" }, elapsedMs);
+
+      // Role assignment accuracy: proportion of roles that produced output
+      const roleAccuracy = assignments.length > 0 ? roleSuccesses / assignments.length : 0;
+      metrics.setGauge("role_assignment_accuracy", { category: this.category ?? "coding" }, roleAccuracy);
+
+      // Provider selection accuracy per provider
+      for (const a of assignments) {
+        const output = result.outputs[a.role] ?? "";
+        const success = !!output;
+        metrics.setGauge("provider_selection_accuracy", { provider: a.provider, role: a.role }, success ? 1 : 0);
+      }
+
+      // Learning gain: average role score vs baseline (0.5)
+      const avgScore = assignments.reduce((s, a) => s + a.score, 0) / Math.max(assignments.length, 1);
+      metrics.setGauge("learning_gain", { category: this.category ?? "coding" }, avgScore);
+
+      // Benchmark drift: 1 - roleAccuracy as a proxy
+      metrics.setGauge("benchmark_drift", { category: this.category ?? "coding" }, 1 - roleAccuracy);
+
       for (const a of assignments) {
         metrics.observeDuration("provider_latency_ms", { provider: a.provider, model: a.model }, elapsedMs);
       }
@@ -168,6 +233,9 @@ export class SwarmModeExecution implements ExecutionMode {
         recordPerformance(record);
       }
 
+      // Track session duration
+      metrics.observeDuration("session_duration_seconds", { sessionId: session.id }, Date.now() - startMs);
+
       session.sse.emit(session.id, {
         id: ulid(),
         version: 1,
@@ -178,11 +246,25 @@ export class SwarmModeExecution implements ExecutionMode {
         content: synthesis,
       });
 
+      tracer.endSpan(rootSpan, {
+        success: true,
+        sessionId: session.id,
+        swarmId,
+        latencyMs: elapsedMs,
+        roleCount: assignments.length,
+      });
+
       return { content: synthesis, turns: 1 };
     } catch (err) {
       const elapsedMs = Date.now() - startMs;
       metrics.increment("swarm_executions_total", { status: "failed" });
       metrics.increment("swarm_failures_total", { category: this.category ?? "coding" });
+
+      // Track role failures per provider
+      for (const a of assignments) {
+        metrics.increment("provider_failures_total", { provider: a.provider, role: a.role });
+      }
+
       registerSwarmExecution(swarmId, "failed");
 
       // Record failure for T15.4
@@ -204,6 +286,14 @@ export class SwarmModeExecution implements ExecutionMode {
 
       const errorMsg = err instanceof Error ? err.message : String(err);
       session.pushMessage("assistant", `Swarm execution failed: ${errorMsg}`);
+
+      tracer.endSpan(rootSpan, {
+        success: false,
+        sessionId: session.id,
+        swarmId,
+        latencyMs: elapsedMs,
+        error: errorMsg,
+      }, errorMsg);
 
       session.sse.emit(session.id, {
         id: ulid(),

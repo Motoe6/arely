@@ -1,0 +1,145 @@
+{
+  "__inputs": [],
+  "__requires": [],
+  "title": "ARELYOS — Swarm Observability",
+  "uid": "arelyos-swarm",
+  "panels": [
+    {
+      "title": "Swarm Overview",
+      "type": "stat",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
+      "targets": [
+        { "expr": "arely_swarm_executions_total", "legendFormat": "Total" },
+        { "expr": "rate(arely_swarm_executions_total[5m])", "legendFormat": "Rate" },
+        { "expr": "arely_swarm_failures_total", "legendFormat": "Failures" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "palette-classic" }
+        }
+      }
+    },
+    {
+      "title": "Swarm Latency (p50 / p95 / p99)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        { "expr": "histogram_quantile(0.5, sum(rate(arely_swarm_latency_ms_bucket[5m])) by (le))", "legendFormat": "p50" },
+        { "expr": "histogram_quantile(0.95, sum(rate(arely_swarm_latency_ms_bucket[5m])) by (le))", "legendFormat": "p95" },
+        { "expr": "histogram_quantile(0.99, sum(rate(arely_swarm_latency_ms_bucket[5m])) by (le))", "legendFormat": "p99" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        }
+      }
+    },
+    {
+      "title": "SSE Connections",
+      "type": "gauge",
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 8 },
+      "targets": [
+        { "expr": "arely_sse_connections_active" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 100,
+          "color": { "mode": "thresholds" },
+          "thresholds": { "steps": [ { "value": -1, "color": "green" }, { "value": 50, "color": "yellow" }, { "value": 80, "color": "red" } ] }
+        }
+      }
+    },
+    {
+      "title": "Session Duration",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 8 },
+      "targets": [
+        { "expr": "arely_session_duration_seconds_max", "legendFormat": "Max" },
+        { "expr": "arely_session_duration_seconds_avg", "legendFormat": "Avg" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        }
+      }
+    },
+    {
+      "title": "Provider Performance",
+      "type": "table",
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 16 },
+      "targets": [
+        { "expr": "sum by (provider) (arely_provider_requests_total)", "legendFormat": "Requests" },
+        { "expr": "sum by (provider) (arely_provider_latency_ms_sum) / sum by (provider) (arely_provider_latency_ms_count)", "legendFormat": "Avg Latency" }
+      ],
+      "transformations": [
+        { "id": "groupBy", "options": { "fields": { "provider": { "aggregations": [] }, "Requests": { "aggregations": ["sum"] }, "Avg Latency": { "aggregations": ["mean"] } } } }
+      ]
+    },
+    {
+      "title": "Provider Selection Accuracy",
+      "type": "timeseries",
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 16 },
+      "targets": [
+        { "expr": "arely_provider_selection_accuracy", "legendFormat": "Accuracy" },
+        { "expr": "avg_over_time(arely_provider_selection_accuracy[1h])", "legendFormat": "1h Avg" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 1,
+          "unit": "percentunit"
+        }
+      }
+    },
+    {
+      "title": "Learning Gain",
+      "type": "timeseries",
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 26 },
+      "targets": [
+        { "expr": "arely_learning_gain", "legendFormat": "Gain" },
+        { "expr": "arely_role_assignment_accuracy", "legendFormat": "Role Accuracy" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 1,
+          "unit": "percentunit"
+        }
+      }
+    },
+    {
+      "title": "Benchmark Drift",
+      "type": "timeseries",
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 26 },
+      "targets": [
+        { "expr": "arely_benchmark_drift", "legendFormat": "Drift" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "unit": "percent"
+        }
+      }
+    },
+    {
+      "title": "Runtime Health",
+      "type": "stat",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 36 },
+      "targets": [
+        { "expr": "arely_swarm_queue_depth", "legendFormat": "Queue" },
+        { "expr": "arely_tool_failures_total", "legendFormat": "Tool Failures" },
+        { "expr": "arely_sse_connections_active", "legendFormat": "SSE" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "steps": [ { "value": -1, "color": "green" }, { "value": 10, "color": "yellow" }, { "value": 50, "color": "red" } ] }
+        }
+      }
+    }
+  ],
+  "schemaVersion": 39,
+  "version": 1
+}

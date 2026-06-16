@@ -38,6 +38,16 @@ class Metrics {
     }
   }
 
+  add(name: string, labels: Labels, value: number): void {
+    const key = labelKey(name, labels ?? {});
+    const existing = this.counters.get(key);
+    if (existing) {
+      existing.value += value;
+    } else {
+      this.counters.set(key, { value });
+    }
+  }
+
   observeDuration(name: string, labels: Labels, durationMs: number): void {
     const key = labelKey(name, labels ?? {});
     let entry = this.histograms.get(key);

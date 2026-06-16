@@ -455,6 +455,18 @@ export type SwarmLearningUpdateEvent = BaseEvent & {
   };
 };
 
+export type TraceEvent = BaseEvent & {
+  type: "trace";
+  sessionId?: string;
+  spanId: string;
+  parentSpanId?: string;
+  name: string;
+  durationMs: number;
+  status: "ok" | "error";
+  tags?: Record<string, unknown>;
+  error?: string;
+};
+
 export type AgentEvent =
   | SessionStartedEvent
   | SessionCompletedEvent
@@ -517,7 +529,8 @@ export type AgentEvent =
   | EvolutionProposalApprovedEvent
   | EvolutionProposalRejectedEvent
   | SwarmRoleSelectedEvent
-  | SwarmLearningUpdateEvent;
+  | SwarmLearningUpdateEvent
+  | TraceEvent;
 
 export interface SSEEventData {
   event: AgentEvent["type"];
