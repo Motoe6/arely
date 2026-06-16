@@ -4,25 +4,25 @@ import type { AgentSession } from "../session.js";
 import type { SessionMessage } from "../../types.js";
 import type { AgentEvent } from "../../types/events.js";
 import type { LLMAdapter } from "@arelyos/llm-core";
-import type { AgentExecutor } from "../../llm/swarm-orchestrator.js";
+import type { AgentExecutor, HeterogeneousExecutor } from "../../llm/swarm-orchestrator.js";
 import type { SwarmAgentRole } from "../../llm/swarm-task-types.js";
 import { ParallelSwarmOrchestrator } from "../../llm/parallel-swarm-orchestrator.js";
 import { registerSwarmExecution } from "../../routes/swarm-routes.js";
 import { selectRoles, loadProviderSummary, getProviderCategoryStats, runLearningCycle, recordPerformance } from "@arelyos/agent-core/swarm/index.js";
 import type { RoleAssignment, TaskCategory, RolePerformanceRecord } from "@arelyos/agent-core/swarm/index.js";
 
-function createAgentExecutor(llm: LLMAdapter, signal?: AbortSignal, roleMap?: Map<string, RoleAssignment>): AgentExecutor {
-  return async (role, systemPrompt, task, context) => {
+function createAgentExecutor(llm: LLMAdapter, signal?: AbortSignal, roleMap?: Map<string, RoleAssignment>): AgentExecutor & HeterogeneousExecutor {
+  return async (role, systemPrompt, task, context, modelId?: string) => {
     const roleName = role as string;
     const assignment = roleMap?.get(roleName);
-    const modelId = assignment ? `${assignment.provider}:${assignment.model}` : undefined;
+    const resolvedModelId = modelId ?? (assignment ? `${assignment.provider}:${assignment.model}` : undefined);
 
     const messages: SessionMessage[] = [
       { role: "system", content: systemPrompt, timestamp: Date.now() },
       { role: "user", content: `${task}\n\nContext:\n${context}`, timestamp: Date.now() },
     ];
     let result = "";
-    for await (const response of llm.complete(messages, signal, modelId as any)) {
+    for await (const response of llm.complete(messages, signal, resolvedModelId as any)) {
       if (response.type !== "delta") {
         result += response.content ?? "";
       }
@@ -94,7 +94,11 @@ export class SwarmModeExecution implements ExecutionMode {
     registerSwarmExecution(swarmId, "running");
 
     const executor = createAgentExecutor(session.llm, session.abortSignal, roleMap);
-    const orchestrator = new ParallelSwarmOrchestrator(executor);
+    const providerModelMap = new Map<string, { provider: string; model: string }>();
+    for (const a of assignments) {
+      providerModelMap.set(a.role, { provider: a.provider, model: a.model });
+    }
+    const orchestrator = new ParallelSwarmOrchestrator(executor, { roleMap: providerModelMap });
 
     const startMs = Date.now();
 

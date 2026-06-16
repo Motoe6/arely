@@ -13,7 +13,7 @@ import {
   getGoal,
   updateGoal,
 } from "@arelyos/persistence";
-import type { GoalPlan, GoalPlanQuery, Milestone, MilestoneQuery } from "@arelyos/persistence";
+import type { GoalPlan, GoalPlanStatus, GoalPlanQuery, Milestone, MilestoneStatus, MilestoneQuery } from "@arelyos/persistence";
 
 export type { GoalPlan, GoalPlanStatus, GoalPlanQuery, Milestone, MilestoneStatus, MilestoneQuery };
 

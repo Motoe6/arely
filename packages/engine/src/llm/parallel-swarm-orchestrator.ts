@@ -8,15 +8,19 @@ const PLANNER_PROMPT = getSystemPrompt("planner");
 
 export type { ParallelSwarmResult, SharedMemoryOptions, AgentContribution } from "./swarm-task-types.js";
 
+export interface RoleModelMap {
+  [role: string]: { provider: string; model: string };
+}
+
 export class ParallelSwarmOrchestrator {
   private taskExecutor: SwarmTaskExecutor;
   private graphBuilder: TaskGraphBuilder;
 
   constructor(
     execute: AgentExecutor,
-    deps?: { graphBuilder?: TaskGraphBuilder },
+    deps?: { graphBuilder?: TaskGraphBuilder; roleMap?: Map<string, { provider: string; model: string }> },
   ) {
-    this.taskExecutor = new SwarmTaskExecutor(execute);
+    this.taskExecutor = new SwarmTaskExecutor(execute, deps?.roleMap);
     this.graphBuilder = deps?.graphBuilder ?? defaultBuilder;
   }
 

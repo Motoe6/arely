@@ -40,7 +40,7 @@ export { StrategyEvaluator } from "./strategy-evaluator.js";
 export type { ModelPerfRecord, TaskType } from "./model-performance-service.js";
 export { TASK_TYPES, ModelPerformanceService, modelPerformanceService } from "./model-performance-service.js";
 
-export type { DecisionOutcomeUpdatedCallback } from "./decision-service.js";
+export type { OutcomeUpdatedCallback } from "./decision-service.js";
 export { DecisionService, decisionService, setOutcomeUpdatedCallback } from "./decision-service.js";
 
 export type {

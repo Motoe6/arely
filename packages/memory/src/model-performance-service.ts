@@ -134,7 +134,7 @@ export class ModelPerformanceService {
     if (filters?.provider) conditions.push(eq(modelPerformance.provider, filters.provider));
     if (filters?.taskType) conditions.push(eq(modelPerformance.taskType, filters.taskType));
 
-    let query = db.select().from(modelPerformance);
+    let query: any = db.select().from(modelPerformance);
     if (conditions.length > 0) query = query.where(and(...conditions));
 
     const rows = query.orderBy(desc(modelPerformance.totalDecisions)).all() as unknown as ModelPerfRecord[];

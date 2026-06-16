@@ -1,6 +1,6 @@
 import type { SwarmTask, SwarmAgentRole } from "./swarm-task-types.js";
 import type { SharedSwarmMemory } from "./shared-swarm-memory.js";
-import type { AgentExecutor, AgentRole } from "./swarm-orchestrator.js";
+import type { AgentExecutor, HeterogeneousExecutor, AgentRole } from "./swarm-orchestrator.js";
 
 export type { SwarmTask } from "./swarm-task-types.js";
 
@@ -17,12 +17,21 @@ export function getSystemPrompt(role: SwarmAgentRole): string {
 }
 
 export class SwarmTaskExecutor {
-  constructor(private execute: AgentExecutor) {}
+  private execute: HeterogeneousExecutor;
+
+  constructor(
+    execute: HeterogeneousExecutor | AgentExecutor,
+    private roleMap?: Map<string, { provider: string; model: string }>,
+  ) {
+    this.execute = execute as HeterogeneousExecutor;
+  }
 
   async run(task: SwarmTask, context: string, request: string): Promise<string> {
     const prompt = getSystemPrompt(task.role);
     const fullInstructions = task.instructions || `Goal: ${task.goal}\n\nRequest: ${request}`;
-    return this.execute(task.role as AgentRole, prompt, fullInstructions, context);
+    const assignment = this.roleMap?.get(task.role);
+    const modelId = assignment ? `${assignment.provider}:${assignment.model}` : undefined;
+    return this.execute(task.role as AgentRole, prompt, fullInstructions, context, modelId);
   }
 
   async runWithDependencies(

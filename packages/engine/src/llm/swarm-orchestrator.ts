@@ -2,6 +2,8 @@ import type { AgentRole, SwarmResult, SwarmStepResult } from "./swarm-types.js";
 
 export type AgentExecutor = (role: AgentRole, systemPrompt: string, task: string, context: string) => Promise<string>;
 
+export type HeterogeneousExecutor = (role: AgentRole, systemPrompt: string, task: string, context: string, modelId?: string) => Promise<string>;
+
 export type { AgentRole, SwarmResult, SwarmStepResult } from "./swarm-types.js";
 
 const SYSTEM_PROMPTS: Record<AgentRole, string> = {
@@ -15,12 +17,15 @@ const ORDER: AgentRole[] = ["planner", "coder", "reviewer"];
 export class SwarmOrchestrator {
   constructor(private execute: AgentExecutor) {}
 
-  async run(request: string): Promise<SwarmResult> {
+  async run(request: string, roleMap?: Map<string, { provider: string; model: string }>): Promise<SwarmResult> {
     const steps: SwarmStepResult[] = [];
     let context = "";
 
     for (const role of ORDER) {
-      const output = await this.execute(role, SYSTEM_PROMPTS[role], request, context);
+      const assignment = roleMap?.get(role);
+      const modelId = assignment ? `${assignment.provider}:${assignment.model}` : undefined;
+      const executor = this.execute as unknown as HeterogeneousExecutor;
+      const output = await executor(role, SYSTEM_PROMPTS[role], request, context, modelId);
       const step: SwarmStepResult = { role, output };
       steps.push(step);
       context = output;
