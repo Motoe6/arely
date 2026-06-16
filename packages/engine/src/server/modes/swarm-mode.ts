@@ -8,8 +8,8 @@ import type { AgentExecutor, HeterogeneousExecutor } from "../../llm/swarm-orche
 import type { SwarmAgentRole } from "../../llm/swarm-task-types.js";
 import { ParallelSwarmOrchestrator } from "../../llm/parallel-swarm-orchestrator.js";
 import { registerSwarmExecution } from "../../routes/swarm-routes.js";
-import { selectRoles, loadProviderSummary, getProviderCategoryStats, runLearningCycle, recordPerformance } from "@arelyos/agent-core/swarm/index.js";
-import type { RoleAssignment, TaskCategory, RolePerformanceRecord } from "@arelyos/agent-core/swarm/index.js";
+import { selectRoles, loadProviderSummary, getProviderCategoryStats, runLearningCycle, recordPerformance, loadLearnedWeights, getWeightsForCategory } from "@arelyos/agent-core/swarm/index.js";
+import type { RoleAssignment, TaskCategory, RolePerformanceRecord, LearnedWeights } from "@arelyos/agent-core/swarm/index.js";
 
 function createAgentExecutor(llm: LLMAdapter, signal?: AbortSignal, roleMap?: Map<string, RoleAssignment>): AgentExecutor & HeterogeneousExecutor {
   return async (role, systemPrompt, task, context, modelId?: string) => {
@@ -65,7 +65,9 @@ export class SwarmModeExecution implements ExecutionMode {
       roleMap.set(a.role, a);
     }
 
-    // Emit role selection events
+    // Emit role selection events with full explainability data
+    const fullWeights = loadLearnedWeights();
+    const catWeights = getWeightsForCategory(fullWeights, this.category ?? "coding");
     for (const a of assignments) {
       const event: AgentEvent = {
         id: ulid(),
@@ -78,9 +80,35 @@ export class SwarmModeExecution implements ExecutionMode {
         model: a.model,
         score: a.score,
         confidence: a.confidence,
+        reason: a.reason ?? "auto_selected",
+        weights: {
+          historical: catWeights.historicalScore,
+          utility: catWeights.utility,
+          availability: catWeights.availability,
+          cost: catWeights.costEfficiency,
+          latency: catWeights.latencyScore,
+        },
       };
       session.sse.emit(session.id, event);
     }
+
+    // Emit learning update event
+    const learningEvent: AgentEvent = {
+      id: ulid(),
+      version: 1 as const,
+      timestamp: Date.now(),
+      type: "swarm_learning_update",
+      sessionId: session.id,
+      category: this.category ?? "coding",
+      weights: {
+        historicalScore: catWeights.historicalScore,
+        utility: catWeights.utility,
+        availability: catWeights.availability,
+        costEfficiency: catWeights.costEfficiency,
+        latencyScore: catWeights.latencyScore,
+      },
+    };
+    session.sse.emit(session.id, learningEvent);
 
     session.sse.emit(session.id, {
       id: ulid(),

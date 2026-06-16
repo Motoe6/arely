@@ -15,6 +15,7 @@ import type { PolicyRule } from "../agents/policy/policy-types.js";
 import type { HealthRegistry } from "../health.js";
 import type { Middleware } from "./middleware.js";
 import { renderDashboardPage } from "../ui/dashboard.js";
+import { renderSwarmPage } from "../ui/swarm-viz.js";
 import { PolicyChangeService, ChangeServiceError } from "../control/policy-change-service.js";
 
 export interface HttpServerOptions {
@@ -634,6 +635,11 @@ export function createHttpServer(opts: HttpServerOptions): ReturnType<typeof cre
   router.get("/dashboard", (_req: IncomingMessage, res: ServerResponse) => {
     res.writeHead(200, { "Content-Type": "text/html" });
     res.end(renderDashboardPage());
+  });
+
+  router.get("/swarm", (_req: IncomingMessage, res: ServerResponse) => {
+    res.writeHead(200, { "Content-Type": "text/html" });
+    res.end(renderSwarmPage());
   });
 
   if (setupRoutes) {

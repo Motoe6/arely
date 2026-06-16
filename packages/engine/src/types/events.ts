@@ -432,6 +432,27 @@ export type SwarmRoleSelectedEvent = BaseEvent & {
   model: string;
   score: number;
   confidence: number;
+  reason: string;
+  weights: {
+    historical: number;
+    utility: number;
+    availability: number;
+    cost: number;
+    latency: number;
+  };
+};
+
+export type SwarmLearningUpdateEvent = BaseEvent & {
+  type: "swarm_learning_update";
+  sessionId: string;
+  category: string;
+  weights: {
+    historicalScore: number;
+    utility: number;
+    availability: number;
+    costEfficiency: number;
+    latencyScore: number;
+  };
 };
 
 export type AgentEvent =
@@ -495,7 +516,8 @@ export type AgentEvent =
   | EvolutionProposalCreatedEvent
   | EvolutionProposalApprovedEvent
   | EvolutionProposalRejectedEvent
-  | SwarmRoleSelectedEvent;
+  | SwarmRoleSelectedEvent
+  | SwarmLearningUpdateEvent;
 
 export interface SSEEventData {
   event: AgentEvent["type"];
