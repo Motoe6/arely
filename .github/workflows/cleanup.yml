@@ -1,0 +1,15 @@
+name: Cleanup
+
+on:
+  schedule:
+    - cron: "0 2 * * 0"
+
+jobs:
+  artifacts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/gh-actions-cleaner@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          remove-aging-days: 30

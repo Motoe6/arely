@@ -100,6 +100,11 @@ export function main() {
   healthRegistry.registerCheck("search", () => ({
     ok: true,
   }));
+  healthRegistry.registerCheck("provider", () => {
+    const providers = [config.ARELY_PROVIDER ?? "openai"];
+    const enabled = providers.filter((p) => config[`ARELY_${p.toUpperCase()}_ENABLED` as keyof typeof config] !== false);
+    return { ok: enabled.length > 0, error: enabled.length === 0 ? "no providers enabled" : undefined };
+  });
 
   logger.info("bootstrap", "Recovering interrupted sessions");
   const recovered = recoverSessions();

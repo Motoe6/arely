@@ -1,0 +1,38 @@
+services:
+  arely:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: arelyos/arely:1.1.0
+    container_name: arely
+    ports:
+      - "8081:8081"
+    volumes:
+      - arely-data:/root/.arely
+      - arely-benchmarks:/app/benchmark-reports
+    environment:
+      - DB_PATH=/root/.arely/data.db
+      - HTTP_PORT=8081
+      - NODE_ENV=production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    profiles:
+      - optional
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  arely-data:
+  arely-benchmarks:
+  ollama-data:

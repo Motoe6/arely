@@ -1,0 +1,36 @@
+services:
+  arely:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: arely-dev
+    ports:
+      - "8081:8081"
+    volumes:
+      - ~/.arely:/root/.arely
+      - ./benchmark-reports:/app/benchmark-reports
+      - ./packages/engine/src:/app/packages/engine/src
+      - ./packages/agent-core/src:/app/packages/agent-core/src
+      - ./packages/llm-core/src:/app/packages/llm-core/src
+      - ./packages/persistence/src:/app/packages/persistence/src
+    environment:
+      - DB_PATH=/root/.arely/data.db
+      - HTTP_PORT=8081
+      - ARELY_LOG_LEVEL=debug
+      - NODE_ENV=development
+    command: ["npx", "tsx", "watch", "packages/engine/src/index.ts"]
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama-dev
+    profiles:
+      - optional
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  ollama-data:

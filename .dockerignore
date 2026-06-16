@@ -1,0 +1,12 @@
+node_modules
+.git
+*.tsbuildinfo
+dist
+benchmark-reports
+policy-packs
+.turbo
+coverage
+.DS_Store
+*.log
+docker-compose*.yml
+.github

@@ -8,6 +8,7 @@ import type { AgentExecutor, HeterogeneousExecutor } from "../../llm/swarm-orche
 import type { SwarmAgentRole } from "../../llm/swarm-task-types.js";
 import { ParallelSwarmOrchestrator } from "../../llm/parallel-swarm-orchestrator.js";
 import { registerSwarmExecution } from "../../routes/swarm-routes.js";
+import { metrics } from "../../metrics.js";
 import { selectRoles, loadProviderSummary, getProviderCategoryStats, runLearningCycle, recordPerformance, loadLearnedWeights, getWeightsForCategory } from "@arelyos/agent-core/swarm/index.js";
 import type { RoleAssignment, TaskCategory, RolePerformanceRecord, LearnedWeights } from "@arelyos/agent-core/swarm/index.js";
 
@@ -130,8 +131,19 @@ export class SwarmModeExecution implements ExecutionMode {
 
     const startMs = Date.now();
 
+    // Record metrics per role assignment
+    metrics.increment("swarm_executions_total");
+    for (const a of assignments) {
+      metrics.increment("provider_requests_total", { provider: a.provider, role: a.role, model: a.model });
+    }
+
     try {
       const result = await orchestrator.run(input);
+      const elapsedMs = Date.now() - startMs;
+      metrics.observeDuration("swarm_latency_ms", { category: this.category ?? "coding" }, elapsedMs);
+      for (const a of assignments) {
+        metrics.observeDuration("provider_latency_ms", { provider: a.provider, model: a.model }, elapsedMs);
+      }
       registerSwarmExecution(swarmId, "completed", result);
 
       const synthesis = result.synthesis || result.review || Object.values(result.outputs).join("\n\n");
@@ -168,6 +180,9 @@ export class SwarmModeExecution implements ExecutionMode {
 
       return { content: synthesis, turns: 1 };
     } catch (err) {
+      const elapsedMs = Date.now() - startMs;
+      metrics.increment("swarm_executions_total", { status: "failed" });
+      metrics.increment("swarm_failures_total", { category: this.category ?? "coding" });
       registerSwarmExecution(swarmId, "failed");
 
       // Record failure for T15.4
