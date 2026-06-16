@@ -51,15 +51,15 @@ export function registerPackageRoutes(router: Router, opts: PackageRoutesOptions
         .then((id) => {
           const record = getInstalledPackage(id)
           if (record) {
-            sse.emitSystem({
-              id: ulid(),
-              version: 1 as const,
-              timestamp: Date.now(),
-              type: "package_installed",
-              packageId: record.id,
-              name: record.name,
-              version: record.version,
-            })
+          sse.emitSystem({
+            id: ulid(),
+            version: 1 as const,
+            timestamp: Date.now(),
+            type: "package_installed",
+            packageId: record.id,
+            name: record.name,
+            pkgVersion: record.version,
+          })
           }
           res.writeHead(201, { "Content-Type": "application/json" })
           res.end(JSON.stringify({ ok: true, package: record }))
@@ -106,7 +106,7 @@ export function registerPackageRoutes(router: Router, opts: PackageRoutesOptions
         type: "package_removed",
         packageId: record.id,
         name: record.name,
-        version: record.version,
+        pkgVersion: record.version,
       })
       res.writeHead(200, { "Content-Type": "application/json" })
       res.end(JSON.stringify({ ok: true }))

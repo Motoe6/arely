@@ -13,6 +13,13 @@ export const llmSchema = z.object({
   ARELY_DEFAULT_MODEL: z.string().default("deepseek-v4"),
   ARELY_AUTH_HEADER: z.string().default("Authorization"),
   ARELY_AUTH_PREFIX: z.string().default("Bearer"),
+
+  // Multi-provider API keys (env overrides config file)
+  OPENAI_API_KEY: z.string().optional(),
+  ANTHROPIC_API_KEY: z.string().optional(),
+  OPENROUTER_API_KEY: z.string().optional(),
+  OLLAMA_BASE_URL: z.string().default("http://localhost:11434"),
+  LMSTUDIO_BASE_URL: z.string().default("http://localhost:1234/v1"),
 });
 
 export const toolsSchema = z.object({

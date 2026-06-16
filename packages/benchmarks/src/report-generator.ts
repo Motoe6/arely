@@ -1,4 +1,4 @@
-import type { BenchmarkReport, BenchmarkSuite, BenchmarkMetric } from "./types.js";
+import type { BenchmarkReport, BenchmarkSuite, BenchmarkMetric, ProviderBenchmarkResult, ProviderLeaderboard, ProviderBenchmarkSummary } from "./types.js";
 
 export class ReportGenerator {
   toJSON(report: BenchmarkReport): string {
@@ -69,5 +69,47 @@ export class ReportGenerator {
     await fs.writeFile(mdPath, this.toMarkdown(report), "utf-8");
 
     return { jsonPath, mdPath };
+  }
+
+  toProviderMarkdown(leaderboard: ProviderLeaderboard, results: ProviderBenchmarkResult[]): string {
+    const lines: string[] = [];
+    lines.push(`# Provider Benchmark Report`);
+    lines.push(`**Generated:** ${new Date().toISOString()}`);
+    lines.push(`**Providers tested:** ${results.length}`);
+    lines.push("");
+
+    // Individual results
+    for (const r of results) {
+      lines.push(`## ${r.label}`);
+      lines.push(`| Metric | Value |`);
+      lines.push(`|--------|------:|`);
+      lines.push(`| Success Rate | ${(r.successRate * 100).toFixed(1)}% |`);
+      lines.push(`| Avg Latency | ${(r.avgLatencyMs / 1000).toFixed(1)}s |`);
+      lines.push(`| Cost | $${r.costUsd.toFixed(6)} |`);
+      lines.push(`| Utility | ${r.utility.toFixed(3)} |`);
+      lines.push(`| Score | ${r.score.toFixed(3)} |`);
+      lines.push(`| Cost Efficiency | ${r.costEfficiency.toFixed(2)} |`);
+      lines.push(`| Scenarios | ${r.scenarioCount} |`);
+      lines.push("");
+    }
+
+    const printBoard = (title: string, list: ProviderBenchmarkResult[], val: (r: ProviderBenchmarkResult) => string) => {
+      lines.push(`## ${title}`);
+      lines.push("| Rank | Provider | Value |");
+      lines.push("|------|----------|------:|");
+      for (let i = 0; i < list.length; i++) {
+        lines.push(`| ${i + 1} | ${list[i].label} | ${val(list[i])} |`);
+      }
+      lines.push("");
+    };
+
+    printBoard("Leaderboard (Overall)", leaderboard.overall, (r) => r.score.toFixed(3));
+    printBoard("Leaderboard (Utility)", leaderboard.utility, (r) => r.utility.toFixed(3));
+    printBoard("Leaderboard (Cost Efficiency)", leaderboard.costEfficiency, (r) => r.costEfficiency.toFixed(2));
+    printBoard("Leaderboard (Latency)", leaderboard.latency, (r) => `${(r.avgLatencyMs / 1000).toFixed(1)}s`);
+    printBoard("Leaderboard (Cost)", leaderboard.cost, (r) => `$${r.costUsd.toFixed(6)}`);
+    printBoard("Leaderboard (Success Rate)", leaderboard.successRate, (r) => `${(r.successRate * 100).toFixed(1)}%`);
+
+    return lines.join("\n");
   }
 }

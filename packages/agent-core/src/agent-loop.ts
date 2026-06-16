@@ -25,6 +25,7 @@ export interface AgentLoopOptions {
   sessionId: string;
   maxIterations: number;
   signal?: AbortSignal;
+  modelId?: string;
   onMessage?: (role: "user" | "assistant" | "system", content: string) => void;
   getMemoryContext?: (messages: SessionMessage[]) => Promise<SessionMessage[]>;
   onDecision?: (decision: {
@@ -77,7 +78,7 @@ export async function runAgentLoop(opts: AgentLoopOptions): Promise<AgentLoopRes
     try {
       const contextMessages = opts.getMemoryContext ? await opts.getMemoryContext(messages) : [];
       const llmMessages = [...contextMessages, ...messages];
-      const generator = llm.complete(llmMessages, signal);
+      const generator = llm.complete(llmMessages, signal, opts.modelId);
       let chunkContent = "";
       let hasToolCalls = false;
 

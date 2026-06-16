@@ -27,6 +27,7 @@ import {
   deleteInstalledNode,
 } from "./node-marketplace-store.js"
 import { listWorkflows, getWorkflowWithCurrentVersion } from "../persistence/workflow-store.js"
+import type { TemplateSource } from "../templates/template-types.js"
 
 const SUPPORTED_MANIFEST_VERSION = 2
 
@@ -67,13 +68,13 @@ interface PackageManifestV2 {
 
 export class NodePackageLoader {
   private db?: DbClient
-  private templateRegistry?: { registerTemplate: (dir: string, source?: string) => void; unregisterTemplate?: (id: string) => boolean; get?: (id: string) => unknown; list?: () => { id: string }[] }
+  private templateRegistry?: { registerTemplate: (dir: string, source?: TemplateSource) => void; unregisterTemplate?: (id: string) => boolean; get?: (id: string) => unknown; list?: () => { id: string }[] }
 
   constructor(db?: DbClient) {
     this.db = db
   }
 
-  setTemplateRegistry(tr: { registerTemplate: (dir: string, source?: string) => void; unregisterTemplate?: (id: string) => boolean; get?: (id: string) => unknown; list?: () => { id: string }[] }): void {
+  setTemplateRegistry(tr: { registerTemplate: (dir: string, source?: TemplateSource) => void; unregisterTemplate?: (id: string) => boolean; get?: (id: string) => unknown; list?: () => { id: string }[] }): void {
     this.templateRegistry = tr
   }
 
@@ -481,7 +482,7 @@ function validateManifestV2(raw: unknown): PackageManifestV2 {
   }
 }
 
-function validateManifest(raw: unknown): PackageManifest {
+function validateManifest(raw: unknown): PackageManifestV1 {
   if (!raw || typeof raw !== "object") {
     throw new Error("manifest.json must be a JSON object")
   }

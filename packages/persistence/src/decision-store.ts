@@ -87,7 +87,7 @@ export function queryDecisions(q: DecisionQuery): DecisionRecord[] {
   const limit = q.limit ?? 50;
   const offset = q.offset ?? 0;
 
-  let query = db.select().from(decisionLog);
+  let query: any = db.select().from(decisionLog);
   if (conditions.length > 0) query = query.where(and(...conditions));
   const rows = query.orderBy(desc(decisionLog.createdAt)).limit(limit).offset(offset).all();
 
@@ -113,7 +113,7 @@ export function countDecisions(q: DecisionQuery): number {
   if (q.templateId) conditions.push(eq(decisionLog.templateId, q.templateId));
   if (q.outcome) conditions.push(eq(decisionLog.outcome, q.outcome));
 
-  let query = db.select({ count: sql<number>`count(*)` }).from(decisionLog);
+  let query: any = db.select({ count: sql<number>`count(*)` }).from(decisionLog);
   if (conditions.length > 0) query = query.where(and(...conditions));
   const result = query.get();
   return result?.count ?? 0;

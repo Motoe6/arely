@@ -51,6 +51,50 @@ export const DEFAULT_MODELS: ModelDefinition[] = [
   },
 ];
 
+export const PROVIDER_DEFAULTS: Record<string, { baseUrl: string; defaultModel: string }> = {
+  openai: { baseUrl: "https://api.openai.com/v1", defaultModel: "gpt-4o" },
+  anthropic: { baseUrl: "https://api.anthropic.com/v1", defaultModel: "claude-sonnet-4" },
+  openrouter: { baseUrl: "https://openrouter.ai/api/v1", defaultModel: "deepseek/deepseek-v4-flash:free" },
+  ollama: { baseUrl: "http://localhost:11434", defaultModel: "qwen2.5:3b" },
+  lmstudio: { baseUrl: "http://localhost:1234/v1", defaultModel: "local-model" },
+};
+
+export function buildModelId(provider: string, model: string): string {
+  return `${provider}:${model}`;
+}
+
+export function buildModelsFromProviders(
+  providers: Record<string, { enabled: boolean; apiKey?: string; baseUrl?: string; defaultModel?: string }>,
+  envApiKeys: Record<string, string | undefined>,
+): ModelDefinition[] {
+  const models: ModelDefinition[] = [];
+
+  for (const [provider, cfg] of Object.entries(providers)) {
+    if (!cfg.enabled) continue;
+    const defaults = PROVIDER_DEFAULTS[provider];
+    if (!defaults) continue;
+
+    const baseUrl = cfg.baseUrl ?? defaults.baseUrl;
+    const modelName = cfg.defaultModel ?? defaults.defaultModel;
+    const apiKey = cfg.apiKey ?? envApiKeys[`${provider.toUpperCase()}_API_KEY`];
+
+    models.push({
+      id: buildModelId(provider, modelName),
+      name: `${provider.charAt(0).toUpperCase() + provider.slice(1)} — ${modelName}`,
+      provider,
+      model: modelName,
+      baseUrl,
+      apiKey,
+      capabilities: ["chat", "tools"],
+      contextWindow: 128_000,
+      costTier: "standard",
+      enabled: true,
+    });
+  }
+
+  return models;
+}
+
 export class ModelRegistry {
   private models = new Map<string, ModelDefinition>();
   private defaultId: string;

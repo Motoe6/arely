@@ -1,11 +1,13 @@
-import * as http from "node:http";
 import * as path from "node:path";
 import * as fs from "node:fs";
 import { loadScenarios, formatScenario } from "./scenario-loader.js";
 import type { Scenario, ScenarioRunResult, BenchmarkMode } from "./scenario-types.js";
 import { BenchmarkRunner } from "./runner.js";
 import { ReportGenerator } from "./report-generator.js";
-import type { Collector, BenchmarkMetric } from "./types.js";
+import type {
+  Collector, BenchmarkMetric, BenchmarkReport, BenchmarkOptions, BenchmarkSuite,
+  ProviderBenchmarkResult, ProviderLeaderboard, ProviderBenchmarkSummary,
+} from "./types.js";
 
 const SCENARIO_DIR = new URL("scenarios", import.meta.url).pathname;
 
@@ -13,11 +15,6 @@ interface SessionResponse {
   id: string;
   state: string;
   mode: string;
-}
-
-interface ScenarioCollectorOptions {
-  engineUrl?: string;
-  deterministic?: boolean;
 }
 
 function engineMode(mode: BenchmarkMode): string {
@@ -29,9 +26,11 @@ function engineMode(mode: BenchmarkMode): string {
   }
 }
 
-export function createScenarioCollector(opts?: ScenarioCollectorOptions): Collector {
-  const engineUrl = opts?.engineUrl ?? "http://localhost:8081";
-  const deterministic = opts?.deterministic ?? true;
+export function createScenarioCollector(opts?: BenchmarkOptions): Collector {
+  const engineUrl = process.env.BENCHMARK_ENGINE_URL ?? "http://localhost:8081";
+  const deterministic = !opts?.real;
+  const provider = opts?.provider;
+  const model = opts?.model;
 
   return {
     name: "scenarios",
@@ -51,7 +50,7 @@ export function createScenarioCollector(opts?: ScenarioCollectorOptions): Collec
         for (const mode of modes) {
           const result = deterministic
             ? await runDeterministic(scenario, mode)
-            : await runLive(scenario, mode, engineUrl);
+            : await runLive(scenario, mode, engineUrl, provider, model);
           results.push(result);
         }
       }
@@ -102,7 +101,7 @@ async function runDeterministic(scenario: Scenario, mode: BenchmarkMode): Promis
   };
 }
 
-async function runLive(scenario: Scenario, mode: BenchmarkMode, engineUrl: string): Promise<ScenarioRunResult> {
+async function runLive(scenario: Scenario, mode: BenchmarkMode, engineUrl: string, provider?: string, model?: string): Promise<ScenarioRunResult> {
   const startTime = Date.now();
   let totalTokens = 0;
   let totalToolCalls = 0;
@@ -113,6 +112,8 @@ async function runLive(scenario: Scenario, mode: BenchmarkMode, engineUrl: strin
     const body = JSON.stringify({
       query: scenario.prompt,
       mode: engineMode(mode),
+      provider,
+      model,
     });
 
     const res = await fetch(`${engineUrl}/api/sessions`, {
@@ -263,7 +264,7 @@ function buildSuite(results: ScenarioRunResult[], scenarios: Scenario[]): import
   };
 }
 
-export async function runScenarioBenchmarks(opts?: ScenarioCollectorOptions): Promise<void> {
+export async function runScenarioBenchmarks(opts?: BenchmarkOptions): Promise<BenchmarkReport> {
   const runner = new BenchmarkRunner();
   const collector = createScenarioCollector(opts);
   runner.register(collector.name, collector);
@@ -275,6 +276,232 @@ export async function runScenarioBenchmarks(opts?: ScenarioCollectorOptions): Pr
   const outDir = path.resolve("benchmark-reports");
   await generator.write(report, outDir);
 
-  console.log(generator.toMarkdown(report));
-  console.log(`\n  Reports written to ${outDir}/\n`);
+  if (!opts?.jsonOutput) {
+    console.log(generator.toMarkdown(report));
+    console.log(`\n  Reports written to ${outDir}/\n`);
+  }
+
+  return report;
+}
+
+function computeScore(successRate: number, utility: number, avgLatencyMs: number, maxLatencyMs: number): number {
+  const normLatency = maxLatencyMs > 0 ? Math.max(0, Math.min(1, 1 - avgLatencyMs / maxLatencyMs)) : 0;
+  return successRate * 0.5 + utility * 0.3 + normLatency * 0.2;
+}
+
+function computeCostEfficiency(utility: number, costUsd: number): number {
+  return costUsd > 0 ? utility / costUsd : 10;  // free providers get max efficiency
+}
+
+function buildProviderResultFromSuite(suite: BenchmarkSuite, providerLabel: string): ProviderBenchmarkResult {
+  const find = (name: string) => suite.metrics.find((m) => m.name.endsWith(name));
+  const successRate = find("_avg_success_rate")?.value ?? 0;
+  const avgLatencyMs = Math.round(find("_avg_latency_ms")?.value ?? 0);
+  const costUsd = find("_avg_cost_usd")?.value ?? 0;
+  const utility = find("_avg_utility")?.value ?? 0;
+
+  // Find max latency across all mode-level metrics for normalization
+  const allLatencyMetrics = suite.metrics.filter((m) => m.unit === "ms" && m.name.endsWith("latency_ms"));
+  const maxLatencyMs = Math.max(...allLatencyMetrics.map((m) => m.value), 1);
+
+  return {
+    provider: providerLabel.toLowerCase(),
+    label: providerLabel,
+    successRate,
+    avgLatencyMs,
+    costUsd,
+    utility,
+    score: computeScore(successRate, utility, avgLatencyMs, maxLatencyMs),
+    costEfficiency: computeCostEfficiency(utility, costUsd),
+    scenarioCount: (suite.metadata?.totalRuns as number) ?? 0,
+  };
+}
+
+export async function runBenchmarkForProvider(
+  provider: string,
+  label: string,
+  model?: string,
+  opts?: BenchmarkOptions,
+): Promise<ProviderBenchmarkResult> {
+  const report = await runScenarioBenchmarks({
+    ...opts,
+    provider,
+    model,
+    jsonOutput: true,
+  });
+
+  const scenarioSuite = report.suites.find((s) => s.name === "scenarios");
+  if (!scenarioSuite) {
+    return {
+      provider, label, successRate: 0, avgLatencyMs: 0, costUsd: 0, utility: 0, score: 0,
+      costEfficiency: 0, scenarioCount: 0,
+    };
+  }
+
+  return buildProviderResultFromSuite(scenarioSuite, label);
+}
+
+export function buildLeaderboard(results: ProviderBenchmarkResult[]): ProviderLeaderboard {
+  const sortDesc = (key: (r: ProviderBenchmarkResult) => number) =>
+    [...results].filter((r) => r.scenarioCount > 0).sort((a, b) => key(b) - key(a));
+
+  return {
+    overall: sortDesc((r) => r.score),
+    utility: sortDesc((r) => r.utility),
+    latency: sortDesc((r) => -r.avgLatencyMs),
+    cost: sortDesc((r) => -r.costUsd),
+    successRate: sortDesc((r) => r.successRate),
+    costEfficiency: sortDesc((r) => r.costEfficiency),
+  };
+}
+
+export function buildProviderSummary(
+  results: ProviderBenchmarkResult[],
+  leaderboard: ProviderLeaderboard,
+): ProviderBenchmarkSummary {
+  const providers: ProviderBenchmarkSummary["providers"] = {};
+  for (const r of results) {
+    providers[r.provider] = {
+      successRate: r.successRate,
+      avgLatencyMs: r.avgLatencyMs,
+      costUsd: r.costUsd,
+      utility: r.utility,
+      score: r.score,
+      costEfficiency: r.costEfficiency,
+      scenarioCount: r.scenarioCount,
+    };
+  }
+
+  const extractNames = (list: ProviderBenchmarkResult[]) => list.map((r) => r.provider);
+
+  return {
+    timestamp: new Date().toISOString(),
+    providers,
+    leaderboard: {
+      overall: extractNames(leaderboard.overall),
+      utility: extractNames(leaderboard.utility),
+      cost: extractNames(leaderboard.cost),
+      latency: extractNames(leaderboard.latency),
+      successRate: extractNames(leaderboard.successRate),
+      costEfficiency: extractNames(leaderboard.costEfficiency),
+    },
+  };
+}
+
+export async function runBenchmarkAllProviders(opts?: BenchmarkOptions): Promise<{ results: ProviderBenchmarkResult[]; leaderboard: ProviderLeaderboard; summary: ProviderBenchmarkSummary }> {
+  const { checkAllProviders } = await import("@arelyos/engine/models/health-checker.js");
+  const healthResults = await checkAllProviders();
+
+  const onlineProviders = healthResults.filter((h) => h.status === "online");
+  const skippedProviders = healthResults.filter((h) => h.status !== "online");
+
+  if (onlineProviders.length === 0) {
+    console.log("  No online providers found. Run `arely models --health` to diagnose.");
+    return { results: [], leaderboard: buildLeaderboard([]), summary: buildProviderSummary([] as ProviderBenchmarkResult[], buildLeaderboard([])) };
+  }
+
+  console.log(`\n  Running benchmarks across ${onlineProviders.length} providers:\n`);
+  for (const h of onlineProviders) {
+    console.log(`    ✓ ${h.label} (${h.latencyMs ?? "?"}ms)`);
+  }
+  for (const h of skippedProviders) {
+    console.log(`    ⚠ ${h.label} (skipped — ${h.status})`);
+  }
+  console.log("");
+
+  const concurrency = opts?.concurrency ?? Math.min(onlineProviders.length, 4);
+
+  // Process providers in batches to respect concurrency
+  const allResults: Array<{ status: "fulfilled"; value: ProviderBenchmarkResult } | { status: "rejected"; reason: unknown }> = [];
+  for (let i = 0; i < onlineProviders.length; i += concurrency) {
+    const batch = onlineProviders.slice(i, i + concurrency);
+    const batchResults = await Promise.allSettled(
+      batch.map((h) => {
+        const provider = h.provider;
+        // Discover model from health result or use default
+        const model = h.models?.[0];
+        return runBenchmarkForProvider(provider, h.label, model, opts);
+      }),
+    );
+    allResults.push(...batchResults);
+  }
+
+  const failed: string[] = [];
+  for (const r of allResults) {
+    if (r.status === "rejected") {
+      failed.push(String(r.reason));
+    }
+  }
+  if (failed.length > 0) {
+    console.log(`  ${failed.length} provider(s) failed:`);
+    for (const f of failed) console.log(`    ✗ ${f}`);
+    console.log("");
+  }
+
+  const results: ProviderBenchmarkResult[] = [];
+  for (const result of allResults) {
+    if (result.status === "fulfilled") {
+      results.push(result.value);
+    }
+  }
+
+  const leaderboard = buildLeaderboard(results);
+  const summary = buildProviderSummary(results, leaderboard);
+
+  // Write output
+  const outDir = path.resolve("benchmark-reports");
+  const fs_p = await import("node:fs/promises");
+  await fs_p.mkdir(path.join(outDir, "history"), { recursive: true });
+
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const summaryJson = JSON.stringify(summary, null, 2);
+
+  // Latest
+  await fs_p.writeFile(path.join(outDir, "latest-provider-summary.json"), summaryJson, "utf-8");
+
+  // History
+  await fs_p.writeFile(path.join(outDir, "history", `provider-summary-${timestamp}.json`), summaryJson, "utf-8");
+
+  // Print leaderboard
+  if (!opts?.jsonOutput) {
+    printLeaderboardText(leaderboard, results, onlineProviders, skippedProviders);
+  }
+
+  return { results, leaderboard, summary };
+}
+
+function printLeaderboardText(
+  leaderboard: ProviderLeaderboard,
+  results: ProviderBenchmarkResult[],
+  online: Array<{ label: string; latencyMs?: number }>,
+  skipped: Array<{ label: string; status: string }>,
+): void {
+  console.log("\n  Provider Benchmarks\n");
+
+  for (const r of results) {
+    console.log(`  ${r.label}`);
+    console.log(`    Success:      ${(r.successRate * 100).toFixed(0)}%`);
+    console.log(`    Avg latency:  ${(r.avgLatencyMs / 1000).toFixed(1)}s`);
+    console.log(`    Cost:         $${r.costUsd.toFixed(4)}`);
+    console.log(`    Utility:      ${r.utility.toFixed(2)}`);
+    console.log(`    Score:        ${r.score.toFixed(3)}`);
+    console.log("");
+  }
+
+  const printBoard = (title: string, list: ProviderBenchmarkResult[], val: (r: ProviderBenchmarkResult) => string) => {
+    console.log(`  ${title}`);
+    for (let i = 0; i < list.length; i++) {
+      console.log(`    ${i + 1}. ${list[i].label.padEnd(14)} ${val(list[i])}`);
+    }
+    console.log("");
+  };
+
+  printBoard("Leaderboard (Overall)", leaderboard.overall, (r) => r.score.toFixed(3));
+  printBoard("Leaderboard (Utility)", leaderboard.utility, (r) => r.utility.toFixed(2));
+  printBoard("Leaderboard (Cost Efficiency)", leaderboard.costEfficiency, (r) => r.costEfficiency.toFixed(2));
+  printBoard("Leaderboard (Latency)", leaderboard.latency, (r) => `${(r.avgLatencyMs / 1000).toFixed(1)}s`);
+  printBoard("Leaderboard (Cost)", leaderboard.cost, (r) => `$${r.costUsd.toFixed(4)}`);
+  printBoard("Leaderboard (Success Rate)", leaderboard.successRate, (r) => `${(r.successRate * 100).toFixed(0)}%`);
+
+  console.log(`  Reports written to benchmark-reports/\n`);
 }

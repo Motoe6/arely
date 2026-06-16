@@ -1,6 +1,6 @@
 import type { SwarmTask, SwarmAgentRole } from "./swarm-task-types.js";
 import type { SharedSwarmMemory } from "./shared-swarm-memory.js";
-import type { AgentExecutor } from "./swarm-orchestrator.js";
+import type { AgentExecutor, AgentRole } from "./swarm-orchestrator.js";
 
 export type { SwarmTask } from "./swarm-task-types.js";
 
@@ -22,7 +22,7 @@ export class SwarmTaskExecutor {
   async run(task: SwarmTask, context: string, request: string): Promise<string> {
     const prompt = getSystemPrompt(task.role);
     const fullInstructions = task.instructions || `Goal: ${task.goal}\n\nRequest: ${request}`;
-    return this.execute(task.role, prompt, fullInstructions, context);
+    return this.execute(task.role as AgentRole, prompt, fullInstructions, context);
   }
 
   async runWithDependencies(

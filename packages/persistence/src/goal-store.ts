@@ -86,7 +86,7 @@ export function queryGoals(q: GoalQuery = {}): Goal[] {
   const limit = q.limit ?? 50;
   const offset = q.offset ?? 0;
 
-  let query = db.select().from(goals);
+  let query: any = db.select().from(goals);
   if (conditions.length > 0) query = query.where(and(...conditions));
   const rows = query.orderBy(desc(goals.priority), desc(goals.createdAt)).limit(limit).offset(offset).all();
 
@@ -98,7 +98,7 @@ export function countGoals(q: GoalQuery = {}): number {
   const conditions: ReturnType<typeof eq>[] = [];
   if (q.status) conditions.push(eq(goals.status, q.status));
 
-  let query = db.select({ count: sql<number>`count(*)` }).from(goals);
+  let query: any = db.select({ count: sql<number>`count(*)` }).from(goals);
   if (conditions.length > 0) query = query.where(and(...conditions));
   const result = query.get();
   return result?.count ?? 0;

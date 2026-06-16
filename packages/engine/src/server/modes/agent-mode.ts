@@ -44,6 +44,7 @@ export class AgentModeExecution implements ExecutionMode {
     const result = await runAgentLoop({
       llm: session.llm,
       messages: session.messages,
+      modelId: session.modelId,
       tools: session.tools,
       emit: (event) => { session.sse.emit(session.id, event); },
       sessionId: session.id,

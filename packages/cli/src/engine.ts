@@ -32,7 +32,7 @@ export interface EngineContext {
 }
 
 function cfg(key: string): string | undefined {
-  const val = getConfig()[key];
+  const val = (getConfig() as unknown as Record<string, string | undefined>)[key];
   return typeof val === "string" ? val : undefined;
 }
 

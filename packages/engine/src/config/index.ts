@@ -1,7 +1,9 @@
 import { envSchema } from "./schema.js";
+import type { Config } from "./types.js";
+import { loadUserConfigFile, loadDotEnvFile, mergeUserConfigIntoEnv } from "./io.js";
 export { envSchema } from "./schema.js";
-export type { Config, UserConfigFile } from "./types.js";
-export { loadUserConfigFile, saveUserConfigFile, getUserConfigPath } from "./io.js";
+export type { Config, UserConfigFile, KnownProvider, ProviderConfigFile, KNOWN_PROVIDERS } from "./types.js";
+export { loadUserConfigFile, saveUserConfigFile, getUserConfigPath, getArelyDir } from "./io.js";
 
 const DEPRECATED_ENV_MAP: Record<string, string> = {
   OPENCODE_API_KEY: "ARELY_API_KEY",
@@ -27,11 +29,24 @@ function migrateDeprecatedEnv(): void {
   }
 }
 
-let _config: Record<string, unknown> | null = null;
+let _config: Config | null = null;
 
-export function loadConfig(): Record<string, unknown> {
+export function loadConfig(): Config {
   if (_config) return _config;
   migrateDeprecatedEnv();
+
+  // Load ~/.arely/.env first (lowest priority, skip in test env)
+  if (!process.env.VITEST) {
+    loadDotEnvFile();
+  }
+
+  // Load ~/.arely/config.json and merge into env (medium priority, skip in test env)
+  if (!process.env.VITEST) {
+    const userConfig = loadUserConfigFile();
+    mergeUserConfigIntoEnv(userConfig);
+  }
+
+  // Parse env (highest priority — actual process.env overrides everything)
   const result = envSchema.safeParse(process.env);
   if (!result.success) {
     console.error("Configuration validation failed:");
@@ -40,11 +55,11 @@ export function loadConfig(): Record<string, unknown> {
     }
     process.exit(1);
   }
-  _config = result.data as Record<string, unknown>;
+  _config = result.data;
   return _config;
 }
 
-export function getConfig(): Record<string, unknown> {
+export function getConfig(): Config {
   if (!_config) throw new Error("Config not loaded. Call loadConfig() first.");
   return _config;
 }

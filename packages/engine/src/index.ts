@@ -280,9 +280,12 @@ export function main() {
 
       router.post("/api/sessions", (req: IncomingMessage, res: ServerResponse) => {
         try {
-          const data = ((req as unknown as Record<string, unknown>).body as { query?: string; mode?: string; model?: string }) ?? {};
+          const data = ((req as unknown as Record<string, unknown>).body as { query?: string; mode?: string; model?: string; provider?: string }) ?? {};
 
-          const modelId = data.model ?? modelRegistry.getDefaultId();
+          // Build modelId from provider+model or use explicit model or fallback to default
+          const modelId = data.provider
+            ? `${data.provider}:${data.model || config.ARELY_MODEL}`
+            : (data.model ?? modelRegistry.getDefaultId());
           const session = sessionManager.createSession(sse, llm, {
             permissions: {
               websearch: config.ARELY_PERMIT_WEBSEARCH,

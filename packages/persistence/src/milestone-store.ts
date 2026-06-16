@@ -98,7 +98,7 @@ export function queryMilestones(q: MilestoneQuery = {}): Milestone[] {
   const limit = q.limit ?? 50;
   const offset = q.offset ?? 0;
 
-  let query = db.select().from(milestones);
+  let query: any = db.select().from(milestones);
   if (conditions.length > 0) query = query.where(and(...conditions));
   const rows = query.orderBy(desc(milestones.createdAt)).limit(limit).offset(offset).all();
 
@@ -111,7 +111,7 @@ export function countMilestones(q: MilestoneQuery = {}): number {
   if (q.planId) conditions.push(eq(milestones.planId, q.planId));
   if (q.status) conditions.push(eq(milestones.status, q.status));
 
-  let query = db.select({ count: sql<number>`count(*)` }).from(milestones);
+  let query: any = db.select({ count: sql<number>`count(*)` }).from(milestones);
   if (conditions.length > 0) query = query.where(and(...conditions));
   const result = query.get();
   return result?.count ?? 0;

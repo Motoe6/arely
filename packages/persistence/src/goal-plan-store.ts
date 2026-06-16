@@ -88,7 +88,7 @@ export function updateGoalPlan(id: string, updates: {
   metadata?: Record<string, unknown>
 }): boolean {
   const db = getDb();
-  const existing = db.select({ goalId: goalPlans.goalId }).from(goalPlans).where(eq(goalPlans.id, id)).limit(1).get();
+  const existing = db.select({ goalId: goalPlans.goalId, status: goalPlans.status }).from(goalPlans).where(eq(goalPlans.id, id)).limit(1).get();
   if (!existing) return false;
   const setFields: Record<string, unknown> = { updatedAt: new Date().toISOString() };
   if (updates.title !== undefined) setFields.title = updates.title;
@@ -120,7 +120,7 @@ export function queryGoalPlans(q: GoalPlanQuery = {}): GoalPlan[] {
   const limit = q.limit ?? 50;
   const offset = q.offset ?? 0;
 
-  let query = db.select().from(goalPlans);
+  let query: any = db.select().from(goalPlans);
   if (conditions.length > 0) query = query.where(and(...conditions));
   const rows = query.orderBy(goalPlans.sortOrder, desc(goalPlans.createdAt)).limit(limit).offset(offset).all();
 
@@ -133,7 +133,7 @@ export function countGoalPlans(q: GoalPlanQuery = {}): number {
   if (q.goalId) conditions.push(eq(goalPlans.goalId, q.goalId));
   if (q.status) conditions.push(eq(goalPlans.status, q.status));
 
-  let query = db.select({ count: sql<number>`count(*)` }).from(goalPlans);
+  let query: any = db.select({ count: sql<number>`count(*)` }).from(goalPlans);
   if (conditions.length > 0) query = query.where(and(...conditions));
   const result = query.get();
   return result?.count ?? 0;

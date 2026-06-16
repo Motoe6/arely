@@ -11,5 +11,5 @@ export interface LLMResponse {
 }
 
 export interface LLMAdapter {
-  complete(messages: SessionMessage[], signal?: AbortSignal): AsyncGenerator<LLMResponse>;
+  complete(messages: SessionMessage[], signal?: AbortSignal, modelIdOrOpts?: string | Record<string, unknown>): AsyncGenerator<LLMResponse>;
 }

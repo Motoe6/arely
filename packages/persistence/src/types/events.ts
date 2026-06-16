@@ -306,14 +306,14 @@ export type PackageInstalledEvent = BaseEvent & {
   type: "package_installed";
   packageId: string;
   name: string;
-  version: string;
+  pkgVersion: string;
 };
 
 export type PackageRemovedEvent = BaseEvent & {
   type: "package_removed";
   packageId: string;
   name: string;
-  version: string;
+  pkgVersion: string;
 };
 
 export type PackageReloadedEvent = BaseEvent & {

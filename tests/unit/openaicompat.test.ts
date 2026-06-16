@@ -57,9 +57,10 @@ describe("OpenAICompatAdapter", () => {
 
     const results = await collectGenerator(adapter.complete(messages));
 
-    expect(results).toHaveLength(1);
-    expect(results[0].content).toBe("Hello world");
-    expect(results[0].toolCalls).toBeUndefined();
+    // first 2 are delta chunks, 3rd is the final content
+    expect(results).toHaveLength(3);
+    expect(results[2].content).toBe("Hello world");
+    expect(results[2].toolCalls).toBeUndefined();
   });
 
   it("should yield tool calls from LLM response", async () => {
@@ -163,11 +164,11 @@ describe("OpenAICompatAdapter", () => {
 
     const results = await collectGenerator(adapter.complete(messages));
 
-    // text mode yields: 1) raw content with embedded tool call, 2) cleaned content + parsed toolCalls
-    expect(results).toHaveLength(2);
-    expect(results[1].content).toBe("Let me search for you.");
-    expect(results[1].toolCalls).toHaveLength(1);
-    expect(results[1].toolCalls![0].name).toBe("websearch");
+    // text mode yields: 1) delta chunk, 2) raw content with embedded tool call, 3) cleaned content + parsed toolCalls
+    expect(results).toHaveLength(3);
+    expect(results[2].content).toBe("Let me search for you.");
+    expect(results[2].toolCalls).toHaveLength(1);
+    expect(results[2].toolCalls![0].name).toBe("websearch");
   });
 
   it("should not parse text tool calls in native mode", async () => {
@@ -195,9 +196,10 @@ describe("OpenAICompatAdapter", () => {
 
     const results = await collectGenerator(adapter.complete(messages));
 
-    expect(results).toHaveLength(1);
-    expect(results[0].toolCalls).toBeUndefined();
-    expect(results[0].content).toContain("websearch");
+    // native mode: 1) delta chunk, 2) final content (not parsed for tool calls)
+    expect(results).toHaveLength(2);
+    expect(results[1].toolCalls).toBeUndefined();
+    expect(results[1].content).toContain("websearch");
   });
 
   it("should pass correct API request", async () => {

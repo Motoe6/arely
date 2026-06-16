@@ -16,7 +16,7 @@
     "build": "tsc -b",
     "start": "tsx packages/engine/src/index.ts",
     "dev": "tsx watch packages/engine/src/index.ts",
-    "typecheck": "tsc -b --noEmit",
+    "typecheck": "tsc -b",
     "lint": "eslint packages/engine/src/",
     "format": "prettier --write \"packages/engine/src/**/*.{ts,tsx}\"",
     "test": "vitest run",

@@ -93,7 +93,7 @@ export async function getMemory(type: MemoryType, key: string): Promise<MemoryRe
 
 export async function searchMemories(
   sessionId: string | null,
-  query: MemorySearchQuery,
+  q: MemorySearchQuery,
 ): Promise<MemoryRecord[]> {
   const db = getDb();
   const conditions: ReturnType<typeof eq>[] = [];
@@ -102,35 +102,35 @@ export async function searchMemories(
     conditions.push(eq(memoryStore.sessionId, sessionId));
   }
 
-  if (query.type) {
-    conditions.push(eq(memoryStore.type, query.type));
-  } else if (query.typeIn && query.typeIn.length > 0) {
-    conditions.push(inArray(memoryStore.type, query.typeIn));
+  if (q.type) {
+    conditions.push(eq(memoryStore.type, q.type));
+  } else if (q.typeIn && q.typeIn.length > 0) {
+    conditions.push(inArray(memoryStore.type, q.typeIn));
   }
 
-  const limit = query.limit ?? 100;
-  const offset = query.offset ?? 0;
+  const limit = q.limit ?? 100;
+  const offset = q.offset ?? 0;
 
-  let baseQuery = db.select().from(memoryStore);
+  let query: any = db.select().from(memoryStore);
 
   if (conditions.length > 0) {
-    baseQuery = baseQuery.where(and(...conditions));
+    query = query.where(and(...conditions));
   }
 
-  const rows = await baseQuery
+  const rows = await query
     .orderBy(desc(memoryStore.confidence), desc(memoryStore.updatedAt))
     .limit(limit)
     .offset(offset)
     .all();
 
-  let results = rows.map((r: unknown) => mapRow(r as Record<string, unknown>));
+  let results: MemoryRecord[] = rows.map((r: unknown) => mapRow(r as Record<string, unknown>));
 
-  if (query.minConfidence) {
-    results = results.filter((r) => r.confidence >= query.minConfidence!);
+  if (q.minConfidence) {
+    results = results.filter((r: MemoryRecord) => r.confidence >= q.minConfidence!);
   }
 
-  if (query.tags && query.tags.length > 0) {
-    results = results.filter((r) => query.tags!.some((t) => r.tags.includes(t)));
+  if (q.tags && q.tags.length > 0) {
+    results = results.filter((r: MemoryRecord) => q.tags!.some((t) => r.tags.includes(t)));
   }
 
   return results;

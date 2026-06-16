@@ -14,6 +14,7 @@ const HELP = `
     arely doctor           Verify system installation
     arely bench            Run benchmarks
     arely models           List installed models
+    arely models --health  Check provider connectivity (--json for JSON)
     arely version          Show version
 
   Options:
@@ -171,23 +172,168 @@ async function bench() {
 }
 
 async function models() {
+  const picocolors = await import("picocolors");
+  const c = picocolors.default;
+  const args = process.argv.slice(3);
+  const showHealth = args.includes("--health") || args.includes("-H");
+  const jsonOutput = args.includes("--json") || args.includes("-j");
+
   try {
-    const { loadConfig } = await import("@arelyos/engine/config/index.js");
-    const { ModelRegistry } = await import("@arelyos/engine/models/model-registry.js");
-    loadConfig();
-    const registry = new ModelRegistry();
-    const modelList = registry.getAll();
-    if (modelList.length === 0) {
-      console.log("  No models installed. Configure via ARELY_MODELS env.");
+    const { loadUserConfigFile, getArelyDir } = await import("@arelyos/engine/config/io.js");
+    const { KNOWN_PROVIDERS } = await import("@arelyos/engine/config/types.js");
+    type KnownProvider = (typeof KNOWN_PROVIDERS)[number];
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+
+    if (showHealth) {
+      const { loadConfig } = await import("@arelyos/engine/config/index.js");
+      const { checkAllProviders } = await import("@arelyos/engine/models/health-checker.js");
+      loadConfig();
+      const userConfig = loadUserConfigFile();
+
+      const enabledProviders: string[] = userConfig.providers
+        ? Object.entries(userConfig.providers).filter(([_, p]) => p?.enabled).map(([k]) => k)
+        : userConfig.defaultProvider ? [userConfig.defaultProvider] : [];
+
+      if (enabledProviders.length === 0) {
+        console.log(c.yellow("  No providers configured. Run `arely init` first."));
+        return;
+      }
+
+      console.log(c.bold("  Provider Health\n"));
+      const healthResults = await checkAllProviders();
+
+      if (jsonOutput) {
+        console.log(JSON.stringify(healthResults, null, 2));
+        return;
+      }
+
+      for (const h of healthResults) {
+        let icon: string;
+        let statusText: string;
+        switch (h.status) {
+          case "online":
+            icon = c.green("✓");
+            statusText = c.green(`online${h.latencyMs != null ? `  ${h.latencyMs}ms` : ""}`);
+            break;
+          case "unauthorized":
+            icon = c.red("✗");
+            statusText = c.red("unauthorized");
+            break;
+          case "rate_limited":
+            icon = c.yellow("⚠");
+            statusText = c.yellow("rate limited");
+            break;
+          case "offline":
+            icon = c.red("✗");
+            statusText = c.red("offline");
+            break;
+          default:
+            icon = c.dim("?");
+            statusText = c.dim(h.status);
+        }
+
+        console.log(`  ${c.cyan(c.bold(h.label))}`);
+        console.log(`    ${icon} ${statusText}`);
+
+        if (h.modelCount != null) {
+          console.log(`    ${c.dim("Models:")} ${h.modelCount}`);
+        }
+        if (h.models && h.models.length > 0) {
+          const shown = h.models.slice(0, 5);
+          for (const m of shown) {
+            const marker = m === h.defaultModel ? c.yellow(" ★") : "";
+            console.log(`    ${c.dim("─")} ${m}${marker}`);
+          }
+          if (h.models.length > 5) {
+            console.log(`    ${c.dim(`  … and ${h.models.length - 5} more`)}`);
+          }
+        }
+        if (h.error) {
+          console.log(`    ${c.dim("Error:")} ${c.red(h.error)}`);
+        }
+        console.log("");
+      }
+      return;
+    }
+
+    // Non-health display
+    const config = loadUserConfigFile();
+    const arelyDir = getArelyDir();
+    const envPath = path.join(arelyDir, ".env");
+
+    const envApiKeys: Record<string, string> = {};
+    if (fs.existsSync(envPath)) {
+      for (const line of fs.readFileSync(envPath, "utf-8").split("\n")) {
+        const eq = line.indexOf("=");
+        if (eq === -1) continue;
+        envApiKeys[line.slice(0, eq).trim()] = line.slice(eq + 1).trim();
+      }
+    }
+
+    const providerLabels: Record<string, string> = {
+      openai: "OpenAI", anthropic: "Anthropic", openrouter: "OpenRouter",
+      ollama: "Ollama", lmstudio: "LM Studio",
+    };
+
+    const providerDefaults: Record<string, { baseUrl: string; defaultModel: string }> = {
+      openai: { baseUrl: "https://api.openai.com/v1", defaultModel: "gpt-4o" },
+      anthropic: { baseUrl: "https://api.anthropic.com/v1", defaultModel: "claude-sonnet-4" },
+      openrouter: { baseUrl: "https://openrouter.ai/api/v1", defaultModel: "deepseek/deepseek-v4-flash:free" },
+      ollama: { baseUrl: "http://localhost:11434", defaultModel: "qwen2.5:3b" },
+      lmstudio: { baseUrl: "http://localhost:1234/v1", defaultModel: "local-model" },
+    };
+
+    const modelSuggestions: Record<string, string[]> = {
+      openai: ["gpt-4o", "gpt-4o-mini", "gpt-4.1", "gpt-4.1-mini", "o3-mini"],
+      anthropic: ["claude-sonnet-4", "claude-haiku-3-5", "claude-opus-4"],
+      openrouter: ["deepseek/deepseek-v4-flash:free", "meta-llama/llama-3.3-70b", "openai/gpt-4o-mini", "anthropic/claude-sonnet-4"],
+      ollama: ["qwen2.5:3b", "qwen2.5:7b", "llama3.3", "llama3.2:3b", "deepseek-r1:8b"],
+      lmstudio: ["local-model"],
+    };
+
+    const enabledProviders: KnownProvider[] = config.providers
+      ? (Object.entries(config.providers).filter(([_, p]) => p?.enabled).map(([k]) => k) as KnownProvider[])
+      : config.defaultProvider && KNOWN_PROVIDERS.includes(config.defaultProvider as KnownProvider)
+        ? [config.defaultProvider as KnownProvider] : [];
+
+    if (enabledProviders.length === 0) {
+      console.log(c.yellow("  No providers configured. Run `arely init` first."));
       process.exit(0);
     }
-    console.log("  Installed Models\n");
-    for (const m of modelList) {
-      const status = m.enabled ? "●" : "○";
-      console.log(`  ${status} ${m.id.padEnd(30)} ${m.provider}`);
+
+    console.log(c.bold("  Available Models\n"));
+
+    for (const provider of enabledProviders) {
+      const pCfg = config.providers?.[provider];
+      const label = providerLabels[provider] ?? provider;
+      const defaults = providerDefaults[provider];
+      const isRemote = provider !== "ollama" && provider !== "lmstudio";
+
+      const apiKey = pCfg?.apiKey || envApiKeys[`${provider.toUpperCase()}_API_KEY`];
+      const baseUrl = pCfg?.baseUrl || defaults?.baseUrl || "—";
+
+      const hasApiKey = !isRemote || (apiKey && apiKey.length > 0);
+      const statusIcon = hasApiKey ? c.green("✓") : c.red("✗");
+      const statusText = hasApiKey ? c.green("reachable") : c.red("missing API key");
+
+      console.log(`  ${c.cyan(c.bold(label))}  ${statusIcon} ${statusText}`);
+      console.log(`    ${c.dim("Base URL:")} ${baseUrl}`);
+
+      const models = modelSuggestions[provider] ?? [];
+      const defaultModel = pCfg?.defaultModel || defaults?.defaultModel;
+
+      for (const m of models) {
+        const marker = m === defaultModel ? c.yellow(" ★") : "  ";
+        console.log(`    ${c.dim("─")} ${m}${marker}`);
+      }
+      console.log("");
     }
-  } catch {
-    console.log("  Could not load model registry.");
+
+    console.log(c.dim("  ★ = default model"));
+  } catch (err) {
+    console.log(c.red("  Could not load models."));
+    if (err instanceof Error) console.log(c.dim(`  ${err.message}`));
     process.exit(1);
   }
 }
@@ -205,15 +351,16 @@ async function showVersion() {
 
 async function initCmd() {
   const { intro, outro, select, text, confirm, isCancel, note, log } = await import("@clack/prompts");
-  const { loadUserConfigFile, saveUserConfigFile, getUserConfigPath } = await import("@arelyos/engine/config/io.js");
+  const { getArelyDir, getDotEnvPath, saveUserConfigFile } = await import("@arelyos/engine/config/io.js");
   const picocolors = await import("picocolors");
   const fs = await import("node:fs");
   const path = await import("node:path");
 
-  intro(picocolors.default.cyan("Welcome to ARELY v1.0.0"));
+  intro(picocolors.default.cyan("ARELY Setup — Multi-Provider"));
 
-  const existing = loadUserConfigFile();
-  if (Object.keys(existing).length > 0) {
+  const arelyDir = getArelyDir();
+  const configPath = path.join(arelyDir, "config.json");
+  if (fs.existsSync(configPath)) {
     const overwrite = await confirm({ message: "Config already exists. Overwrite?" });
     if (isCancel(overwrite) || !overwrite) {
       outro("Cancelled.");
@@ -221,85 +368,155 @@ async function initCmd() {
     }
   }
 
-  const provider = await select({
-    message: "Preferred provider",
-    options: [
-      { value: "ollama", label: "Ollama", hint: "local, open-source" },
-      { value: "openai", label: "OpenAI", hint: "gpt-4o, gpt-4o-mini" },
-      { value: "anthropic", label: "Anthropic", hint: "claude-3.5, claude-3 opus" },
-      { value: "openrouter", label: "OpenRouter", hint: "multi-provider gateway" },
-    ],
-  });
-  if (isCancel(provider)) { outro("Cancelled."); return; }
+  const KNOWN_PROVIDERS = ["openai", "anthropic", "openrouter", "ollama", "lmstudio"];
 
-  const modelMap: Record<string, { label: string; value: string }[]> = {
+  const providerLabels: Record<string, { label: string; hint: string }> = {
+    openai: { label: "OpenAI", hint: "gpt-4o, gpt-4o-mini" },
+    anthropic: { label: "Anthropic", hint: "claude-sonnet-4, claude-haiku-3-5" },
+    openrouter: { label: "OpenRouter", hint: "multi-provider gateway" },
+    ollama: { label: "Ollama", hint: "local, open-source" },
+    lmstudio: { label: "LM Studio", hint: "local, GUI" },
+  };
+
+  const modelOptions: Record<string, { label: string; value: string }[]> = {
+    openai: [
+      { label: "gpt-4o", value: "gpt-4o" },
+      { label: "gpt-4o-mini", value: "gpt-4o-mini" },
+      { label: "gpt-4.1", value: "gpt-4.1" },
+      { label: "gpt-4.1-mini", value: "gpt-4.1-mini" },
+      { label: "o3-mini", value: "o3-mini" },
+    ],
+    anthropic: [
+      { label: "claude-sonnet-4", value: "claude-sonnet-4" },
+      { label: "claude-haiku-3-5", value: "claude-haiku-3-5" },
+      { label: "claude-opus-4", value: "claude-opus-4" },
+    ],
+    openrouter: [
+      { label: "deepseek/deepseek-v4-flash:free", value: "deepseek/deepseek-v4-flash:free" },
+      { label: "meta-llama/llama-3.3-70b", value: "meta-llama/llama-3.3-70b" },
+      { label: "openai/gpt-4o-mini", value: "openai/gpt-4o-mini" },
+      { label: "anthropic/claude-sonnet-4", value: "anthropic/claude-sonnet-4" },
+    ],
     ollama: [
       { label: "qwen2.5:3b", value: "qwen2.5:3b" },
       { label: "qwen2.5:7b", value: "qwen2.5:7b" },
       { label: "llama3.3", value: "llama3.3" },
       { label: "llama3.2:3b", value: "llama3.2:3b" },
+      { label: "deepseek-r1:8b", value: "deepseek-r1:8b" },
     ],
-    openai: [
-      { label: "gpt-4o-mini", value: "gpt-4o-mini" },
-      { label: "gpt-4o", value: "gpt-4o" },
-      { label: "o3-mini", value: "o3-mini" },
-    ],
-    anthropic: [
-      { label: "claude-3.5-sonnet", value: "claude-3.5-sonnet" },
-      { label: "claude-3-opus", value: "claude-3-opus" },
-      { label: "claude-3-haiku", value: "claude-3-haiku" },
-    ],
-    openrouter: [
-      { label: "openai/gpt-4o-mini", value: "openai/gpt-4o-mini" },
-      { label: "anthropic/claude-3.5-sonnet", value: "anthropic/claude-3.5-sonnet" },
-      { label: "meta-llama/llama-3.3-70b", value: "meta-llama/llama-3.3-70b" },
+    lmstudio: [
+      { label: "local-model", value: "local-model" },
     ],
   };
 
-  const model = await select({
-    message: "Default model",
-    options: modelMap[provider as string] ?? modelMap.ollama,
+  const providerDefaults: Record<string, { baseUrl: string; defaultModel: string }> = {
+    openai: { baseUrl: "https://api.openai.com/v1", defaultModel: "gpt-4o" },
+    anthropic: { baseUrl: "https://api.anthropic.com/v1", defaultModel: "claude-sonnet-4" },
+    openrouter: { baseUrl: "https://openrouter.ai/api/v1", defaultModel: "deepseek/deepseek-v4-flash:free" },
+    ollama: { baseUrl: "http://localhost:11434", defaultModel: "qwen2.5:3b" },
+    lmstudio: { baseUrl: "http://localhost:1234/v1", defaultModel: "local-model" },
+  };
+
+  const providers: Record<string, { enabled: boolean; apiKey?: string; baseUrl?: string; defaultModel?: string }> = {};
+  const envLines: string[] = [];
+
+  for (const provider of KNOWN_PROVIDERS) {
+    const pl = providerLabels[provider];
+    const enabled = await confirm({ message: `Configure ${pl.label}?`, initialValue: true });
+    if (isCancel(enabled)) { outro("Cancelled."); return; }
+    if (!enabled) continue;
+
+    const defaults = providerDefaults[provider];
+
+    const isRemote = provider !== "ollama" && provider !== "lmstudio";
+    let apiKey: string | undefined;
+    if (isRemote) {
+      const keyResult = await text({
+        message: `${pl.label} API key`,
+        initialValue: process.env[`${provider.toUpperCase()}_API_KEY`] || "",
+        validate: (v) => (v?.length ?? 0) < 4 ? "Valid API key required" : undefined,
+      });
+      if (isCancel(keyResult)) { outro("Cancelled."); return; }
+      apiKey = keyResult;
+    }
+
+    const model = await select({
+      message: `Default model for ${pl.label}`,
+      options: modelOptions[provider],
+    });
+    if (isCancel(model)) { outro("Cancelled."); return; }
+
+    providers[provider] = {
+      enabled: true,
+      apiKey: apiKey || undefined,
+      baseUrl: defaults.baseUrl,
+      defaultModel: model as string,
+    };
+
+    if (apiKey && apiKey.length > 0) {
+      envLines.push(`${provider.toUpperCase()}_API_KEY=${apiKey}`);
+    }
+  }
+
+  const enabledProviders = Object.keys(providers);
+  if (enabledProviders.length === 0) {
+    log.error("At least one provider must be configured.");
+    outro("Cancelled.");
+    return;
+  }
+
+  const defaultProvider = await select({
+    message: "Default provider",
+    options: enabledProviders.map((p) => ({
+      label: providerLabels[p]?.label ?? p,
+      value: p,
+    })),
   });
-  if (isCancel(model)) { outro("Cancelled."); return; }
+  if (isCancel(defaultProvider)) { outro("Cancelled."); return; }
 
-  const swarmEnabled = await confirm({ message: "Enable swarm mode by default?" });
-  if (isCancel(swarmEnabled)) { outro("Cancelled."); return; }
+  const allModelChoices: { label: string; value: string }[] = [];
+  for (const p of enabledProviders) {
+    for (const m of modelOptions[p]) {
+      allModelChoices.push({
+        label: `${providerLabels[p]?.label ?? p} — ${m.label}`,
+        value: m.value,
+      });
+    }
+  }
 
-  const port = await text({ message: "Engine port", initialValue: "8081", validate: (v) => isNaN(Number(v)) ? "Must be a number" : undefined });
-  if (isCancel(port)) { outro("Cancelled."); return; }
-
-  const apiKey = await text({ message: "API key (optional)", initialValue: "" });
-  if (isCancel(apiKey)) { outro("Cancelled."); return; }
-
-  const baseUrlMap: Record<string, string> = {
-    openai: "https://api.openai.com/v1",
-    anthropic: "https://api.anthropic.com",
-    ollama: "http://localhost:11434",
-    openrouter: "https://openrouter.ai/api/v1",
-  };
+  const defaultModel = await select({
+    message: "Default model",
+    options: allModelChoices,
+  });
+  if (isCancel(defaultModel)) { outro("Cancelled."); return; }
 
   const config = {
-    defaultProvider: provider as string,
-    defaultModel: model as string,
-    swarmEnabled: swarmEnabled as boolean,
-    port: Number(port),
-    apiKey: (apiKey as string) || undefined,
-    baseUrl: baseUrlMap[provider as string] ?? baseUrlMap.ollama,
+    defaultProvider: defaultProvider as string,
+    defaultModel: defaultModel as string,
+    providers,
+    swarmEnabled: true,
     goalResumeEnabled: true,
     benchmarksEnabled: true,
     autoRecover: true,
   };
 
+  if (!fs.existsSync(arelyDir)) fs.mkdirSync(arelyDir, { recursive: true });
+
   saveUserConfigFile(config);
 
-  const dir = path.dirname(getUserConfigPath());
+  const envPath = getDotEnvPath();
+  if (envLines.length > 0) {
+    fs.writeFileSync(envPath, envLines.join("\n") + "\n", { mode: 0o600 });
+  }
+
   for (const db of ["goals.db", "memory.db"]) {
-    const dbPath = path.join(dir, db);
+    const dbPath = path.join(arelyDir, db);
     if (!fs.existsSync(dbPath)) fs.writeFileSync(dbPath, "");
   }
 
-  note(`Config: ${getUserConfigPath()}`, "Created");
-  log.success("Config saved");
+  note(configPath, "Config created");
+  log.success(`Providers configured: ${enabledProviders.join(", ")}`);
+  log.success(".env saved with API keys");
   log.success("goals.db created");
   log.success("memory.db created");
 

@@ -32,7 +32,7 @@ const EVOLVE_RECOMMEND_THRESHOLD = 0.20
 const MAX_CANDIDATES = 5
 
 const ParamInferenceSchema = z.object({
-  params: z.record(z.unknown()),
+  params: z.record(z.string(), z.unknown()),
   reasoning: z.string(),
   confidence: z.number().min(0).max(1),
 })

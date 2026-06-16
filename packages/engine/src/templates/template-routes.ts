@@ -383,11 +383,9 @@ function handleSaveAsTemplate(registry: TemplateRegistry, userDir: string, sse?:
 
     const body = ((req as unknown as Record<string, unknown>).body ?? {}) as Record<string, unknown>
 
-    const name =
-      (typeof body.name === "string" && body.name.trim() ? body.name : undefined) ??
-      (typeof workflow.name === "string" ? workflow.name : undefined) ??
-      (entry.workflow.name ?? undefined) ??
-      "Untitled"
+    const bodyName = typeof body.name === "string" && body.name.trim() ? body.name : undefined;
+    const wfName = typeof workflow.name === "string" ? workflow.name : undefined;
+    const name = bodyName ?? wfName ?? entry.workflow.name ?? "Untitled"
 
     const templateId = slugify(name)
     if (!templateId) {

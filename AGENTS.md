@@ -268,10 +268,46 @@ Replace ad-hoc body parsing, raw `createServer` calls, and manual shutdown with 
 - **Shutdown**: first signal → `startDrain()` polls active requests → closes DB + emits drain event; second signal → `process.exit(1)` immediately (matches Docker SIGTERM→SIGKILL)
 - **No new npm dependencies**: all middleware built from `node:http` primitives; AsyncLocalStorage from `node:async_hooks`
 
-### Quality Metrics (post M8.1)
-- **Build**: `tsc --noEmit` — 0 errors
-- **Tests**: 521 pass (64 files)
+## Fase 1 — Root Build Stability
+
+### Goal
+Root `tsc -b` passes with 0 errors. Before this build, the project had ~60+ TypeScript errors across 15 files due to stale builds, Drizzle ORM duplicate instances, and Zod 4 API incompatibilities.
+
+### Fixed Issues
+
+| Issue | Root Cause | Fix | Files Changed |
+|-------|-----------|-----|---------------|
+| Drizzle `where()` TS2740 | Nested `drizzle-orm` copies → structurally incompatible `SQL` types | Removed `drizzle-orm` from workspace `package.json` files (kept only in root) → `npm install` | `packages/engine/package.json`, `packages/persistence/package.json` |
+| Drizzle path mapping | `paths` in root tsconfig don't work with project references (each child compiles independently) | Discarded path mapping approach; single npm copy is definitive | root `tsconfig.json` |
+| `.npmrc` | Incorrect pnpm config for npm project | Deleted `.npmrc` | `.npmrc` |
+| `memory-store.ts` `query` param name collision | `query` parameter name shadowed `let query: any` variable (TS2300, TS2339, TS7006) | Renamed param `query` → `q`; added explicit `MemoryRecord[]` and `(r: MemoryRecord)` types | `packages/persistence/src/memory-store.ts` |
+| `memory/src/index.ts` renamed type | `DecisionOutcomeUpdatedCallback` was renamed to `OutcomeUpdatedCallback` (TS2724) | Updated import to use new name | `packages/memory/src/index.ts` |
+| `model-performance-service.ts` Drizzle chain | Missing `: any` on `let query` for `.where()` (TS2740) | Added `: any` annotation | `packages/memory/src/model-performance-service.ts` |
+| `planning-service.ts` missing imports | `GoalPlanStatus` and `MilestoneStatus` not imported (TS2304) | Added imports from `@arelyos/persistence` | `packages/memory/src/planning-service.ts` |
+| `evolution-routes.ts` missing import | `TemplateMetricsService` not imported (TS2304) | Added `import type` | `packages/engine/src/compiler/evolution-routes.ts` |
+| `node-package-loader.ts` return type | `validateManifest` returned `PackageManifestV1` but signature said `PackageManifest` (TS2552); `setTemplateRegistry` param type mismatch (TS2345) | Updated return type to `PackageManifestV1`; added `import type { TemplateSource }`; updated param to `source?: TemplateSource` | `packages/engine/src/compiler/node-package-loader.ts` |
+| `package-routes.ts` duplicate `version` | Two `version: record.version` in same object (TS1117) + collision with `BaseEvent.version: 1` (TS2322) | Removed duplicates; renamed event field from `version` to `pkgVersion` | `packages/engine/src/compiler/package-routes.ts` |
+| `evolution-engine.ts` Zod 4 API | `z.record(z.unknown())` → Zod 4 requires explicit key schema (TS2554) | Changed to `z.record(z.string(), z.unknown())` | `packages/engine/src/templates/evolution-engine.ts` |
+| `template-routes.ts` nullish chain | TS2871 on long `??` chain | Split into intermediate `const` variables (`bodyName`, `wfName`) | `packages/engine/src/templates/template-routes.ts` |
+| `swarm-executor.ts` role cast | `task.role as AgentRole` — import missing (TS2345) | Added import from `swarm-orchestrator` | `packages/engine/src/llm/swarm-executor.ts` |
+| `cli/engine.ts` config index | `getConfig()` return type too strict (TS2352) | Double cast `as unknown as Record<string, string \| undefined>` | `packages/cli/src/engine.ts` |
+| `events.ts` `version` collision | `PackageInstalledEvent.version: string` ∩ `BaseEvent.version: 1` = `never`, making variants uninhabitable (TS2322) | Renamed `version` → `pkgVersion` in BOTH `engine` + `persistence` copies | `packages/engine/src/types/events.ts`, `packages/persistence/src/types/events.ts` |
+| `openaicompat.test.ts` delta yields | 3 tests expected fewer results than generator actually yields (stale tests from before delta chunk support) | Updated expected lengths + last-element assertions | `tests/unit/openaicompat.test.ts` |
+
+### Key Decisions
+- **Eliminate nested drizzle-orm copies over path mapping**: Adding `drizzle-orm` to root `tsconfig.json` `paths` did not work with TypeScript project references (each child compiles independently). Removing `drizzle-orm` from workspace `package.json` files and keeping only root's copy ensures a single physical install, making all `SQL` types structurally identical.
+- **Rename field over cast**: `PackageInstalledEvent.version: string` collides with `BaseEvent.version: 1` (literal). Renaming to `pkgVersion: string` in both `engine` and `persistence` copies of `events.ts` fixes the uninhabitable intersection type properly.
+- **Import types explicitly**: Several errors (missing types, renamed types, wrong argument counts) were fixed by adding missing imports or adjusting type references.
+- **Separate variable declaration over chained `??`**: The TS2871 error on long nullish chains was fixed by splitting into intermediate `const` variables.
+- **Drizzle duplicate instance fix**: removing `drizzle-orm` from workspace `package.json` files + `npm install` removes the nested `node_modules` copy, leaving only root's `node_modules/drizzle-orm`
+
+### Quality Metrics
+- **Build**: `tsc -b` — **0 errors** ✓
+- **Tests**: **197 files, 1725 tests — 0 failures** ✓
+- **Test duration**: 42.9s
 
 ## Next Steps
-- M8.2 Observability Layer: logger improvements (LOG_LEVEL filter, childLogger, error serialization, auto correlationId), health registry (HealthRegistry with injected checks, /health+/ready+/deps enhancements), metrics histogram + Prometheus export format
-- M9+: Request tracing spans, system-wide correlation across pipeline/notifications/circuit-breakers (custom spans without OTEL SDK), F29 notification self-monitoring/alerting
+1. **Fase 2**: Run `arely bench --real` with real LLM calls
+2. **Fase 3**: Deploy web app (Next.js 15 + React 19) to production URL
+3. **Fase 4**: Dynamic Role Selection (M7)
+4. **Fase 5**: Swarm Learning (M8)
