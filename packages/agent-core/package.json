@@ -9,7 +9,8 @@
     ".": "./src/index.ts",
     "./agent-loop": "./src/agent-loop.ts",
     "./execution-mode": "./src/execution-mode.ts",
-    "./types": "./src/types.ts"
+    "./types": "./src/types.ts",
+    "./swarm/*": "./src/swarm/*.ts"
   },
   "dependencies": {
     "@arelyos/llm-core": "*",

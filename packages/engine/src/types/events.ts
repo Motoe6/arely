@@ -424,6 +424,16 @@ export type EvolutionProposalRejectedEvent = BaseEvent & {
   parameter: string;
 };
 
+export type SwarmRoleSelectedEvent = BaseEvent & {
+  type: "swarm_role_selected";
+  sessionId: string;
+  role: string;
+  provider: string;
+  model: string;
+  score: number;
+  confidence: number;
+};
+
 export type AgentEvent =
   | SessionStartedEvent
   | SessionCompletedEvent
@@ -484,7 +494,8 @@ export type AgentEvent =
   | TemplateEvolvedEvent
   | EvolutionProposalCreatedEvent
   | EvolutionProposalApprovedEvent
-  | EvolutionProposalRejectedEvent;
+  | EvolutionProposalRejectedEvent
+  | SwarmRoleSelectedEvent;
 
 export interface SSEEventData {
   event: AgentEvent["type"];
