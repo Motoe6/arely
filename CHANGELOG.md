@@ -33,6 +33,26 @@
 
 ---
 
+## v1.2.0-b1 — Distributed Multi-Node Swarms
+
+### Distributed Swarms
+- WebSocket coordinator/worker transport with send buffer
+- Multi-node heterogeneous swarm execution (OpenAI, Ollama, OpenRouter)
+- Dynamic provider:model routing across worker nodes
+- Worker registration buffering — fixes silent message loss on connect
+- Lease management and automated failover recovery
+- Distributed Prometheus metrics (30+ metric constants)
+- End-to-end validated cluster execution (201 test files, 1752 tests)
+
+### Quality
+- TypeScript build: 0 errors
+- Test suite: 1752 passing tests across 201 files
+- Real multi-node deployment validated end-to-end
+- Failover metrics: disconnects, reassignments, state transitions captured
+- Reconnection: offline→online state transitions verified
+
+---
+
 ## v0.1.0 — AgentOS Foundation
 
 ### Cognitive Core (T7–T15)
