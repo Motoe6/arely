@@ -8,6 +8,8 @@ import { SwarmScheduler } from "./scheduler.js";
 import { HeartbeatManager } from "./heartbeat.js";
 import { trace, context, SpanKind } from "@opentelemetry/api";
 import type { MetricEvent } from "./metric-events.js";
+import { DiscoveryManager } from "./discovery/manager.js";
+import type { DiscoveryProvider } from "./discovery/provider.js";
 import {
   METRIC_WORKER_REGISTRATIONS_TOTAL,
   METRIC_WORKER_DISCONNECTS_TOTAL,
@@ -40,6 +42,7 @@ export class Coordinator {
   readonly leases: LeaseManager;
   readonly scheduler: SwarmScheduler;
   readonly heartbeats: HeartbeatManager;
+  readonly discovery?: DiscoveryManager;
 
   private wsServer: WebSocketRpcServer | null = null;
   private ipServer: InProcessRpcServer | null = null;
@@ -54,7 +57,12 @@ export class Coordinator {
     model: string;
   }>();
 
-  constructor(config?: Partial<CoordinatorConfig>, delegate?: CoordinatorDelegate, log?: (msg: string) => void) {
+  constructor(
+    config?: Partial<CoordinatorConfig>,
+    delegate?: CoordinatorDelegate,
+    log?: (msg: string) => void,
+    discoveryProviders?: DiscoveryProvider[],
+  ) {
     this.config = { ...DEFAULT_COORDINATOR_CONFIG, ...config };
     this.delegate = delegate;
     this.log = log ?? (() => {});
@@ -68,6 +76,9 @@ export class Coordinator {
       (workerId) => this.handleWorkerTimeout(workerId),
       log,
     );
+    if (discoveryProviders && discoveryProviders.length > 0) {
+      this.discovery = new DiscoveryManager(discoveryProviders, this.registry, undefined, emit, log);
+    }
   }
 
   start(mode: RpcMode = "inprocess"): void {
@@ -86,10 +97,17 @@ export class Coordinator {
       this.ipServer.onMessage(handler);
       this.log(`Coordinator started (in-process mode)`);
     }
+
+    if (this.discovery) {
+      this.discovery.start().catch((err) => {
+        this.log(`Discovery start failed: ${err}`);
+      });
+    }
   }
 
   stop(): void {
     this.heartbeats.stop();
+    if (this.discovery) { this.discovery.stop().catch(() => {}); }
     if (this.wsServer) { this.wsServer.stop(); this.wsServer = null; }
     if (this.ipServer) { this.ipServer.closeAll(); this.ipServer = null; }
     this.registry.reset();

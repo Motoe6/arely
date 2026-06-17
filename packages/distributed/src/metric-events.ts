@@ -51,3 +51,11 @@ export const METRIC_REASSIGNMENTS_TOTAL = "distributed_reassignments_total";
 export const METRIC_STALE_RESULTS_TOTAL = "distributed_stale_results_total";
 export const METRIC_WORKER_STATE_TRANSITIONS_TOTAL = "distributed_worker_state_transitions_total";
 export const METRIC_COORDINATOR_RESTARTS_TOTAL = "distributed_coordinator_restarts_total";
+
+// ── Discovery ──
+
+export const METRIC_DISCOVERED_WORKERS_TOTAL = "distributed_discovered_workers_total";
+export const METRIC_WORKER_JOINS_TOTAL = "distributed_worker_joins_total";
+export const METRIC_WORKER_LEAVES_TOTAL = "distributed_worker_leaves_total";
+export const METRIC_DISCOVERY_ERRORS_TOTAL = "distributed_discovery_errors_total";
+export const METRIC_DISCOVERY_LATENCY_MS = "distributed_discovery_latency_ms";

@@ -10,3 +10,7 @@ export { WebSocketRpcServer, WebSocketRpcClient, InProcessRpcServer, InProcessRp
 export type { RpcTransport, MessageHandler } from "./rpc.js";
 export * from "./types.js";
 export * from "./metric-events.js";
+export { DiscoveryManager } from "./discovery/manager.js";
+export { StaticDiscovery } from "./discovery/static.js";
+export type { DiscoveryProvider } from "./discovery/provider.js";
+export type { StaticDiscoveryConfig } from "./discovery/static.js";
