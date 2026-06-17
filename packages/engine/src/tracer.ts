@@ -1,4 +1,7 @@
 import { ulid } from "ulid";
+import { BasicTracerProvider, BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
+import { Resource } from "@opentelemetry/resources";
+import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 
 export type SpanStatus = "ok" | "error";
 
@@ -89,6 +92,71 @@ export class SpanStore {
     this.spans.clear();
   }
 }
+
+// ── OpenTelemetry initialization (opt-in via env) ──
+
+let _otelInitialized = false;
+
+export function initOtel(config: {
+  serviceName: string;
+  endpoint: string;
+  samplingRatio: number;
+}): void {
+  if (_otelInitialized) return;
+  _otelInitialized = true;
+
+  const exporter = new OTLPTraceExporter({
+    url: config.endpoint,
+  });
+
+  const provider = new BasicTracerProvider({
+    resource: new Resource({
+      "service.name": config.serviceName,
+    }),
+  });
+
+  provider.addSpanProcessor(
+    new BatchSpanProcessor(exporter, {
+      maxExportBatchSize: 512,
+      scheduledDelayMillis: 5000,
+    }),
+  );
+
+  provider.register();
+}
+
+export function isOtelEnabled(): boolean {
+  return _otelInitialized;
+}
+
+// ── W3C Trace Context helpers ──
+
+export function parseTraceparent(tp: string): { traceId: string; spanId: string; flags: string } | null {
+  const parts = tp.split("-");
+  if (parts.length !== 4 || parts[0] !== "00") return null;
+  if (parts[1].length !== 32 || parts[2].length !== 16) return null;
+  return { traceId: parts[1], spanId: parts[2], flags: parts[3] };
+}
+
+export function formatTraceparent(traceId: string, spanId: string, flags = "01"): string {
+  return `00-${traceId}-${spanId}-${flags}`;
+}
+
+function randomHex(len: number): string {
+  const bytes = new Uint8Array(len / 2);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+export function newOtelTraceId(): string {
+  return randomHex(32);
+}
+
+export function newOtelSpanId(): string {
+  return randomHex(16);
+}
+
+// ── In-memory tracer (backward compatible) ──
 
 export function createTracer(store?: SpanStore): Tracer {
   const spanStore = store ?? new SpanStore();

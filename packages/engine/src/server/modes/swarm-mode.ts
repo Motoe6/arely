@@ -10,6 +10,7 @@ import { ParallelSwarmOrchestrator } from "../../llm/parallel-swarm-orchestrator
 import { registerSwarmExecution } from "../../routes/swarm-routes.js";
 import { metrics } from "../../metrics.js";
 import { tracer } from "../../tracer.js";
+import { trace, context, SpanKind } from "@opentelemetry/api";
 import { selectRoles, loadProviderSummary, getProviderCategoryStats, runLearningCycle, recordPerformance, loadLearnedWeights, getWeightsForCategory } from "@arelyos/agent-core/swarm/index.js";
 import type { RoleAssignment, TaskCategory, RolePerformanceRecord, LearnedWeights } from "@arelyos/agent-core/swarm/index.js";
 import { getConfig } from "../../config/index.js";
@@ -224,7 +225,28 @@ export class SwarmModeExecution implements ExecutionMode {
         const distExecutor = new DistributedSwarmExecutor({
           coordinator: coordinator!,
         });
-        result = await distExecutor.execute(session.id, input, assignments);
+
+        // Create an OTel root span so the coordinator can pick up the trace context
+        const otelTracer = trace.getTracer("arely-engine", "1.0.0");
+        const otelSpan = otelTracer.startSpan("swarm.execute", {
+          kind: SpanKind.CLIENT,
+          attributes: {
+            "session.id": session.id,
+            "distributed": true,
+            "role_count": assignments.length,
+          },
+        });
+        const otelCtx = trace.setSpan(context.active(), otelSpan);
+
+        result = await context.with(otelCtx, () =>
+          distExecutor.execute(session.id, input, assignments),
+        );
+
+        otelSpan.setAttributes({
+          "latency_ms": Date.now() - startMs,
+          "success": true,
+        });
+        otelSpan.end();
       } else {
         result = await orchestrator.run(input);
       }

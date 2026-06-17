@@ -6,6 +6,7 @@ import type { RpcTransport } from "./rpc.js";
 import { LeaseManager } from "./lease-manager.js";
 import { SwarmScheduler } from "./scheduler.js";
 import { HeartbeatManager } from "./heartbeat.js";
+import { trace, context, SpanKind } from "@opentelemetry/api";
 import type { MetricEvent } from "./metric-events.js";
 import {
   METRIC_WORKER_REGISTRATIONS_TOTAL,
@@ -157,10 +158,17 @@ export class Coordinator {
       this.leases.grant(decision.workerId, sessionId, roleId, assignment.role);
       this.registry.incrementLeases(decision.workerId);
 
+      // Inject W3C traceparent from active OTel span for distributed tracing
+      const currentSpan = trace.getSpan(context.active());
+      const traceparent = currentSpan
+        ? `00-${currentSpan.spanContext().traceId}-${currentSpan.spanContext().spanId}-01`
+        : undefined;
+
       const request: ExecuteRoleRequest = {
         type: "execute_role",
         correlationId,
         traceId,
+        traceparent,
         sessionId,
         swarmId,
         roleId,

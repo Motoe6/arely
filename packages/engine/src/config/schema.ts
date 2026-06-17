@@ -94,6 +94,13 @@ export const pathsSchema = z.object({
   PACKAGES_DIR: z.string().default("./data/packages"),
 });
 
+export const telemetrySchema = z.object({
+  OTEL_ENABLED: z.coerce.boolean().default(false),
+  OTEL_EXPORTER_OTLP_ENDPOINT: z.string().default("http://localhost:4318/v1/traces"),
+  OTEL_SERVICE_NAME: z.string().default("arely"),
+  OTEL_SAMPLING_RATIO: z.coerce.number().min(0).max(1).default(1),
+});
+
 export const envSchema = z.object({})
   .merge(llmSchema)
   .merge(toolsSchema)
@@ -101,4 +108,5 @@ export const envSchema = z.object({})
   .merge(planningSchema)
   .merge(agentSchema)
   .merge(notificationSchema)
-  .merge(pathsSchema);
+  .merge(pathsSchema)
+  .merge(telemetrySchema);

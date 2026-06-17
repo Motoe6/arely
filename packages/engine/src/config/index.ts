@@ -1,6 +1,7 @@
 import { envSchema } from "./schema.js";
 import type { Config } from "./types.js";
 import { loadUserConfigFile, loadDotEnvFile, mergeUserConfigIntoEnv } from "./io.js";
+import { initOtel } from "../tracer.js";
 export { envSchema } from "./schema.js";
 export type { Config, UserConfigFile, KnownProvider, ProviderConfigFile, KNOWN_PROVIDERS } from "./types.js";
 export { loadUserConfigFile, saveUserConfigFile, getUserConfigPath, getArelyDir } from "./io.js";
@@ -56,6 +57,17 @@ export function loadConfig(): Config {
     process.exit(1);
   }
   _config = result.data;
+
+  // Initialize OpenTelemetry if enabled (guarded: _config is always set when
+  // this line is reached, except when tests mock process.exit(1))
+  if (_config && _config.OTEL_ENABLED) {
+    initOtel({
+      serviceName: _config.OTEL_SERVICE_NAME,
+      endpoint: _config.OTEL_EXPORTER_OTLP_ENDPOINT,
+      samplingRatio: _config.OTEL_SAMPLING_RATIO,
+    });
+  }
+
   return _config;
 }
 

@@ -52,6 +52,7 @@ export interface ExecuteRoleRequest {
   type: "execute_role";
   correlationId: string;
   traceId: string;
+  traceparent?: string;
   sessionId: string;
   swarmId: string;
   roleId: string;
@@ -68,6 +69,7 @@ export interface ExecuteRoleResponse {
   type: "role_result";
   correlationId: string;
   traceId: string;
+  traceparent?: string;
   sessionId: string;
   swarmId: string;
   roleId: string;

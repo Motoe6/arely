@@ -1,6 +1,7 @@
 import type { RpcMessage, WorkerInfo, ExecuteRoleRequest, ExecuteRoleResponse } from "./types.js";
 import { newCorrelationId } from "./types.js";
 import type { RpcTransport } from "./rpc.js";
+import { trace, context, propagation, SpanKind, SpanStatusCode } from "@opentelemetry/api";
 
 export type RoleExecutor = (
   role: string,
@@ -72,6 +73,31 @@ export class Worker {
     let output: string | undefined;
     let error: string | undefined;
 
+    // Extract W3C trace context from traceparent for distributed tracing
+    const parentCtx = msg.traceparent
+      ? propagation.extract(context.active(), { traceparent: msg.traceparent })
+      : context.active();
+    const workerTracer = trace.getTracer("arely-worker", "1.0.0");
+    const span = workerTracer.startSpan(
+      `execute_role.${msg.role}`,
+      {
+        kind: SpanKind.SERVER,
+        attributes: {
+          "worker.id": this.info.workerId,
+          "worker.host": this.info.host,
+          "role.id": msg.roleId,
+          "role": msg.role,
+          "provider": msg.provider,
+          "model": msg.model,
+          "session.id": msg.sessionId,
+          "swarm.id": msg.swarmId,
+          "messaging.system": "websocket",
+          "messaging.destination": "execute_role",
+        },
+      },
+      parentCtx,
+    );
+
     try {
       const signal = msg.timeoutMs ? AbortSignal.timeout(msg.timeoutMs) : undefined;
       output = await this.executeRole(
@@ -87,6 +113,7 @@ export class Worker {
     } catch (err) {
       error = err instanceof Error ? err.message : String(err);
       this.totalFailures++;
+      span.setStatus({ code: SpanStatusCode.ERROR, message: error });
     }
 
     const finishedAt = Date.now();
@@ -96,10 +123,22 @@ export class Worker {
     this.totalRoles++;
     this.activeRoles.delete(msg.roleId);
 
+    // End span with final attributes
+    const sc = span.spanContext();
+    span.setAttributes({
+      "latency_ms": latencyMs,
+      "success": success,
+    });
+    span.end();
+
+    // Propagate updated traceparent in response
+    const updatedTraceparent = `00-${sc.traceId}-${sc.spanId}-01`;
+
     const response: ExecuteRoleResponse = {
       type: "role_result",
       correlationId: msg.correlationId,
       traceId: msg.traceId,
+      traceparent: updatedTraceparent,
       sessionId: msg.sessionId,
       swarmId: msg.swarmId,
       roleId: msg.roleId,
