@@ -1,7 +1,6 @@
-import { ulid } from "ulid";
 import type { RpcMessage, WorkerInfo, ExecuteRoleRequest, ExecuteRoleResponse } from "./types.js";
 import { newCorrelationId } from "./types.js";
-import type { CoordinatorRpcServer } from "./rpc.js";
+import type { RpcTransport } from "./rpc.js";
 
 export type RoleExecutor = (
   role: string,
@@ -15,7 +14,7 @@ export type RoleExecutor = (
 
 export class Worker {
   readonly info: WorkerInfo;
-  private rpc: CoordinatorRpcServer;
+  private transport: RpcTransport;
   private executeRole: RoleExecutor;
   private activeRoles = new Set<string>();
   private totalLatencyMs = 0;
@@ -26,19 +25,19 @@ export class Worker {
 
   constructor(
     info: WorkerInfo,
-    rpc: CoordinatorRpcServer,
+    transport: RpcTransport,
     executeRole: RoleExecutor,
     log?: (msg: string) => void,
   ) {
     this.info = info;
-    this.rpc = rpc;
+    this.transport = transport;
     this.executeRole = executeRole;
     this.log = log ?? (() => {});
   }
 
   start(): void {
     // Register with coordinator
-    this.rpc.sendTo("coordinator", {
+    this.transport.send({
       type: "register",
       correlationId: newCorrelationId(),
       worker: this.info,
@@ -48,8 +47,8 @@ export class Worker {
     // Start heartbeats
     this.heartbeatIntervalId = setInterval(() => this.sendHeartbeat(), 5000);
 
-    // Listen for messages
-    this.rpc.onMessage((msg) => this.handleMessage(msg));
+    // Listen for messages from coordinator
+    this.transport.onMessage((msg) => this.handleMessage(msg));
   }
 
   stop(): void {
@@ -61,10 +60,8 @@ export class Worker {
   }
 
   private handleMessage(msg: RpcMessage): void {
-    switch (msg.type) {
-      case "execute_role":
-        this.handleExecuteRole(msg);
-        break;
+    if (msg.type === "execute_role") {
+      this.handleExecuteRole(msg);
     }
   }
 
@@ -116,12 +113,12 @@ export class Worker {
       error,
     };
 
-    this.rpc.sendTo("coordinator", response);
+    this.transport.send(response);
     this.log(`Role ${msg.roleId} (${msg.role}) completed: ${success ? "ok" : "fail"} (${latencyMs}ms)`);
   }
 
   private sendHeartbeat(): void {
-    this.rpc.sendTo("coordinator", {
+    this.transport.send({
       type: "heartbeat_ping",
       correlationId: newCorrelationId(),
       workerId: this.info.workerId,

@@ -455,6 +455,14 @@ export type SwarmLearningUpdateEvent = BaseEvent & {
   };
 };
 
+export type SwarmExecutionModeEvent = BaseEvent & {
+  type: "swarm_execution_mode";
+  sessionId?: string;
+  mode: "local" | "distributed";
+  coordinatorUrl?: string;
+  workerCount?: number;
+};
+
 export type TraceEvent = BaseEvent & {
   type: "trace";
   sessionId?: string;
@@ -530,6 +538,7 @@ export type AgentEvent =
   | EvolutionProposalRejectedEvent
   | SwarmRoleSelectedEvent
   | SwarmLearningUpdateEvent
+  | SwarmExecutionModeEvent
   | TraceEvent;
 
 export interface SSEEventData {

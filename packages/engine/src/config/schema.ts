@@ -56,6 +56,8 @@ export const serverSchema = z.object({
   AUDIT_RETENTION_DAYS: z.coerce.number().int().min(1).default(30),
   DEFAULT_REPLAY_BATCH_SIZE: z.coerce.number().int().positive().max(5000).default(1000),
   MAX_REPLAY_BATCH_SIZE: z.coerce.number().int().positive().max(50000).default(5000),
+  ARELY_EXECUTION_MODE: z.enum(["local", "distributed"]).default("local"),
+  ARELY_COORDINATOR_URL: z.string().optional(),
 });
 
 export const planningSchema = z.object({

@@ -1,13 +1,23 @@
 import type { Lease, CoordinatorConfig } from "./types.js";
 import { newLeaseId } from "./types.js";
+import type { MetricEmitter } from "./metric-events.js";
+import {
+  METRIC_LEASES_ACTIVE,
+  METRIC_LEASES_GRANTED_TOTAL,
+  METRIC_LEASES_EXPIRED_TOTAL,
+  METRIC_LEASES_REVOKED_TOTAL,
+  METRIC_LEASE_DURATION_MS,
+} from "./metric-events.js";
 
 export class LeaseManager {
   private leases = new Map<string, Lease>();
   private config: CoordinatorConfig;
   private log: (msg: string) => void;
+  private emit: MetricEmitter;
 
-  constructor(config: CoordinatorConfig, log?: (msg: string) => void) {
+  constructor(config: CoordinatorConfig, emit?: MetricEmitter, log?: (msg: string) => void) {
     this.config = config;
+    this.emit = emit ?? (() => {});
     this.log = log ?? (() => {});
   }
 
@@ -24,15 +34,20 @@ export class LeaseManager {
       attempt: 1,
     };
     this.leases.set(lease.leaseId, lease);
+    this.emit({ type: "counter", name: METRIC_LEASES_GRANTED_TOTAL, labels: { workerId, role } });
+    this.emit({ type: "gauge", name: METRIC_LEASES_ACTIVE, value: this.leases.size });
     return lease;
   }
 
   renew(leaseId: string): boolean {
     const lease = this.leases.get(leaseId);
     if (!lease) return false;
-    lease.renewedAt = Date.now();
-    lease.expiresAt = Date.now() + this.config.leaseDurationMs;
+    const now = Date.now();
+    const elapsed = now - lease.grantedAt;
+    lease.renewedAt = now;
+    lease.expiresAt = now + this.config.leaseDurationMs;
     lease.attempt++;
+    this.emit({ type: "histogram", name: METRIC_LEASE_DURATION_MS, durationMs: elapsed });
     return true;
   }
 
@@ -41,6 +56,8 @@ export class LeaseManager {
     if (!lease) return false;
     this.log(`Lease ${leaseId} (${lease.role} on ${lease.workerId}) revoked: ${reason}`);
     this.leases.delete(leaseId);
+    this.emit({ type: "counter", name: METRIC_LEASES_REVOKED_TOTAL, labels: { workerId: lease.workerId, role: lease.role, reason } });
+    this.emit({ type: "gauge", name: METRIC_LEASES_ACTIVE, value: this.leases.size });
     return true;
   }
 
@@ -51,7 +68,11 @@ export class LeaseManager {
         this.leases.delete(id);
         count++;
         this.log(`Lease ${id} (${lease.role}) revoked on worker ${workerId}: ${reason}`);
+        this.emit({ type: "counter", name: METRIC_LEASES_REVOKED_TOTAL, labels: { workerId, role: lease.role, reason } });
       }
+    }
+    if (count > 0) {
+      this.emit({ type: "gauge", name: METRIC_LEASES_ACTIVE, value: this.leases.size });
     }
     return count;
   }
@@ -70,6 +91,10 @@ export class LeaseManager {
     for (const l of expired) {
       this.leases.delete(l.leaseId);
       this.log(`Lease ${l.leaseId} (${l.role}) expired`);
+      this.emit({ type: "counter", name: METRIC_LEASES_EXPIRED_TOTAL, labels: { workerId: l.workerId, role: l.role } });
+    }
+    if (expired.length > 0) {
+      this.emit({ type: "gauge", name: METRIC_LEASES_ACTIVE, value: this.leases.size });
     }
     return expired.length;
   }

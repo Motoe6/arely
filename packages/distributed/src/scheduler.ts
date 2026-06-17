@@ -1,21 +1,26 @@
 import type { WorkerRegistry } from "./registry.js";
 import type { LeaseManager } from "./lease-manager.js";
 import type { RegistryEntry, ScheduleDecision, ScheduleStrategy } from "./types.js";
+import type { MetricEmitter } from "./metric-events.js";
+import { METRIC_SCHEDULER_DECISIONS_TOTAL, METRIC_SCHEDULER_LATENCY_MS } from "./metric-events.js";
 
 export class SwarmScheduler {
   private registry: WorkerRegistry;
   private leases: LeaseManager;
   private strategy: ScheduleStrategy;
   private roundRobinIndex = 0;
+  private emit: MetricEmitter;
 
   constructor(
     registry: WorkerRegistry,
     leases: LeaseManager,
     strategy: ScheduleStrategy,
+    emit?: MetricEmitter,
   ) {
     this.registry = registry;
     this.leases = leases;
     this.strategy = strategy;
+    this.emit = emit ?? (() => {});
   }
 
   setStrategy(strategy: ScheduleStrategy): void {
@@ -28,21 +33,37 @@ export class SwarmScheduler {
     provider: string,
     requiredCapabilities?: string[],
   ): ScheduleDecision | null {
+    const startMs = Date.now();
     const available = this.getCandidates(provider, requiredCapabilities);
-    if (available.length === 0) return null;
+    const latencyMs = Date.now() - startMs;
 
+    this.emit({ type: "histogram", name: METRIC_SCHEDULER_LATENCY_MS, durationMs: latencyMs });
+
+    if (available.length === 0) {
+      this.emit({ type: "counter", name: METRIC_SCHEDULER_DECISIONS_TOTAL, labels: { strategy: this.strategy, result: "no_worker" } });
+      return null;
+    }
+
+    let decision: ScheduleDecision | null = null;
     switch (this.strategy) {
       case "least_loaded":
-        return this.leastLoaded(available);
+        decision = this.leastLoaded(available);
+        break;
       case "round_robin":
-        return this.roundRobin(available);
+        decision = this.roundRobin(available);
+        break;
       case "benchmark_aware":
-        return this.benchmarkAware(available);
+        decision = this.benchmarkAware(available);
+        break;
       case "capability_aware":
-        return this.capabilityAware(available, requiredCapabilities);
+        decision = this.capabilityAware(available, requiredCapabilities);
+        break;
       default:
-        return this.leastLoaded(available);
+        decision = this.leastLoaded(available);
     }
+
+    this.emit({ type: "counter", name: METRIC_SCHEDULER_DECISIONS_TOTAL, labels: { strategy: this.strategy, result: decision ? "assigned" : "no_worker" } });
+    return decision;
   }
 
   private getCandidates(provider: string, requiredCapabilities?: string[]): RegistryEntry[] {

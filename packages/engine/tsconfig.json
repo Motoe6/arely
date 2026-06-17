@@ -13,6 +13,7 @@
     { "path": "../persistence" },
     { "path": "../memory" },
     { "path": "../agent-core" },
-    { "path": "../evolution" }
+    { "path": "../evolution" },
+    { "path": "../distributed" }
   ]
 }

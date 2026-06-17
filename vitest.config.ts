@@ -18,12 +18,13 @@ export default defineConfig({
       "@arelyos/benchmarks": fileURLToPath(new URL("./packages/benchmarks/src", import.meta.url)),
       "@arelyos/ui-core": fileURLToPath(new URL("./packages/ui-core/src", import.meta.url)),
       "@arelyos/cli": fileURLToPath(new URL("./packages/cli/src", import.meta.url)),
+      "@arelyos/distributed": fileURLToPath(new URL("./packages/distributed/src", import.meta.url)),
     },
   },
   test: {
     globals: true,
     environment: "node",
-    include: ["tests/**/*.test.ts"],
+    include: ["tests/**/*.test.ts", "packages/distributed/src/__tests__/**/*.test.ts"],
     coverage: {
       provider: "v8",
       include: [
@@ -39,12 +40,14 @@ export default defineConfig({
         "packages/engine/src/llm/adapter.ts",
         "packages/engine/src/llm/openaicompat.ts",
         "packages/engine/src/llm/conversation.ts",
+        "packages/distributed/src/**/*.ts",
       ],
       exclude: [
         "tests/**",
         "packages/engine/src/types/**",
         "packages/engine/src/ui/**",
         "packages/engine/src/index.ts",
+        "packages/distributed/src/__tests__/**",
         "packages/engine/src/tools/base-tool.ts",
         "packages/engine/src/persistence/schema.ts",
         "packages/engine/src/persistence/database.ts",

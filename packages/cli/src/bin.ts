@@ -15,6 +15,8 @@ const HELP = `
     arely bench            Run benchmarks
     arely models           List installed models
     arely models --health  Check provider connectivity (--json for JSON)
+    arely coordinator      Start distributed swarm coordinator
+    arely worker           Start distributed swarm worker
     arely version          Show version
 
   Options:
@@ -22,6 +24,12 @@ const HELP = `
     --port <port>          Port for serve (default: 8081)
     --help, -h             Show this help
     --version, -v          Show version
+
+  Coordinator:
+    arely coordinator --port 9091
+
+  Worker:
+    arely worker --coordinator ws://localhost:9091 --provider ollama --model qwen2.5:3b
 
   Examples:
     arely
@@ -64,6 +72,8 @@ async function main() {
     case "config": await configCmd(); break;
     case "login": await loginCmd(); break;
     case "update": await updateCmd(); break;
+    case "coordinator": await startCoordinator(); break;
+    case "worker": await startWorker(); break;
     default:
       if (args.includes("--connect")) {
         const idx = args.indexOf("--connect");
@@ -113,6 +123,151 @@ async function startWeb() {
     shell: true,
   });
   child.on("exit", (code) => process.exit(code ?? 0));
+}
+
+async function startCoordinator() {
+  const args = process.argv.slice(3);
+  const portIdx = args.indexOf("--port");
+  const port = portIdx >= 0 ? Number(args[portIdx + 1]) : 9091;
+
+  const picocolors = await import("picocolors");
+  const c = picocolors.default;
+  const { Coordinator } = await import("@arelyos/distributed");
+
+  console.log(c.cyan(`\n  ARELY Coordinator\n`));
+  console.log(`  Port:       ${c.bold(String(port))}`);
+  console.log(`  Strategy:   ${c.bold("least_loaded")}`);
+  console.log(`  Workers:    0`);
+  console.log(`  Leases:     0`);
+  console.log(c.dim(`\n  Use: arely worker --coordinator ws://localhost:${port} --provider ollama --model qwen2.5:3b\n`));
+
+  const coordinator = new Coordinator({
+    port,
+    scheduleStrategy: "least_loaded",
+  }, {
+    onWorkerOffline(workerId) {
+      console.log(`  ${c.yellow("⚠")} Worker ${workerId} went offline`);
+    },
+  }, (msg) => {
+    console.log(`  ${c.dim("[coordinator]")} ${msg}`);
+  });
+
+  coordinator.start("websocket");
+
+  // Log active workers periodically
+  const statusInterval = setInterval(() => {
+    const count = coordinator.registry.getActiveWorkerCount();
+    const leases = coordinator.leases.activeLeaseCount();
+    if (count > 0) {
+      process.stdout.write(`\x1b[1A\x1b[2K\x1b[1A\x1b[2K`);
+      console.log(`  Workers:     ${c.green(String(count))}`);
+      console.log(`  Leases:      ${c.yellow(String(leases))}`);
+    }
+  }, 2000);
+
+  process.on("SIGINT", () => {
+    clearInterval(statusInterval);
+    coordinator.stop();
+    process.exit(0);
+  });
+  process.on("SIGTERM", () => {
+    clearInterval(statusInterval);
+    coordinator.stop();
+    process.exit(0);
+  });
+
+  // Keep alive
+  await new Promise(() => {});
+}
+
+async function startWorker() {
+  const args = process.argv.slice(3);
+  const coordIdx = args.indexOf("--coordinator");
+  const providerIdx = args.indexOf("--provider");
+  const modelIdx = args.indexOf("--model");
+
+  const coordinatorUrl = coordIdx >= 0 ? args[coordIdx + 1] : "ws://localhost:9091";
+  const provider = providerIdx >= 0 ? args[providerIdx + 1] : "ollama";
+  const model = modelIdx >= 0 ? args[modelIdx + 1] : "qwen2.5:3b";
+
+  const picocolors = await import("picocolors");
+  const c = picocolors.default;
+  const { ulid } = await import("ulid");
+  const { Worker } = await import("@arelyos/distributed");
+  const { WebSocketRpcClient } = await import("@arelyos/distributed/rpc.js");
+  const { loadConfig } = await import("@arelyos/engine/config/index.js");
+  const { ModelRegistry } = await import("@arelyos/engine/models/model-registry.js");
+  const { ModelAwareAdapter } = await import("@arelyos/engine/models/model-adapter.js");
+
+  loadConfig();
+
+  const workerId = `worker-${ulid().slice(0, 12)}`;
+  console.log(c.cyan(`\n  ARELY Worker\n`));
+  console.log(`  ID:         ${c.bold(workerId)}`);
+  console.log(`  Coordinator: ${c.bold(coordinatorUrl)}`);
+  console.log(`  Provider:    ${c.bold(provider)}`);
+  console.log(`  Model:       ${c.bold(model)}`);
+  console.log(c.dim(`\n  Waiting for role assignments...\n`));
+
+  // Create LLM adapter for role execution
+  const modelId = `${provider}:${model}`;
+  const modelRegistry = new ModelRegistry("", modelId);
+  const llm = new ModelAwareAdapter(modelRegistry, process.env.ARELY_API_KEY);
+
+  const transport = new WebSocketRpcClient(coordinatorUrl, workerId, (msg) => {
+    console.log(`  ${c.dim("[worker]")} ${msg}`);
+  });
+  transport.connect();
+
+  const worker = new Worker({
+    workerId,
+    host: "localhost",
+    port: 0,
+    version: "1.2.0-a2",
+    capabilities: ["llm", "tool"],
+    providers: [provider],
+    models: [model],
+    startedAt: Date.now(),
+  }, transport, async (role, provider, model, task, systemPrompt, context, signal) => {
+    console.log(`  ${c.cyan("▶")} Executing role: ${c.bold(role)} (${provider}:${model})`);
+
+    const messages: Array<{ role: string; content: string; timestamp: number }> = [];
+    if (systemPrompt) {
+      messages.push({ role: "system", content: systemPrompt, timestamp: Date.now() });
+    }
+    const taskContent = context ? `${task}\n\nContext:\n${context}` : task;
+    messages.push({ role: "user", content: taskContent, timestamp: Date.now() });
+
+    // Re-map to the format expected by the LLM adapter (SessionMessage[])
+    const llmMessages = messages as any;
+
+    let result = "";
+    for await (const chunk of llm.complete(llmMessages, signal, modelId as any)) {
+      if (chunk.type !== "delta") {
+        result += chunk.content ?? "";
+      }
+    }
+    console.log(`  ${c.green("✓")} Role ${role} completed (${result.length} chars)`);
+    return result;
+  }, (msg) => {
+    console.log(`  ${c.dim("[worker]")} ${msg}`);
+  });
+
+  worker.start();
+
+  process.on("SIGINT", () => {
+    worker.stop();
+    transport.close();
+    process.exit(0);
+  });
+  process.on("SIGTERM", () => {
+    worker.stop();
+    transport.close();
+    process.exit(0);
+  });
+
+  // Keep alive
+  await new Promise(() => {});
 }
 
 async function doctor() {

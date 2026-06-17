@@ -37,4 +37,6 @@ export interface UserConfigFile {
   /** Multi-provider config (v2) */
   providers?: Partial<Record<KnownProvider, ProviderConfigFile>>;
   swarmProviders?: Record<string, string>;
+  executionMode?: "local" | "distributed";
+  coordinatorUrl?: string;
 }

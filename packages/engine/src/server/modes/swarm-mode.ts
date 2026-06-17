@@ -5,13 +5,16 @@ import type { SessionMessage } from "../../types.js";
 import type { AgentEvent } from "../../types/events.js";
 import type { LLMAdapter } from "@arelyos/llm-core";
 import type { AgentExecutor, HeterogeneousExecutor } from "../../llm/swarm-orchestrator.js";
-import type { SwarmAgentRole } from "../../llm/swarm-task-types.js";
+import type { SwarmAgentRole, ParallelSwarmResult } from "../../llm/swarm-task-types.js";
 import { ParallelSwarmOrchestrator } from "../../llm/parallel-swarm-orchestrator.js";
 import { registerSwarmExecution } from "../../routes/swarm-routes.js";
 import { metrics } from "../../metrics.js";
 import { tracer } from "../../tracer.js";
 import { selectRoles, loadProviderSummary, getProviderCategoryStats, runLearningCycle, recordPerformance, loadLearnedWeights, getWeightsForCategory } from "@arelyos/agent-core/swarm/index.js";
 import type { RoleAssignment, TaskCategory, RolePerformanceRecord, LearnedWeights } from "@arelyos/agent-core/swarm/index.js";
+import { getConfig } from "../../config/index.js";
+import { DistributedSwarmExecutor } from "../../swarm/distributed-swarm-executor.js";
+import { Coordinator } from "@arelyos/distributed";
 
 function createAgentExecutor(llm: LLMAdapter, signal?: AbortSignal, roleMap?: Map<string, RoleAssignment>): AgentExecutor & HeterogeneousExecutor {
   return async (role, systemPrompt, task, context, modelId?: string) => {
@@ -35,6 +38,30 @@ function createAgentExecutor(llm: LLMAdapter, signal?: AbortSignal, roleMap?: Ma
 
 export class SwarmModeExecution implements ExecutionMode {
   readonly name = "swarm";
+  private static coordinator?: Coordinator;
+
+  private static getCoordinator(url: string): Coordinator {
+    if (this.coordinator) return this.coordinator;
+    const parsed = new URL(url);
+    const host = parsed.hostname;
+    const port = Number(parsed.port || (parsed.protocol === "wss:" ? 443 : 80));
+    this.coordinator = new Coordinator(
+      { port, scheduleStrategy: "least_loaded" },
+      {
+        onMetric: (event) => {
+          if (event.type === "counter") {
+            metrics.increment(event.name, event.labels);
+          } else if (event.type === "gauge") {
+            metrics.setGauge(event.name, event.labels ?? {}, event.value ?? 0);
+          } else if (event.type === "histogram") {
+            metrics.observeDuration(event.name, event.labels ?? {}, event.durationMs ?? 0);
+          }
+        },
+      },
+    );
+    this.coordinator.start("websocket");
+    return this.coordinator;
+  }
 
   constructor(private category?: TaskCategory) {}
 
@@ -42,6 +69,10 @@ export class SwarmModeExecution implements ExecutionMode {
     if (session.abortSignal.aborted) {
       return { content: "Swarm cancelled", turns: 0 };
     }
+
+    const cfg = getConfig();
+    const distributed = cfg.ARELY_EXECUTION_MODE === "distributed";
+    const coordinatorUrl = cfg.ARELY_COORDINATOR_URL || "ws://localhost:9091";
 
     const traceId = `swarm-${ulid()}`;
     const rootSpan = tracer.startSpan(traceId, "swarm.run", undefined);
@@ -99,7 +130,15 @@ export class SwarmModeExecution implements ExecutionMode {
         },
       };
       session.sse.emit(session.id, event);
+
+      // Learning metrics per role assignment
+      metrics.setGauge("distributed_role_selection_score", { role: a.role, provider: a.provider, model: a.model, category: this.category ?? "coding" }, a.score);
+      metrics.setGauge("distributed_role_selection_confidence", { role: a.role, provider: a.provider, model: a.model, category: this.category ?? "coding" }, a.confidence);
     }
+
+    // Learning cycle metrics
+    metrics.setGauge("distributed_learning_gain", { category: this.category ?? "coding" }, catWeights.historicalScore);
+    metrics.setGauge("distributed_benchmark_drift", { category: this.category ?? "coding" }, catWeights.utility);
 
     // Emit learning update event
     const learningEvent: AgentEvent = {
@@ -118,6 +157,25 @@ export class SwarmModeExecution implements ExecutionMode {
       },
     };
     session.sse.emit(session.id, learningEvent);
+
+    // Initialize coordinator lazily on first distributed run
+    let coordinator: Coordinator | undefined;
+    if (distributed) {
+      coordinator = SwarmModeExecution.getCoordinator(coordinatorUrl);
+    }
+
+    // Emit execution mode event
+    const modeEvent: AgentEvent = {
+      id: ulid(),
+      version: 1 as const,
+      timestamp: Date.now(),
+      type: "swarm_execution_mode",
+      sessionId: session.id,
+      mode: distributed ? "distributed" : "local",
+      ...(distributed ? { coordinatorUrl } : {}),
+      ...(distributed && coordinator ? { workerCount: coordinator.registry.getActiveWorkerCount() } : {}),
+    };
+    session.sse.emit(session.id, modeEvent);
 
     session.sse.emit(session.id, {
       id: ulid(),
@@ -146,6 +204,10 @@ export class SwarmModeExecution implements ExecutionMode {
       metrics.increment("role_assignments_total", { role: a.role, provider: a.provider });
     }
 
+    if (distributed) {
+      metrics.increment("distributed_swarm_executions_total");
+    }
+
     try {
       const executeSpan = tracer.startSpan(traceId, "swarm.execute", rootSpan.spanId);
 
@@ -156,8 +218,25 @@ export class SwarmModeExecution implements ExecutionMode {
         roleSpans.set(a.role, roleSpan);
       }
 
-      const result = await orchestrator.run(input);
+      let result: ParallelSwarmResult;
+
+      if (distributed) {
+        const distExecutor = new DistributedSwarmExecutor({
+          coordinator: coordinator!,
+        });
+        result = await distExecutor.execute(session.id, input, assignments);
+      } else {
+        result = await orchestrator.run(input);
+      }
+
       const elapsedMs = Date.now() - startMs;
+
+      if (distributed) {
+        metrics.observeDuration("distributed_swarm_latency_ms", {}, elapsedMs);
+        for (const a of assignments) {
+          metrics.add("distributed_roles_remote_total", { role: a.role, provider: a.provider, model: a.model }, 1);
+        }
+      }
 
       // End all role spans
       let roleSuccesses = 0;
@@ -259,6 +338,10 @@ export class SwarmModeExecution implements ExecutionMode {
       const elapsedMs = Date.now() - startMs;
       metrics.increment("swarm_executions_total", { status: "failed" });
       metrics.increment("swarm_failures_total", { category: this.category ?? "coding" });
+
+      if (distributed) {
+        metrics.increment("distributed_swarm_executions_total", { status: "failed" });
+      }
 
       // Track role failures per provider
       for (const a of assignments) {

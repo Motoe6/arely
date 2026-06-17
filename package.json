@@ -51,6 +51,7 @@
     "@types/nodemailer": "^8.0.0",
     "@types/react": "^19.2.16",
     "@types/turndown": "^5.0.5",
+    "@types/ws": "^8.18.1",
     "@vitest/coverage-v8": "^4.1.8",
     "drizzle-kit": "^0.31.10",
     "eslint": "^9.39.2",
