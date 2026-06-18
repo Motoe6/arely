@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 
-import { runScenarioBenchmarks, runBenchmarkAllProviders } from "./scenario-runner.js";
+import { runScenarioBenchmarks, runBenchmarkAllProviders, runSoakBenchmarks } from "./scenario-runner.js";
 import type { BenchmarkOptions } from "./types.js";
 
 async function main() {
@@ -22,6 +22,22 @@ async function main() {
     ? parseInt(args[concurrencyIdx + 1], 10)
     : undefined;
 
+  // Sprint 1 flags
+  const hierarchicalMode = args.includes("--manager-hierarchical");
+  const distributedMode = args.includes("--distributed");
+  const swarmHeterogeneous = args.includes("--swarm-heterogeneous");
+  const durationIdx = args.indexOf("--duration");
+  const duration = durationIdx !== -1 && args[durationIdx + 1] ? args[durationIdx + 1] : undefined;
+
+  // Determine mode
+  let mode: BenchmarkOptions["mode"] = "standard";
+  if (hierarchicalMode) mode = "hierarchical";
+  else if (distributedMode) mode = "distributed";
+  else if (swarmHeterogeneous) mode = "swarm-heterogeneous";
+  else if (duration) mode = "soak";
+
+  process.env.BENCHMARK_ENGINE_URL = engineUrl;
+
   // Handle --provider all
   if (providerFilter === "all" && useReal) {
     const result = await runBenchmarkAllProviders({
@@ -29,9 +45,32 @@ async function main() {
       jsonOutput: useJson,
       environment,
       concurrency,
+      mode,
     });
     if (useJson) {
       console.log(JSON.stringify({ results: result.results, leaderboard: result.leaderboard, summary: result.summary }, null, 2));
+    }
+    return;
+  }
+
+  // Handle soak mode
+  if (duration && mode === "soak") {
+    console.log(`\n  ARELY Soak Benchmarks — ${useReal ? "REAL LLM" : "Deterministic"} mode`);
+    console.log(`  Duration: ${duration}`);
+    if (distributedMode) console.log("  Mode: distributed");
+
+    await runSoakBenchmarks(duration, {
+      real: useReal,
+      jsonOutput: useJson,
+      environment,
+      concurrency,
+      mode: distributedMode ? "distributed" : "standard",
+      provider: providerFilter,
+    });
+
+    if (useJson) {
+      // Soak outputs per-iteration JSON files in benchmark-reports/soak/
+      console.log(JSON.stringify({ status: "soak_complete", duration }));
     }
     return;
   }
@@ -70,7 +109,8 @@ async function main() {
     }
   }
 
-  console.log(`\n  ARELY Benchmarks — ${useReal ? "REAL LLM" : "Deterministic"} mode`);
+  const modeLabel = mode === "hierarchical" ? "Hierarchical" : mode === "distributed" ? "Distributed" : mode === "swarm-heterogeneous" ? "Swarm Heterogeneous" : "Standard";
+  console.log(`\n  ARELY Benchmarks — ${useReal ? "REAL LLM" : "Deterministic"} mode [${modeLabel}]`);
   if (providerConfig) {
     console.log(`  Provider: ${providerConfig.provider} / ${providerConfig.model}`);
   }
@@ -80,8 +120,9 @@ async function main() {
     jsonOutput: useJson,
     environment,
     concurrency,
+    mode,
+    heterogeneous: swarmHeterogeneous,
   };
-  process.env.BENCHMARK_ENGINE_URL = engineUrl;
   if (providerConfig) {
     opts.provider = providerConfig.provider;
     opts.model = providerConfig.model;
