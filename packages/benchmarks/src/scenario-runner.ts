@@ -57,12 +57,13 @@ export function createScenarioCollector(opts?: BenchmarkOptions): Collector {
               ? ["single"]
               : allModes;
 
+      const log = opts?.jsonOutput ? console.error.bind(console) : console.log.bind(console);
       const results: ScenarioRunResult[] = [];
 
-      console.log(`\n  Loaded ${scenarios.length} scenarios, running modes: ${modes.join(", ")}\n`);
+      log(`\n  Loaded ${scenarios.length} scenarios, running modes: ${modes.join(", ")}\n`);
 
       for (const scenario of scenarios) {
-        console.log(formatScenario(scenario));
+        log(formatScenario(scenario));
 
         for (const mode of modes) {
           if (mode === "hierarchical") {
@@ -538,8 +539,9 @@ export async function runScenarioBenchmarks(opts?: BenchmarkOptions): Promise<Be
   const collector = createScenarioCollector(opts);
   runner.register(collector.name, collector);
 
+  const log = opts?.jsonOutput ? console.error.bind(console) : console.log.bind(console);
   const modeLabel = opts?.mode === "hierarchical" ? "Hierarchical" : opts?.mode === "distributed" ? "Distributed" : opts?.mode === "soak" ? "Soak" : "Standard";
-  console.log(`\n  Running ${modeLabel} LLM Benchmarks...`);
+  log(`\n  Running ${modeLabel} LLM Benchmarks...`);
   const report = await runner.run();
 
   const generator = new ReportGenerator();
@@ -547,8 +549,8 @@ export async function runScenarioBenchmarks(opts?: BenchmarkOptions): Promise<Be
   await generator.write(report, outDir);
 
   if (!opts?.jsonOutput) {
-    console.log(generator.toMarkdown(report));
-    console.log(`\n  Reports written to ${outDir}/\n`);
+    log(generator.toMarkdown(report));
+    log(`\n  Reports written to ${outDir}/\n`);
   }
 
   return report;
@@ -571,11 +573,13 @@ export async function runSoakBenchmarks(duration: string, opts?: BenchmarkOption
   const scenariosDir = fs.existsSync(SCENARIO_DIR) ? SCENARIO_DIR : path.resolve("packages/benchmarks/src/scenarios");
   const scenarios = loadScenarios(scenariosDir);
 
+  const log = opts?.jsonOutput ? console.error.bind(console) : console.log.bind(console);
+
   const soakDir = path.resolve("benchmark-reports", "soak", duration);
   const iterationDir = path.join(soakDir, "iterations");
 
-  console.log(`\n  Starting ${duration} soak test (${deterministic ? "deterministic" : "real"} mode)`);
-  console.log(`  ${scenarios.length} scenarios, ends at ${new Date(endTime).toISOString()}\n`);
+  log(`\n  Starting ${duration} soak test (${deterministic ? "deterministic" : "real"} mode)`);
+  log(`  ${scenarios.length} scenarios, ends at ${new Date(endTime).toISOString()}\n`);
 
   let iteration = 0;
   const allResults: ScenarioRunResult[] = [];
@@ -621,7 +625,7 @@ export async function runSoakBenchmarks(duration: string, opts?: BenchmarkOption
 
     const elapsed = Date.now() - (endTime - durationMs);
     const remaining = Math.max(0, endTime - Date.now());
-    console.log(`  Iteration ${iteration} complete — ${formatDuration(elapsed)} elapsed, ${formatDuration(remaining)} remaining`);
+    log(`  Iteration ${iteration} complete — ${formatDuration(elapsed)} elapsed, ${formatDuration(remaining)} remaining`);
 
     // Sleep between iterations (configurable)
     await sleep(1000);
@@ -640,9 +644,9 @@ export async function runSoakBenchmarks(duration: string, opts?: BenchmarkOption
   const lastScore = lastIterResults.filter((r) => r.success).length / Math.max(lastIterResults.length, 1);
   const learningGain = lastScore - firstScore;
 
-  console.log(`\n  Soak test complete (${iteration} iterations)`);
-  console.log(`  Learning gain: ${(learningGain * 100).toFixed(1)}%`);
-  console.log(`  Reports: ${soakDir}/\n`);
+  log(`\n  Soak test complete (${iteration} iterations)`);
+  log(`  Learning gain: ${(learningGain * 100).toFixed(1)}%`);
+  log(`  Reports: ${soakDir}/\n`);
 }
 
 function buildSoakMetrics(results: ScenarioRunResult[], iteration: number, elapsedMs: number): BenchmarkMetric[] {
@@ -811,22 +815,24 @@ export async function runBenchmarkAllProviders(opts?: BenchmarkOptions): Promise
   loadConfig();
   const healthResults = await checkAllProviders();
 
+  const log = opts?.jsonOutput ? console.error.bind(console) : console.log.bind(console);
+
   const onlineProviders = healthResults.filter((h) => h.status === "online");
   const skippedProviders = healthResults.filter((h) => h.status !== "online");
 
   if (onlineProviders.length === 0) {
-    console.log("  No online providers found. Run `arely models --health` to diagnose.");
+    log("  No online providers found. Run `arely models --health` to diagnose.");
     return { results: [], leaderboard: buildLeaderboard([]), summary: buildProviderSummary([] as ProviderBenchmarkResult[], buildLeaderboard([])) };
   }
 
-  console.log(`\n  Running benchmarks across ${onlineProviders.length} providers:\n`);
+  log(`\n  Running benchmarks across ${onlineProviders.length} providers:\n`);
   for (const h of onlineProviders) {
-    console.log(`    ✓ ${h.label} (${h.latencyMs ?? "?"}ms)`);
+    log(`    ✓ ${h.label} (${h.latencyMs ?? "?"}ms)`);
   }
   for (const h of skippedProviders) {
-    console.log(`    ⚠ ${h.label} (skipped — ${h.status})`);
+    log(`    ⚠ ${h.label} (skipped — ${h.status})`);
   }
-  console.log("");
+  log("");
 
   const concurrency = opts?.concurrency ?? Math.min(onlineProviders.length, 4);
 
@@ -850,9 +856,9 @@ export async function runBenchmarkAllProviders(opts?: BenchmarkOptions): Promise
     }
   }
   if (failed.length > 0) {
-    console.log(`  ${failed.length} provider(s) failed:`);
-    for (const f of failed) console.log(`    ✗ ${f}`);
-    console.log("");
+    log(`  ${failed.length} provider(s) failed:`);
+    for (const f of failed) log(`    ✗ ${f}`);
+    log("");
   }
 
   const results: ProviderBenchmarkResult[] = [];

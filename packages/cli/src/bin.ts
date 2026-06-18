@@ -18,6 +18,16 @@ const HELP = `
     arely coordinator      Start distributed swarm coordinator
     arely worker           Start distributed swarm worker
     arely version          Show version
+    arely runtime          Manage the autonomous runtime
+    arely runtime start    Start the autonomous runtime loop
+    arely runtime stop     Stop the autonomous runtime loop
+    arely runtime pause    Pause the autonomous runtime
+    arely runtime resume   Resume the autonomous runtime
+    arely runtime status   Show runtime status
+    arely runtime goals    List runtime goals
+    arely runtime goal create  Create a new goal
+    arely runtime goal retry   Retry a failed goal
+    arely runtime goal cancel  Cancel a goal
 
   Options:
     --connect <url>        Connect TUI to a remote server
@@ -74,6 +84,7 @@ async function main() {
     case "update": await updateCmd(); break;
     case "coordinator": await startCoordinator(); break;
     case "worker": await startWorker(); break;
+    case "runtime": await runtimeCommands(); break;
     default:
       if (args.includes("--connect")) {
         const idx = args.indexOf("--connect");
@@ -311,19 +322,39 @@ async function doctor() {
 }
 
 async function bench() {
-  const picocolors = await import("picocolors");
-  const args = process.argv.slice(3);
-  const realFlag = args.includes("--real") || args.includes("-r") ? "--real" : "";
-  console.log(picocolors.default.cyan(`Running ARELY Benchmarks... ${realFlag ? "(REAL LLM mode)" : "(deterministic)"}\n`));
+  const pc = (await import("picocolors")).default;
   const { spawn } = await import("node:child_process");
-  const npmArgs = ["run", "bench"];
-  if (realFlag) npmArgs.push("--", "--real");
-  const child = spawn("npm", npmArgs, {
+  const { fileURLToPath } = await import("node:url");
+  const { dirname, resolve } = await import("node:path");
+  const { existsSync } = await import("node:fs");
+
+  const args = process.argv.slice(3);
+  console.error(pc.cyan("Running ARELY Benchmarks..."));
+
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const repoRoot = resolve(__dirname, "../../..");
+  const tsxPath = resolve(repoRoot, "node_modules/tsx/dist/cli.mjs");
+  const benchCliPath = resolve(repoRoot, "packages/benchmarks/src/cli.ts");
+
+  if (!existsSync(tsxPath)) {
+    console.error(pc.red(`tsx not found: ${tsxPath}\nRun: npm install`));
+    process.exit(1);
+  }
+  if (!existsSync(benchCliPath)) {
+    console.error(pc.red(`Benchmark CLI not found: ${benchCliPath}`));
+    process.exit(1);
+  }
+
+  const child = spawn(process.execPath, [tsxPath, benchCliPath, ...args], {
     stdio: "inherit",
-    cwd: new URL("../..", import.meta.url).pathname,
-    shell: true,
+    cwd: repoRoot,
   });
+
   child.on("exit", (code) => process.exit(code ?? 0));
+  child.on("error", (err) => {
+    console.error(pc.red(`Benchmark launcher failed: ${err.message}`));
+    process.exit(1);
+  });
 }
 
 async function models() {
@@ -777,6 +808,253 @@ async function updateCmd() {
   console.log("  npm update -g @arelyos/cli");
 
   outro("Done.");
+}
+
+// ---- Runtime Commands ----
+
+async function runtimeCommands() {
+  const args = process.argv.slice(3);
+  const sub = args[0];
+  const jsonOutput = args.includes("--json") || args.includes("-j");
+  const picocolors = await import("picocolors");
+  const c = picocolors.default;
+
+  // Dynamically import runtime service (avoids loading if not needed)
+  const { RuntimeService } = await import("@arelyos/engine/runtime/runtime-service.js");
+
+  switch (sub) {
+    case "start": {
+      const rs = RuntimeService.getInstance();
+      if (rs.getRuntime().getStatus() === "running") {
+        console.log(c.yellow("Runtime is already running."));
+        return;
+      }
+      console.log(c.cyan("Starting autonomous runtime..."));
+      rs.start();
+      console.log(c.green("Runtime started."));
+      // Keep process alive for long-running runtime
+      await new Promise(() => {});
+      break;
+    }
+
+    case "stop": {
+      const rs = RuntimeService.getInstance();
+      if (rs.getRuntime().getStatus() === "stopped") {
+        console.log(c.yellow("Runtime is already stopped."));
+        return;
+      }
+      console.log(c.cyan("Stopping autonomous runtime..."));
+      rs.stop();
+      console.log(c.green("Runtime stopped."));
+      break;
+    }
+
+    case "pause": {
+      const rs = RuntimeService.getInstance();
+      if (rs.getRuntime().getStatus() !== "running") {
+        console.log(c.yellow("Runtime is not running."));
+        return;
+      }
+      rs.pause();
+      console.log(c.green("Runtime paused."));
+      break;
+    }
+
+    case "resume": {
+      const rs = RuntimeService.getInstance();
+      if (rs.getRuntime().getStatus() !== "paused") {
+        console.log(c.yellow("Runtime is not paused."));
+        return;
+      }
+      rs.resume();
+      console.log(c.green("Runtime resumed."));
+      break;
+    }
+
+    case "status": {
+      const rs = RuntimeService.getInstance();
+      const st = rs.status();
+
+      if (jsonOutput) {
+        console.log(JSON.stringify({
+          state: st.state,
+          uptimeMs: st.uptimeMs,
+          goals: st.goals,
+          policies: Object.fromEntries(st.policies.map((p: { name: string; value: unknown }) => [p.name, p.value])),
+          iterationCount: st.iterationCount,
+        }, null, 2));
+        return;
+      }
+
+      const stateColor = (s: string) => {
+        switch (s) {
+          case "running": return c.green(s);
+          case "paused": return c.yellow(s);
+          case "stopped": return c.red(s);
+          default: return c.dim(s);
+        }
+      };
+
+      console.log(c.bold("\n  Runtime Status"));
+      console.log(c.dim("  ────────────────────"));
+      console.log(`  State:          ${stateColor(st.state)}`);
+      if (st.uptimeMs > 0) {
+        const secs = Math.floor(st.uptimeMs / 1000);
+        const mins = Math.floor(secs / 60);
+        const hrs = Math.floor(mins / 60);
+        const uptimeStr = hrs > 0
+          ? `${hrs}h ${mins % 60}m ${secs % 60}s`
+          : mins > 0
+            ? `${mins}m ${secs % 60}s`
+            : `${secs}s`;
+        console.log(`  Uptime:         ${uptimeStr}`);
+      }
+      console.log(`  Iterations:     ${st.iterationCount}`);
+      console.log(c.dim(`\n  Goals:`));
+      console.log(`    Pending:    ${st.goals.pending}`);
+      console.log(`    Running:    ${st.goals.running}`);
+      console.log(`    Completed:  ${st.goals.completed}`);
+      console.log(`    Failed:     ${st.goals.failed}`);
+      console.log(`    Blocked:    ${st.goals.blocked}`);
+      console.log(c.dim(`\n  Policies:`));
+      for (const p of st.policies) {
+        const val = typeof p.value === "boolean" ? (p.value ? c.green("enabled") : c.red("disabled")) : String(p.value);
+        console.log(`    ${p.name}: ${val}`);
+      }
+      console.log("");
+      break;
+    }
+
+    case "goals": {
+      const rs = RuntimeService.getInstance();
+      const mgr = rs.getGoalManager();
+      const allGoals = mgr.listGoals();
+
+      if (jsonOutput) {
+        console.log(JSON.stringify(allGoals, null, 2));
+        return;
+      }
+
+      if (allGoals.length === 0) {
+        console.log(c.dim("No goals."));
+        return;
+      }
+
+      const statusColor: Record<string, (s: string) => string> = {
+        pending: c.dim,
+        running: c.cyan,
+        completed: c.green,
+        failed: c.red,
+        blocked: c.yellow,
+      };
+
+      console.log(c.bold(`\n  Goals (${allGoals.length})`));
+      console.log(c.dim("  ────────────────────"));
+      for (const g of allGoals) {
+        const color = statusColor[g.status] ?? c.dim;
+        console.log(`  ${color(g.status.padEnd(10))} ${c.bold(g.id.slice(0, 12))}  ${g.description.slice(0, 60)}`);
+      }
+      console.log("");
+      break;
+    }
+
+    case "goal": {
+      // Sub-sub-commands: goal create, goal retry, goal cancel
+      const subCmd = args[1];
+      switch (subCmd) {
+        case "create": {
+          const descIdx = args.indexOf("--description") + 1 || args.indexOf("-d") + 1;
+          const priorityIdx = args.indexOf("--priority") + 1 || args.indexOf("-p") + 1;
+          const description = descIdx > 0 ? args[descIdx] : "";
+          const priority = priorityIdx > 0 ? parseInt(args[priorityIdx], 10) : 0;
+
+          if (!description) {
+            console.log(c.red("Error: --description is required"));
+            process.exit(1);
+          }
+
+          const rs = RuntimeService.getInstance();
+          const goal = rs.getGoalManager().createGoal({
+            description,
+            priority: isNaN(priority) ? 0 : priority,
+          });
+
+          if (jsonOutput) {
+            console.log(JSON.stringify(goal, null, 2));
+            return;
+          }
+          console.log(c.green(`Goal created: ${c.bold(goal.id)}`));
+          console.log(`  ${goal.description}`);
+          break;
+        }
+
+        case "retry": {
+          const goalId = args[2];
+          if (!goalId) {
+            console.log(c.red("Error: goal ID required"));
+            process.exit(1);
+          }
+
+          const rs = RuntimeService.getInstance();
+          const mgr = rs.getGoalManager();
+          const goal = mgr.getGoal(goalId);
+          if (!goal) {
+            console.log(c.red(`Goal not found: ${goalId}`));
+            process.exit(1);
+          }
+          if (goal.status !== "failed") {
+            console.log(c.yellow(`Goal ${goalId} is not failed (status: ${goal.status})`));
+            return;
+          }
+
+          mgr.updateGoal(goalId, { status: "pending", retries: 0, lastError: undefined });
+
+          if (jsonOutput) {
+            console.log(JSON.stringify({ goalId, status: "retried" }, null, 2));
+            return;
+          }
+          console.log(c.green(`Goal ${c.bold(goalId)} queued for retry.`));
+          break;
+        }
+
+        case "cancel": {
+          const goalId = args[2];
+          if (!goalId) {
+            console.log(c.red("Error: goal ID required"));
+            process.exit(1);
+          }
+
+          const rs = RuntimeService.getInstance();
+          const mgr = rs.getGoalManager();
+          const goal = mgr.getGoal(goalId);
+          if (!goal) {
+            console.log(c.red(`Goal not found: ${goalId}`));
+            process.exit(1);
+          }
+
+          mgr.blockGoal(goalId, "Cancelled by user");
+
+          if (jsonOutput) {
+            console.log(JSON.stringify({ goalId, status: "cancelled" }, null, 2));
+            return;
+          }
+          console.log(c.green(`Goal ${c.bold(goalId)} cancelled.`));
+          break;
+        }
+
+        default:
+          console.log(c.red(`Unknown runtime goal subcommand: ${subCmd}`));
+          console.log("  Usage: arely runtime goal create|retry|cancel [options]");
+          process.exit(1);
+      }
+      break;
+    }
+
+    default:
+      console.log(c.red(`Unknown runtime subcommand: ${sub}`));
+      console.log("  Usage: arely runtime <start|stop|pause|resume|status|goals|goal>");
+      process.exit(1);
+  }
 }
 
 main().catch((err) => {

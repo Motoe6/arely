@@ -55,9 +55,10 @@ async function main() {
 
   // Handle soak mode
   if (duration && mode === "soak") {
-    console.log(`\n  ARELY Soak Benchmarks — ${useReal ? "REAL LLM" : "Deterministic"} mode`);
-    console.log(`  Duration: ${duration}`);
-    if (distributedMode) console.log("  Mode: distributed");
+    const log = useJson ? console.error.bind(console) : console.log.bind(console);
+    log(`\n  ARELY Soak Benchmarks — ${useReal ? "REAL LLM" : "Deterministic"} mode`);
+    log(`  Duration: ${duration}`);
+    if (distributedMode) log("  Mode: distributed");
 
     await runSoakBenchmarks(duration, {
       real: useReal,
@@ -109,10 +110,11 @@ async function main() {
     }
   }
 
+  const log = useJson ? console.error.bind(console) : console.log.bind(console);
   const modeLabel = mode === "hierarchical" ? "Hierarchical" : mode === "distributed" ? "Distributed" : mode === "swarm-heterogeneous" ? "Swarm Heterogeneous" : "Standard";
-  console.log(`\n  ARELY Benchmarks — ${useReal ? "REAL LLM" : "Deterministic"} mode [${modeLabel}]`);
+  log(`\n  ARELY Benchmarks — ${useReal ? "REAL LLM" : "Deterministic"} mode [${modeLabel}]`);
   if (providerConfig) {
-    console.log(`  Provider: ${providerConfig.provider} / ${providerConfig.model}`);
+    log(`  Provider: ${providerConfig.provider} / ${providerConfig.model}`);
   }
 
   const opts: BenchmarkOptions = {
