@@ -53,6 +53,75 @@
 
 ---
 
+## v1.2.0-b1.2 — Hierarchical Swarms, Autonomous Runtime, Real Benchmarks
+
+### Hierarchical Swarms (T16.3)
+- `hierarchical-planner.ts` — regex-based category inference (no LLM in planner), produces tree of `RootManager → ResearchManager/EngineeringManager/ValidationManager/SynthesisManager → leaf roles`
+- `hierarchical-executor.ts` — recursive executor: internal nodes run children in parallel via `Promise.all` and synthesize; leaves execute assignments via LLM
+- `hierarchical-types.ts` — `HierarchicalPlan`, `HierarchicalSwarmState`, `ManagerDefinition`, `ManagerRole` with typed categories
+- `manager-planner.ts` — standalone ManagerSwarm planner for distributed heterogeneous execution (OpenAI, Anthropic, Ollama, OpenRouter routing)
+- `manager-swarm.ts` — ManagerSwarm executor with cross-model provider routing per role
+
+### Autonomous Runtime (T16.4)
+- `runtime-types.ts` — `RuntimeGoal` (pending/running/blocked/failed/completed), `RuntimeState` (idle/starting/running/pausing/paused/stopping/stopped/failed)
+- `runtime-loop.ts` — `AutonomousRuntime` with lifecycle hooks (onStart, onTick, onStop), `start()`, `stop()`, `pause()`, `resume()`, goals iteration loop
+- `runtime-service.ts` — `RuntimeService` singleton, 9 CLI commands: `runtime start|stop|pause|resume|status|goals|goal create|retry|cancel`, `--json` flags
+- `goal-manager.ts` — `DefaultGoalManager` with CRUD, retry, priorities, deadlines, parent-child goal trees
+- `replanner.ts` — `DefaultReplanner` with threshold-based replanning (success<30% or predError>0.3), fallback to single-agent after retries exhausted
+- `recovery-manager.ts` — `DefaultRecoveryManager` with circuit breaker state checks, recovery policy, max retries (default 3)
+- `policy-engine.ts` — `DefaultPolicyEngine` with 7 configurable policies (maxRetries, recoveryDelayMs, replanningThreshold, maxReplanCount, adaptiveTimeout, goalTTLDuration, maxConcurrentGoals)
+- 37 new unit tests across all runtime modules
+
+### Cross-Session Memory (T15.6)
+- `cross-session-memory.ts` — `CrossSessionMemory` store with `search()`, `save()`, entity extraction, relation building
+- `entity-extractor.ts` — regex/pattern-based entity extraction from conversation text
+- `entity-graph.ts` — `EntityGraph` with `addEntity()`, `addRelation()`, `findPath()`, `getSubgraph()`, `search()`
+- `relation-builder.ts` — infers `USES`, `DEPENDS_ON`, `IMPLEMENTS`, `EXTENDS`, `CONTAINS` relations from text patterns
+- `cross-session-memory-types.ts` — `MemoryEntry`, `Entity`, `Relation`, `EntityRelation` typed interfaces
+- Global memory store in persistence layer with Drizzle ORM schema
+
+### Distributed Enhancements (B2.1–B2.2)
+- OTel distributed tracing propagation — `distributed_context` header for multi-node trace correlation
+- Pluggable worker discovery framework — abstract `DiscoveryProvider` with `register()`, `discover()`, `heartbeat()`, `unregister()`
+
+### Benchmarks (T16.B1)
+- **7 benchmark modes**: single, planner, swarm, shared-memory-swarm, hierarchical, distributed, soak
+- **16 scenarios** across 6 categories: coding, research, planning, tool-use, multi-step-research, implementation-design
+- `scenario-runner.ts` — `runHierarchicalDeterministic()`, `runHierarchicalLive()`, `runDistributedDeterministic()`, `runDistributedLive()`, `runSoakBenchmarks()` with parseDuration()
+- Extended leaderboards with `hierarchicalEfficiency`, `distributedEfficiency`, `learningGain` metrics
+- Report generator with per-mode summary tables
+- New CLI flags: `--manager-hierarchical`, `--distributed`, `--swarm-heterogeneous`, `--duration`
+
+### Benchmark Results (18 Jun 2026 — Ollama local)
+```
+┌──────────────────────┬──────────┬──────────┬──────────┬──────────┐
+│ Modo                 │ Utility  │ Latencia │ Goal Gain│ Costo    │
+├──────────────────────┼──────────┼──────────┼──────────┼──────────┤
+│ Hierarchical (hetero)│ 0.71     │  6ms     │ 0.57     │ $0.0252  │
+│ Hierarchical (pure)  │ 0.67     │ 13ms     │ 0.63     │ $0.0252  │
+│ Swarm                │ 0.66     │ 21ms     │ 0.50     │ $0.0084  │
+│ Distributed          │ 0.64     │ 10ms     │ 0.53     │ $0.0210  │
+│ Shared-Memory        │ 0.62     │  9ms     │ 0.46     │ $0.0084  │
+└──────────────────────┴──────────┴──────────┴──────────┴──────────┘
+```
+- **Ollama real**: 100% success, 11ms avg latency, $0.0084 total, **score 0.823**
+- **165/165 thresholds passed, 0 failures** across all modes
+- Hierarchical recommended as default mode for complex tasks
+
+### Production Fixes
+- `packages/cli/src/bin.ts`: `spawn("npm", ..., { shell: true })` → `spawn(process.execPath, [tsxPath, ...])` — eliminates cmd.exe dependency, enables WSL/Docker/Linux
+- `packages/benchmarks/src/scenario-runner.ts`: `loadConfig()` before `checkAllProviders()` — fixes "Config not loaded" error
+- `packages/benchmarks/src/cli.ts`: `BENCHMARK_ENGINE_URL` assigned before all execution paths — fixes soak and other modes
+- `scenario-runner.ts` + `cli.ts` + `bin.ts`: all interactive `console.log` → `opts?.jsonOutput ? console.error : console.log` — clean stdout in `--json` mode
+
+### Quality
+- Test suite: **1869 passing tests** across 209 files — 0 failures
+- TypeScript build: **0 errors**
+- Benchmark thresholds: 165/165 passed (33 hierarchical, 33 distributed, 99 swarm-hetero)
+- Architecture: 4 benchmark reports generated with real Ollama provider
+
+---
+
 ## v0.1.0 — AgentOS Foundation
 
 ### Cognitive Core (T7–T15)

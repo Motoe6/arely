@@ -110,6 +110,17 @@ export class ReportGenerator {
     printBoard("Leaderboard (Cost)", leaderboard.cost, (r) => `$${r.costUsd.toFixed(6)}`);
     printBoard("Leaderboard (Success Rate)", leaderboard.successRate, (r) => `${(r.successRate * 100).toFixed(1)}%`);
 
+    // Extended leaderboards (Sprint 1)
+    if (leaderboard.hierarchicalEfficiency && leaderboard.hierarchicalEfficiency.length > 0) {
+      printBoard("Leaderboard (Hierarchical Efficiency)", leaderboard.hierarchicalEfficiency, (r) => r.hierarchicalEfficiency?.toFixed(3) ?? "-");
+    }
+    if (leaderboard.distributedEfficiency && leaderboard.distributedEfficiency.length > 0) {
+      printBoard("Leaderboard (Distributed Efficiency)", leaderboard.distributedEfficiency, (r) => r.distributedEfficiency?.toFixed(3) ?? "-");
+    }
+    if (leaderboard.learningGain && leaderboard.learningGain.length > 0) {
+      printBoard("Leaderboard (Learning Gain)", leaderboard.learningGain, (r) => r.learningGain?.toFixed(4) ?? "-");
+    }
+
     return lines.join("\n");
   }
 }

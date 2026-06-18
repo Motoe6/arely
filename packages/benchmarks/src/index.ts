@@ -18,7 +18,7 @@ export type {
 export { BenchmarkRunner } from "./runner.js";
 export { ReportGenerator } from "./report-generator.js";
 export { loadScenarios, formatScenario } from "./scenario-loader.js";
-export { createScenarioCollector, runScenarioBenchmarks } from "./scenario-runner.js";
+export { createScenarioCollector, runScenarioBenchmarks, runSoakBenchmarks } from "./scenario-runner.js";
 export { createPredictionCollector } from "./collectors/prediction.js";
 export { createStrategyCollector } from "./collectors/strategy.js";
 export { createGoalsCollector } from "./collectors/goals.js";

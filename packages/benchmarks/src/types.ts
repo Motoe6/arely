@@ -42,6 +42,9 @@ export interface BenchmarkOptions {
   real?: boolean;
   environment?: "dev" | "ci" | "production";
   concurrency?: number;
+  mode?: "standard" | "hierarchical" | "distributed" | "swarm-heterogeneous" | "soak";
+  duration?: string; // e.g. "10m", "1h", "24h", "72h", "7d"
+  heterogeneous?: boolean;
 }
 
 export interface ProviderBenchmarkResult {
@@ -58,6 +61,12 @@ export interface ProviderBenchmarkResult {
   bestCodingModel?: string;
   bestResearchModel?: string;
   bestPlanningModel?: string;
+  // Sprint 1 hierarchical/distributed
+  hierarchicalEfficiency?: number; // success/treeDepth
+  distributedEfficiency?: number; // success/workerCount
+  learningGain?: number;
+  avgTreeDepth?: number;
+  avgWorkerUtilization?: number;
 }
 
 export interface ProviderLeaderboard {
@@ -67,6 +76,10 @@ export interface ProviderLeaderboard {
   cost: ProviderBenchmarkResult[];
   successRate: ProviderBenchmarkResult[];
   costEfficiency: ProviderBenchmarkResult[];
+  // Extended leaderboards (Sprint 1)
+  hierarchicalEfficiency?: ProviderBenchmarkResult[];
+  distributedEfficiency?: ProviderBenchmarkResult[];
+  learningGain?: ProviderBenchmarkResult[];
 }
 
 export interface ProviderBenchmarkSummary {
@@ -87,5 +100,8 @@ export interface ProviderBenchmarkSummary {
     latency: string[];
     successRate: string[];
     costEfficiency: string[];
+    hierarchicalEfficiency?: string[];
+    distributedEfficiency?: string[];
+    learningGain?: string[];
   };
 }

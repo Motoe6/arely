@@ -43,6 +43,9 @@ export {
   contextEpochs,
   epochMessages,
   memoryStore,
+  globalMemory,
+  memoryEntities,
+  entityRelations,
   decisionLog,
   modelPerformance,
   goals,
@@ -151,6 +154,32 @@ export {
   evictExpired,
   evictByCount,
 } from "./memory-store.js"
+
+// Stores — global-memory
+export {
+  setGlobalMemory,
+  getGlobalMemory,
+  searchGlobalMemories,
+  deleteGlobalMemory,
+  countGlobalMemories,
+  countDistinctEntities,
+  countEntityRelations,
+  getMemoryEntities,
+  getEntityMemories,
+  upsertEntityRelation,
+  getEntityRelations,
+  getRelatedEntities,
+  updateGlobalMemory,
+  listAllGlobalMemories,
+  countArchivedMemories,
+  deleteGlobalMemories,
+} from "./global-memory-store.js"
+export type {
+  GlobalMemoryRecord,
+  GlobalMemorySearchQuery,
+  MemoryEntityRecord,
+  EntityRelationRecord,
+} from "./types/global-memory.js"
 
 // Stores — message
 export {

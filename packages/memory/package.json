@@ -19,7 +19,12 @@
     "./meta-reasoner": "./src/meta-reasoner.ts",
     "./model-performance-service": "./src/model-performance-service.ts",
     "./strategy-evaluator": "./src/strategy-evaluator.ts",
-    "./strategy-selector": "./src/strategy-selector.ts"
+    "./strategy-selector": "./src/strategy-selector.ts",
+    "./cross-session-memory": "./src/cross-session-memory.ts",
+    "./cross-session-memory-types": "./src/cross-session-memory-types.ts",
+    "./entity-extractor": "./src/entity-extractor.ts",
+    "./relation-builder": "./src/relation-builder.ts",
+    "./entity-graph": "./src/entity-graph.ts"
   },
   "dependencies": {
     "@arelyos/llm-core": "*",

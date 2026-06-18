@@ -391,6 +391,35 @@ export const CREATE_TABLES = [
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
   )`,
+  `CREATE TABLE IF NOT EXISTS global_memory (
+    id TEXT PRIMARY KEY,
+    content TEXT NOT NULL,
+    session_ids TEXT NOT NULL DEFAULT '[]',
+    entities TEXT NOT NULL DEFAULT '[]',
+    tags TEXT NOT NULL DEFAULT '[]',
+    importance REAL NOT NULL DEFAULT 1.0,
+    confidence INTEGER NOT NULL DEFAULT 100,
+    access_count INTEGER NOT NULL DEFAULT 0,
+    last_accessed_at TEXT,
+    embedding TEXT,
+    archived_at TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )`,
+  `CREATE TABLE IF NOT EXISTS memory_entities (
+    id TEXT PRIMARY KEY,
+    memory_id TEXT NOT NULL REFERENCES global_memory(id) ON DELETE CASCADE,
+    entity TEXT NOT NULL,
+    type TEXT NOT NULL DEFAULT 'concept'
+  )`,
+  `CREATE TABLE IF NOT EXISTS entity_relations (
+    id TEXT PRIMARY KEY,
+    source_entity TEXT NOT NULL,
+    target_entity TEXT NOT NULL,
+    weight REAL NOT NULL DEFAULT 1.0,
+    relation_type TEXT NOT NULL DEFAULT 'related',
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )`,
 ];
 
 export const CREATE_INDEXES = [
@@ -467,6 +496,15 @@ export const CREATE_INDEXES = [
   "CREATE INDEX IF NOT EXISTS idx_goal_plan_sort_order ON goal_plans(sort_order)",
   "CREATE INDEX IF NOT EXISTS idx_milestone_plan ON milestones(plan_id)",
   "CREATE INDEX IF NOT EXISTS idx_milestone_status ON milestones(status)",
+  "CREATE INDEX IF NOT EXISTS idx_global_memory_importance ON global_memory(importance)",
+  "CREATE INDEX IF NOT EXISTS idx_global_memory_confidence ON global_memory(confidence)",
+  "CREATE INDEX IF NOT EXISTS idx_global_memory_created ON global_memory(created_at)",
+  "CREATE INDEX IF NOT EXISTS idx_global_memory_updated ON global_memory(updated_at)",
+  "CREATE INDEX IF NOT EXISTS idx_mem_entities_memory ON memory_entities(memory_id)",
+  "CREATE INDEX IF NOT EXISTS idx_mem_entities_entity ON memory_entities(entity)",
+  "CREATE INDEX IF NOT EXISTS idx_entity_rels_source ON entity_relations(source_entity)",
+  "CREATE INDEX IF NOT EXISTS idx_entity_rels_target ON entity_relations(target_entity)",
+  "CREATE INDEX IF NOT EXISTS idx_entity_rels_type ON entity_relations(relation_type)",
 ];
 
 export const MIGRATIONS = [
@@ -518,6 +556,8 @@ export const MIGRATIONS = [
   "CREATE TABLE IF NOT EXISTS milestones (id TEXT PRIMARY KEY, plan_id TEXT NOT NULL REFERENCES goal_plans(id) ON DELETE CASCADE, description TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending', completed_at TEXT, weight REAL NOT NULL DEFAULT 1, metadata TEXT NOT NULL DEFAULT '{}', created_at TEXT NOT NULL DEFAULT (datetime('now')))",
   // M15: weight column for existing milestones
   "ALTER TABLE milestones ADD COLUMN weight REAL NOT NULL DEFAULT 1",
+  // B2.3.4: archived_at for global_memory
+  "ALTER TABLE global_memory ADD COLUMN archived_at TEXT",
 ];
 
 export function pushSchema(databasePath?: string): void {

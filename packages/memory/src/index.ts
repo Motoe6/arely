@@ -54,6 +54,19 @@ export { SCORE_WEIGHTS } from "./model-selection-types.js";
 export { TaskClassifier, taskClassifier } from "./task-classifier.js";
 export { ModelSelector } from "./model-selector.js";
 
+export type { GlobalMemoryRecord, GlobalMemorySearchQuery, MemoryEntityRecord, EntityRelationRecord } from "./cross-session-memory-types.js";
+export type { StoreGlobalMemoryInput, SearchGlobalMemoryOptions, GraphResult, MemoryMetrics } from "./cross-session-memory.js";
+export { CrossSessionMemory, crossSessionMemory } from "./cross-session-memory.js";
+
+export type { EntityType, ExtractedEntity } from "./entity-extractor.js";
+export { extractEntities, extractEntitiesFromMultiple } from "./entity-extractor.js";
+
+export type { RelationType, EntityRelation } from "./relation-builder.js";
+export { buildRelations } from "./relation-builder.js";
+
+export type { GraphNode, GraphEdge } from "./entity-graph.js";
+export { EntityGraph, entityGraph } from "./entity-graph.js";
+
 export type { Goal, GoalStatus, GoalQuery } from "./goal-service.js";
 export { GoalService, goalService } from "./goal-service.js";
 

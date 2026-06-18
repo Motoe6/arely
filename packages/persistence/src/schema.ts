@@ -727,6 +727,62 @@ export const milestones = sqliteTable(
   ],
 );
 
+export const globalMemory = sqliteTable(
+  "global_memory",
+  {
+    id: text("id").primaryKey(),
+    content: text("content").notNull(),
+    sessionIds: text("session_ids").notNull().default("[]"),
+    entities: text("entities").notNull().default("[]"),
+    tags: text("tags").notNull().default("[]"),
+    importance: real("importance").notNull().default(1.0),
+    confidence: integer("confidence").notNull().default(100),
+    accessCount: integer("access_count").notNull().default(0),
+    lastAccessedAt: text("last_accessed_at"),
+    embedding: text("embedding"),
+    archivedAt: text("archived_at"),
+    createdAt: text("created_at").notNull().default("datetime('now')"),
+    updatedAt: text("updated_at").notNull().default("datetime('now')"),
+  },
+  (table) => [
+    index("idx_global_memory_importance").on(table.importance),
+    index("idx_global_memory_confidence").on(table.confidence),
+    index("idx_global_memory_created").on(table.createdAt),
+    index("idx_global_memory_updated").on(table.updatedAt),
+  ],
+);
+
+export const memoryEntities = sqliteTable(
+  "memory_entities",
+  {
+    id: text("id").primaryKey(),
+    memoryId: text("memory_id").notNull().references(() => globalMemory.id, { onDelete: "cascade" }),
+    entity: text("entity").notNull(),
+    type: text("type").notNull().default("concept"),
+  },
+  (table) => [
+    index("idx_mem_entities_memory").on(table.memoryId),
+    index("idx_mem_entities_entity").on(table.entity),
+  ],
+);
+
+export const entityRelations = sqliteTable(
+  "entity_relations",
+  {
+    id: text("id").primaryKey(),
+    sourceEntity: text("source_entity").notNull(),
+    targetEntity: text("target_entity").notNull(),
+    weight: real("weight").notNull().default(1.0),
+    relationType: text("relation_type").notNull().default("related"),
+    updatedAt: text("updated_at").notNull().default("datetime('now')"),
+  },
+  (table) => [
+    index("idx_entity_rels_source").on(table.sourceEntity),
+    index("idx_entity_rels_target").on(table.targetEntity),
+    index("idx_entity_rels_type").on(table.relationType),
+  ],
+);
+
 export const policyChanges = sqliteTable(
   "policy_changes",
   {

@@ -1,5 +1,5 @@
 export type ScenarioCategory = "coding" | "research" | "planning" | "tool-use" | "swarm";
-export type BenchmarkMode = "single" | "planner" | "swarm" | "shared-memory-swarm";
+export type BenchmarkMode = "single" | "planner" | "swarm" | "shared-memory-swarm" | "hierarchical" | "distributed" | "soak";
 
 export interface Scenario {
   id: string;
@@ -28,6 +28,27 @@ export interface ScenarioRunResult {
   tokens: number;
   turns: number;
   error?: string;
+  // Hierarchical-specific
+  treeDepth?: number;
+  nodeCount?: number;
+  managerCount?: number;
+  leafCount?: number;
+  synthesisLatencyMs?: number;
+  // Distributed-specific
+  workerUtilization?: number;
+  roleRetries?: number;
+  failovers?: number;
+  leaseCount?: number;
+  schedulerLatencyMs?: number;
+  rpcLatencyMs?: number;
+  // Soak-specific
+  iteration?: number;
+  memoryLeakRate?: number;
+  providerFailureRate?: number;
+  workerDisconnectRate?: number;
+  schedulerP95Ms?: number;
+  learningGainOverTime?: number;
+  benchmarkDrift?: number;
 }
 
 export interface ScenarioSummary {
